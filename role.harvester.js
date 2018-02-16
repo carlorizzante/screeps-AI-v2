@@ -1,4 +1,5 @@
 module.exports = {
+
   // Creep -> void
   run: creep => {
 
@@ -12,7 +13,7 @@ module.exports = {
       // creep.say("🚨 work");
     }
 
-    // Once charged, carry Energy to Spawn or storage
+    // When charged, carry Energy to Spawn or storage
     if (creep.memory.charged) {
       const structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
         // Filter results by appropriate structure type, as follow
@@ -33,8 +34,7 @@ module.exports = {
         }
       }
 
-    } else {
-      // Go recharging
+    } else { // Go recharging
       creep.recharge(true, false);
     }
   }

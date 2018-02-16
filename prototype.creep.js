@@ -1,12 +1,14 @@
 const roles = {
-  harvester: require("role.harvester")
+  harvester: require("role.harvester"),
+  upgrader: require("role.upgrader")
 }
 
-Creep.prototype.run = function() {
-  // roles[this.memory.role].run(this);
-  roles["harvester"].run(this);
+Creep.prototype.logic = function() {
+  roles[this.memory.role].run(this);
+  // roles["harvester"].run(this);
 }
 
+// Boolean Boolean -> void
 Creep.prototype.recharge = function(useSource, useStorage) {
 
   let storage; // undefined so far

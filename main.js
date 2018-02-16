@@ -1,3 +1,4 @@
+require("prototype.spawn");
 require("prototype.creep");
 
 module.exports.loop = function() {
@@ -9,12 +10,11 @@ module.exports.loop = function() {
 
   // Run creeps logic
   for (let name in Game.creeps) {
-    Game.creeps[name].run();
+    Game.creeps[name].logic();
   }
 
   // Run spawns logic
   for (let name in Game.spawns) {
-    // Game.spawns[name].spawnLogic();
+    Game.spawns[name].logic();
   }
-
 }
