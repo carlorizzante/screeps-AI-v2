@@ -34,7 +34,8 @@ module.exports = {
         }
       }
 
-    } else { // Go recharging
+    // Go recharging
+    } else {
       creep.recharge(true, false);
     }
   }

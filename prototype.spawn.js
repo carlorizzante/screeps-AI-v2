@@ -1,6 +1,7 @@
 const roles = [
   "harvester",
-  "upgrader"
+  "upgrader",
+  "builder"
 ];
 
 StructureSpawn.prototype.logic = function() {
@@ -20,16 +21,19 @@ StructureSpawn.prototype.logic = function() {
 
   if (currentEnergy < maxEnergy) return;
 
-  if (creepCount["harvester"] < 3) {
+  if (creepCount["harvester"] < 4) {
     this.spawnCreepTier1("harvester");
 
-  } else if (creepCount["upgrader"] < 3) {
+  } else if (creepCount["upgrader"] < 4) {
     this.spawnCreepTier1("upgrader");
+
+  } else if (creepCount["builder"] < 4) {
+    this.spawnCreepTier1("builder");
   }
 }
 
 // String -> void
-StructureSpawn.prototype.spawnHarvester = function(role) {
+StructureSpawn.prototype.spawnCreepTier1 = function(role) {
   console.log("Spawning", role);
   Game.spawns["Spawn1"].spawnCreep([WORK, WORK, CARRY, MOVE], role + Game.time, {
     memory: { role: role }
