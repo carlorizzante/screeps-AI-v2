@@ -1,7 +1,8 @@
 const roles = [
   "harvester",
   "upgrader",
-  "builder"
+  "builder",
+  "repairer"
 ];
 
 StructureSpawn.prototype.logic = function() {
@@ -15,20 +16,24 @@ StructureSpawn.prototype.logic = function() {
   const maxEnergy = room.energyCapacityAvailable;
   const currentEnergy = room.energyAvailable;
 
+  // Spawn only the best creeps available
+  if (currentEnergy < maxEnergy) return;
+
   for (let role of roles) {
     creepCount[role] = _.sum(creeps, c => c.memory.role == role);
   }
 
-  if (currentEnergy < maxEnergy) return;
-
   if (creepCount["harvester"] < 4) {
     this.spawnCreepTier1("harvester");
 
-  } else if (creepCount["upgrader"] < 4) {
+  } else if (creepCount["upgrader"] < 5) {
     this.spawnCreepTier1("upgrader");
 
   } else if (creepCount["builder"] < 4) {
     this.spawnCreepTier1("builder");
+
+  } else if (creepCount["repairer"] < 2) {
+    this.spawnCreepTier1("repairer");
   }
 }
 
