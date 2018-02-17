@@ -23,16 +23,16 @@ StructureSpawn.prototype.logic = function() {
     creepCount[role] = _.sum(creeps, c => c.memory.role == role);
   }
 
-  if (creepCount["harvester"] < 5) {
+  if (creepCount["harvester"] < 4) {
     this.spawnCreepTier1("harvester");
 
-  } else if (creepCount["upgrader"] < 8) {
+  } else if (creepCount["upgrader"] < 6) {
     this.spawnCreepTier1("upgrader");
 
-  } else if (creepCount["builder"] < 8) {
+  } else if (creepCount["builder"] < 6) {
     this.spawnCreepTier1("builder");
 
-  } else if (creepCount["repairer"] < 4) {
+  } else if (creepCount["repairer"] < 3) {
     this.spawnCreepTier1("repairer");
   }
 }
@@ -72,8 +72,9 @@ StructureSpawn.prototype.spawnCreepTier1 = function(role) {
     energyUsed += 50;
   }
 
-  console.log("Spawning", role, energyUsed, maxEnergy, skills);
-  Game.spawns["Spawn1"].spawnCreep(skills, role + Game.time, {
+  let name = role + energyUsed + "-" + Game.time;
+  console.log("Spawning", name, energyUsed, maxEnergy, skills);
+  Game.spawns["Spawn1"].spawnCreep(skills, name, {
     memory: { role: role }
   });
 }
