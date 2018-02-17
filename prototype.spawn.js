@@ -23,24 +23,57 @@ StructureSpawn.prototype.logic = function() {
     creepCount[role] = _.sum(creeps, c => c.memory.role == role);
   }
 
-  if (creepCount["harvester"] < 4) {
+  if (creepCount["harvester"] < 5) {
     this.spawnCreepTier1("harvester");
 
-  } else if (creepCount["upgrader"] < 5) {
+  } else if (creepCount["upgrader"] < 8) {
     this.spawnCreepTier1("upgrader");
 
-  } else if (creepCount["builder"] < 4) {
+  } else if (creepCount["builder"] < 8) {
     this.spawnCreepTier1("builder");
 
-  } else if (creepCount["repairer"] < 2) {
+  } else if (creepCount["repairer"] < 4) {
     this.spawnCreepTier1("repairer");
   }
 }
 
 // String -> void
 StructureSpawn.prototype.spawnCreepTier1 = function(role) {
-  console.log("Spawning", role);
-  Game.spawns["Spawn1"].spawnCreep([WORK, WORK, CARRY, MOVE], role + Game.time, {
+  const room = this.room;
+  const maxEnergy = room.energyCapacityAvailable;
+  let energyAvailable = room.energyAvailable;
+  let energyUsed = 0;
+  const skills = [];
+
+  // Reserve half energy for WORK capacity
+  while (energyAvailable > maxEnergy / 2) {
+    skills.push(WORK);
+    energyAvailable -= 100;
+    energyUsed += 100;
+  }
+
+  // Distribute remaining energy among CARRY and then MOVE
+  let energyBlocks = energyAvailable / 50;
+  // let carry = Math.floor(energyBlocks / 2 + energyBlocks % 2);
+  let move = Math.floor(energyBlocks / 2);
+  let carry = energyBlocks - move;
+
+  while (carry) {
+    skills.push(CARRY);
+    carry -= 1;
+    energyAvailable -= 50;
+    energyUsed += 50;
+  }
+
+  while (move) {
+    skills.push(MOVE);
+    move -= 1;
+    energyAvailable -= 50;
+    energyUsed += 50;
+  }
+
+  console.log("Spawning", role, energyUsed, maxEnergy, skills);
+  Game.spawns["Spawn1"].spawnCreep(skills, role + Game.time, {
     memory: { role: role }
   });
 }

@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.0] - 2018-02-17
+### Changed
+- prototype.spawn.js, refactored auto spawn creeps tier 1
+
 ## [2.4.0] - 2018-02-17
 ### Added
 - role.repairer.js
