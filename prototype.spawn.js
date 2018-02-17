@@ -72,8 +72,12 @@ StructureSpawn.prototype.spawnCreepTier1 = function(role) {
     energyUsed += 50;
   }
 
+  const specs = "["
+    + _.sum(skills, s => s == WORK) + " WORK, "
+    + _.sum(skills, s => s == CARRY) + " CARRY, "
+    + _.sum(skills, s => s == MOVE) + " MOVE]";
   let name = role + energyUsed + "-" + Game.time;
-  console.log("Spawning", name, energyUsed, maxEnergy, skills);
+  console.log("Spawning", name, specs);
   Game.spawns["Spawn1"].spawnCreep(skills, name, {
     memory: { role: role }
   });
