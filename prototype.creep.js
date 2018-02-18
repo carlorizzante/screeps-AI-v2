@@ -2,7 +2,8 @@ const roles = {
   harvester: require("role.harvester"),
   upgrader: require("role.upgrader"),
   builder: require("role.builder"),
-  repairer: require("role.repairer")
+  repairer: require("role.repairer"),
+  longHarvester: require("role.longHarvester")
 }
 
 Creep.prototype.logic = function() {
@@ -17,7 +18,6 @@ Creep.prototype.recharge = function(useSource, useStorage) {
 
   // Use storage logic
   if (useStorage) {
-
   }
 
   // Use Energy sources logic

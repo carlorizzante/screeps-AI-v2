@@ -15,7 +15,8 @@ module.exports = {
 
     // When charged, carry Energy to Spawn or storage
     if (creep.memory.charged) {
-      const structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
+
+      let structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
         // Filter results by appropriate structure type, as follow
         filter: structure => ((
           structure.structureType == STRUCTURE_SPAWN
@@ -24,6 +25,10 @@ module.exports = {
           && structure.energy < structure.energyCapacity) // structure low in energy
         });
 
+      // Backup to storage if all other structure are fully charged
+      if (!structure) structure = creep.room.storage;
+
+      // If structure found, go transfer energy to it
       if (structure) {
         // try transfer energy to it
         if (creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
