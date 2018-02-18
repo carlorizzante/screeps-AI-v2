@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.7.5] - 2018-02-18
+### Changed
+- prototype.spawn.js, fallback to Long Range Harvester
+- role.builder.js, removed creep.say(...)
+- role.harvester.js, removed creep.say(...)
+- role.longHarvester.js, removed creep.say(...)
+- role.repairer.js, removed creep.say(...)
+- role.upgrader.js, removed creep.say(...)
+
 ## [2.7.4] - 2018-02-18
 ### Changed
 - prototype.spawn.js, changed spawning priorities

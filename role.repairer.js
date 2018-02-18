@@ -8,11 +8,9 @@ module.exports = {
     // Switch state: charged
     if (creep.carry.energy <= 0) {
       creep.memory.charged = false;
-      // creep.say("🔄 recharging");
 
     } else if (creep.carry.energy == creep.carryCapacity) {
       creep.memory.charged = true;
-      // creep.say("🚨 work");
     }
 
     // When charged, carry Energy to Spawn or storage

@@ -36,7 +36,8 @@ StructureSpawn.prototype.logic = function() {
   } else if (creepCount["repairer"] < 3) {
     this.spawnCreepTier1("repairer", this.room.name);
 
-  } else if (creepCount["longHarvester"] < 16) {
+  // } else if (creepCount["longHarvester"] < 16) {
+  } else {
     // Choosing as target one of the adjacent reooms
     const nearbyRooms = Game.map.describeExits(this.room.name);
     let targets = [];
