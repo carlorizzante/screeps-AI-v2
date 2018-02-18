@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.7.3] - 2018-02-18
+### Changed
+- role.longHarvester.js, upgrade controller when room fully charged
+
 ## [2.7.2] - 2018-02-18
 ### Changed
 - role.longHarvester.js, fully-automatic room targeting

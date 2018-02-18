@@ -1,9 +1,14 @@
+const upgrader = require("role.upgrader");
+
 module.exports = {
 
   // Creep -> void
   run: creep => {
+    creep.say(creep.memory.onduty);
 
-    // Switch state: charged
+    /**
+      Change state: charged / not charged
+      */
     if (creep.carry.energy <= 0) {
       creep.memory.charged = false;
       // creep.say("🔄 recharging");
@@ -13,7 +18,9 @@ module.exports = {
       // creep.say("🚨 work");
     }
 
-    // When charged, carry Energy to Spawn or storage
+    /**
+      If charged, go on duty
+      */
     if (creep.memory.charged) {
       // Verify that creep is in its native room
       if (creep.room.name == creep.memory.home) {
@@ -21,20 +28,27 @@ module.exports = {
         // const containers = creep.pos.findInRange(FIND_STRUCTURES, 10, {filter: {structureType: STRUCTURE_CONTAINER}});
         // console.log("containers:", containers);
 
+        // If creep already on duty, stay on current duty
+        if (creep.memory.onduty) {
+          upgrader.run(creep);
+          return;
+        }
+
+        // If creep not on duty, find something to do
         let structure = creep.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-          // Filter results by appropriate structure type, as follow
-          filter: structure => ((
-            structure.structureType == STRUCTURE_STORAGE
-            || structure.structureType == STRUCTURE_SPAWN
-            || structure.structureType == STRUCTURE_EXTENSION
-            || structure.structureType == STRUCTURE_TOWER)
-            && structure.energy < structure.energyCapacity) // structure low in energy
-          });
+            // Filter results by appropriate structure type, as follow
+            filter: structure => ((
+              structure.structureType == STRUCTURE_STORAGE
+              || structure.structureType == STRUCTURE_SPAWN
+              || structure.structureType == STRUCTURE_EXTENSION
+              || structure.structureType == STRUCTURE_TOWER)
+              && structure.energy < structure.energyCapacity) // structure low in energy
+            });
 
         // Backup to storage if all other structure are fully charged
         if (!structure) structure = creep.room.storage;
 
-        // If structure found, go transfer energy to it
+        // If found a valid structure, transfer energy to it
         if (structure) {
           // try transfer energy to it
           if (creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
@@ -45,6 +59,13 @@ module.exports = {
           }
         }
 
+        // If not target available, upgrade controller
+        if (!structure) {
+          // Keep creep on duty
+          creep.memory.onduty = true;
+          upgrader.run(creep);
+        }
+
       // Otherwise, creep has to move towards its native room
       } else {
 
@@ -53,10 +74,16 @@ module.exports = {
         creep.moveTo(creep.pos.findClosestByRange(exit));
       }
 
-    // Go recharging to the target room
+    /**
+      Otherwise go recharging
+      */
     } else {
       // creep.say("Exit...");
       creep.say(creep.memory.target);
+
+      // Release creep from duty
+      creep.memory.onduty = false;
+
       if (creep.room.name == creep.memory.target) {
         // const source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
         const source = creep.room.find(FIND_SOURCES)[0];
