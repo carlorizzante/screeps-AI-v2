@@ -25,26 +25,41 @@ StructureSpawn.prototype.logic = function() {
   }
 
   if (creepCount["harvester"] < 4) {
-    this.spawnCreepTier1("harvester");
+    this.spawnCreepTier1("harvester", this.room.name);
 
   } else if (creepCount["longHarvester"] < 16) {
-    this.spawnCreepTier1("longHarvester");
+    // Choosing as target one of the adjacent reooms
+    const nearbyRooms = Game.map.describeExits(this.room.name);
+    let targets = [];
+    for (let index in nearbyRooms) {
+      targets.push(nearbyRooms[index]);
+    }
+    this.spawnCreepTier1("longHarvester", _.sample(targets));
 
   } else if (creepCount["upgrader"] < 3) {
-    this.spawnCreepTier1("upgrader");
+    this.spawnCreepTier1("upgrader", this.room.name);
 
   } else if (creepCount["builder"] < 3) {
-    this.spawnCreepTier1("builder");
+    this.spawnCreepTier1("builder", this.room.name);
 
   } else if (creepCount["repairer"] < 1) {
-    this.spawnCreepTier1("repairer");
+    this.spawnCreepTier1("repairer", this.room.name);
   }
 }
 
 // String -> void
-StructureSpawn.prototype.spawnCreepTier1 = function(role) {
+StructureSpawn.prototype.spawnCreepTier1 = function(role, target) {
+
+  // Delete from memory creeps not longer existing
+  for (let name in Memory.creeps) {
+    if (!Game.creeps[name]) {
+      console.log(name, "deleted from memory.");
+      delete Memory.creeps[name];
+    }
+  }
+
   const room = this.room;
-  const home = this.room.name;
+  const home = this.room.name
   const maxEnergy = room.energyCapacityAvailable;
   let energyAvailable = room.energyAvailable;
   let energyUsed = 0;
@@ -83,14 +98,15 @@ StructureSpawn.prototype.spawnCreepTier1 = function(role) {
     + _.sum(skills, s => s == CARRY) + " CARRY, "
     + _.sum(skills, s => s == MOVE) + " MOVE]";
   let name = role + energyUsed + "-" + Game.time;
-  console.log("Spawning", name, specs);
+
+  console.log("Spawning", name, specs, "Target:", target);
 
   // Spawning new creep
-  Game.spawns["Spawn1"].spawnCreep(skills, name, {
+  const result = Game.spawns["Spawn1"].spawnCreep(skills, name, {
     memory: {
       role: role,
       home: home,
-      target: home
+      target: target
     }
   });
 }

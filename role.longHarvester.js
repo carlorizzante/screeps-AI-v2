@@ -1,8 +1,3 @@
-const nearbyRooms = [
-  "W8N2",
-  "W7N3"
-];
-
 module.exports = {
 
   // Creep -> void
@@ -61,11 +56,7 @@ module.exports = {
     // Go recharging to the target room
     } else {
       // creep.say("Exit...");
-      if (creep.memory.target == creep.memory.home) {
-        creep.say("No target");
-        creep.memory.target = nearbyRooms[Math.round(Math.random())];
-      }
-
+      creep.say(creep.memory.target);
       if (creep.room.name == creep.memory.target) {
         // const source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
         const source = creep.room.find(FIND_SOURCES)[0];
