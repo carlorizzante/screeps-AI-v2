@@ -4,8 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.6.1] - 2018-02-17
+## [2.7.1] - 2018-02-18
 ### Changed
+- role.longHarvester.js, pseudo-automatic room targeting
+
+## [2.7.0] - 2018-02-18
+### Added
+- role.longHarvester.js, adds basic Long Range Harvesters
+
+## [2.6.1] - 2018-02-17
+### Changes
 - prototype.spawn.js, refactored auto spawning for creeps tier 1
 
 ## [2.6.0] - 2018-02-17

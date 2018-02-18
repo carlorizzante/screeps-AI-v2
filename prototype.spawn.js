@@ -27,7 +27,7 @@ StructureSpawn.prototype.logic = function() {
   if (creepCount["harvester"] < 4) {
     this.spawnCreepTier1("harvester");
 
-  } else if (creepCount["longHarvester"] < 8) {
+  } else if (creepCount["longHarvester"] < 16) {
     this.spawnCreepTier1("longHarvester");
 
   } else if (creepCount["upgrader"] < 3) {
@@ -77,12 +77,15 @@ StructureSpawn.prototype.spawnCreepTier1 = function(role) {
     energyUsed += 50;
   }
 
+  // Output specs new creep
   const specs = "["
     + _.sum(skills, s => s == WORK) + " WORK, "
     + _.sum(skills, s => s == CARRY) + " CARRY, "
     + _.sum(skills, s => s == MOVE) + " MOVE]";
   let name = role + energyUsed + "-" + Game.time;
   console.log("Spawning", name, specs);
+
+  // Spawning new creep
   Game.spawns["Spawn1"].spawnCreep(skills, name, {
     memory: {
       role: role,
