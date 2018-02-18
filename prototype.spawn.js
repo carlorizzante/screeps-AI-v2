@@ -6,9 +6,16 @@ const roles = [
   "longHarvester"
 ];
 
+const settings = require("settings");
+
 StructureSpawn.prototype.logic = function() {
 
   const room = this.room;
+
+  const HARVESTERS_CAP = settings.harvesters_cap(room);
+  const BUILDERS_CAP = settings.builders_cap(room);
+  const UPGRADERS_CAP = settings.upgraders_cap(room);
+  const REPAIRERS_CAP = settings.repairers_cap(room);
 
   // Find all creeps in this room
   const creeps = room.find(FIND_MY_CREEPS);
@@ -27,13 +34,13 @@ StructureSpawn.prototype.logic = function() {
   if (creepCount["harvester"] < 3) {
     this.spawnCreepTier1("harvester", this.room.name);
 
-  } else if (creepCount["upgrader"] < 3) {
-    this.spawnCreepTier1("upgrader", this.room.name);
-
-  } else if (creepCount["builder"] < 3) {
+  } else if (creepCount["builder"] < BUILDERS_CAP) {
     this.spawnCreepTier1("builder", this.room.name);
 
-  } else if (creepCount["repairer"] < 3) {
+  } else if (creepCount["upgrader"] < UPGRADERS_CAP) {
+    this.spawnCreepTier1("upgrader", this.room.name);
+
+  } else if (creepCount["repairer"] < REPAIRERS_CAP) {
     this.spawnCreepTier1("repairer", this.room.name);
 
   // } else if (creepCount["longHarvester"] < 16) {
