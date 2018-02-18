@@ -4,7 +4,6 @@ module.exports = {
 
   // Creep -> void
   run: creep => {
-    creep.say(creep.memory.onduty);
 
     /**
       Change state: charged / not charged

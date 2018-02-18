@@ -24,8 +24,17 @@ StructureSpawn.prototype.logic = function() {
     creepCount[role] = _.sum(creeps, c => c.memory.role == role);
   }
 
-  if (creepCount["harvester"] < 4) {
+  if (creepCount["harvester"] < 3) {
     this.spawnCreepTier1("harvester", this.room.name);
+
+  } else if (creepCount["upgrader"] < 3) {
+    this.spawnCreepTier1("upgrader", this.room.name);
+
+  } else if (creepCount["builder"] < 3) {
+    this.spawnCreepTier1("builder", this.room.name);
+
+  } else if (creepCount["repairer"] < 3) {
+    this.spawnCreepTier1("repairer", this.room.name);
 
   } else if (creepCount["longHarvester"] < 16) {
     // Choosing as target one of the adjacent reooms
@@ -35,15 +44,6 @@ StructureSpawn.prototype.logic = function() {
       targets.push(nearbyRooms[index]);
     }
     this.spawnCreepTier1("longHarvester", _.sample(targets));
-
-  } else if (creepCount["upgrader"] < 3) {
-    this.spawnCreepTier1("upgrader", this.room.name);
-
-  } else if (creepCount["builder"] < 3) {
-    this.spawnCreepTier1("builder", this.room.name);
-
-  } else if (creepCount["repairer"] < 1) {
-    this.spawnCreepTier1("repairer", this.room.name);
   }
 }
 

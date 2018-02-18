@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.7.4] - 2018-02-18
+### Changed
+- prototype.spawn.js, changed spawning priorities
+- role.builder.js, Builder can gather energy from storage
+- role.repairer.js, Repairer can gather energy from storage
+- role.upgrader.js, Upgrader can gather energy from storage
+
 ## [2.7.3] - 2018-02-18
 ### Changed
 - role.longHarvester.js, upgrade controller when room fully charged
