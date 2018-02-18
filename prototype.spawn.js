@@ -31,6 +31,10 @@ StructureSpawn.prototype.logic = function() {
     creepCount[role] = _.sum(creeps, c => c.memory.role == role);
   }
 
+  for (let role in creepCount) {
+    console.log(role, creepCount[role]);
+  }
+
   if (creepCount["harvester"] < 3) {
     this.spawnCreepTier1("harvester", this.room.name);
 
@@ -68,8 +72,11 @@ StructureSpawn.prototype.spawnCreepTier1 = function(role, target) {
 
   const room = this.room;
   const home = this.room.name
-  const maxEnergy = room.energyCapacityAvailable;
-  let energyAvailable = room.energyAvailable;
+  
+  // Max energy capped for Creeps Tier 1
+  const maxEnergy = _.min([settings.tier1_energy_cap(), room.energyCapacityAvailable]);
+  let energyAvailable = maxEnergy;
+
   let energyUsed = 0;
   const skills = [];
 

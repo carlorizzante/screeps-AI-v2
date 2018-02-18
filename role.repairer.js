@@ -1,4 +1,4 @@
-const upgrader = require("role.upgrader");
+const builder = require("role.builder");
 
 module.exports = {
 
@@ -21,8 +21,9 @@ module.exports = {
           && s.structureType != STRUCTURE_WALL
       });
 
+      // If not structure in need to repair, see if you can help building
       if (!structure) {
-        upgrader.run(creep);
+        builder.run(creep);
 
       } else {
         if (creep.repair(structure) == ERR_NOT_IN_RANGE) {

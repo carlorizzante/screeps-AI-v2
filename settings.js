@@ -9,6 +9,14 @@ module.exports = {
   },
 
   /**
+    Max energy available for Creeps Tier 1
+    capped to 600
+    */
+  tier1_energy_cap: function() {
+    return 600;
+  },
+
+  /**
     Harvesters are spawn in presence of active energy sources
     Range [4, 12]
     */
@@ -32,11 +40,11 @@ module.exports = {
   /**
     Upgraders are spawn in a max of 8,
     reduced in number if any building is required
-    Range [2, 8]
+    Range [2, 4]
     */
   upgraders_cap: function(room) {
     const constructionSites = room.find(FIND_CONSTRUCTION_SITES);
-    return _.max([2, 8 - constructionSites.length]);
+    return _.max([2, 4 - constructionSites.length]);
   },
 
   /**

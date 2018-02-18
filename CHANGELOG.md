@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.4.1] - 2018-02-19
+### Changed
+- prototype.spawn.js, implements energy cap limit for Creeps tier 1
+- role.repairer.js, switch to build mode if not repair needed
+- settings.js, Creeps tier 1 capped at 600 Max Energy
+
 ## [2.4.0] - 2018-02-18
 ### Changed
 - prototype.spawn.js, implements automatic settings for creeps tier 1
