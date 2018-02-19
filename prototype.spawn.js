@@ -3,6 +3,7 @@ const roles = [
   "builder",
   "upgrader",
   "repairer",
+  "longBuilder",
   "longHarvester"
 ];
 
@@ -55,6 +56,16 @@ StructureSpawn.prototype.logic = function() {
   } else if (creepCount["repairer"] < REPAIRERS_CAP) {
     this.spawnCreepTier1("repairer", this.room.name);
 
+  } else if (true) {
+    // Choosing as target one of the adjacent reooms
+    const nearbyRooms = Game.map.describeExits(this.room.name);
+    let targets = [];
+    for (let index in nearbyRooms) {
+      targets.push(nearbyRooms[index]);
+    }
+    const home = _.sample(targets);
+    this.spawnCreepTier2("longBuilder", home, home);
+
   } else {
     // Choosing as target one of the adjacent reooms
     const nearbyRooms = Game.map.describeExits(this.room.name);
@@ -62,7 +73,7 @@ StructureSpawn.prototype.logic = function() {
     for (let index in nearbyRooms) {
       targets.push(nearbyRooms[index]);
     }
-    this.spawnCreepTier2("longHarvester", _.sample(targets));
+    this.spawnCreepTier2("longHarvester", home, _.sample(targets));
   }
 }
 
@@ -125,10 +136,10 @@ StructureSpawn.prototype.spawnCreepTier1 = function(role, target) {
 }
 
 // String -> void
-StructureSpawn.prototype.spawnCreepTier2 = function(role, target) {
+StructureSpawn.prototype.spawnCreepTier2 = function(role, home, target) {
 
   const room = this.room;
-  const home = this.room.name
+  // const home = this.room.name;
 
   // Max energy capped for Creeps Tier 1
   const maxEnergy = room.energyCapacityAvailable;

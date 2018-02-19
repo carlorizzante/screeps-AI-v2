@@ -9,3 +9,7 @@ Game.spawns["Spawn1"].spawnCreep([WORK, CARRY, MOVE, MOVE], "upgrader" + Game.ti
 Game.spawns["Spawn1"].spawnCreep([WORK, WORK, WORK, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE], "builder600" + Game.time, {
   memory: { role: "builder" }
 });
+
+Game.spawns["Spawn1"].spawnCreep([WORK, WORK, WORK, CARRY, CARRY, CARRY, CARRY, MOVE, MOVE, MOVE, MOVE], "builder600" + Game.time, {
+  memory: { role: "longBuilder", home: "W8N3", target: "W7N3" }
+});

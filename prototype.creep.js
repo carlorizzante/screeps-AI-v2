@@ -3,6 +3,7 @@ const roles = {
   upgrader: require("role.upgrader"),
   builder: require("role.builder"),
   repairer: require("role.repairer"),
+  longBuilder: require("role.longBuilder"),
   longHarvester: require("role.longHarvester")
 }
 
@@ -101,9 +102,7 @@ Creep.prototype.longRecharge = function(pickUpDroppedResources) {
     // Try harvesting from source
     if (this.harvest(source) == ERR_NOT_IN_RANGE) {
       // Otherwise get closer to source
-      this.moveTo(source, {
-        visualizePathStyle: { stroke: '#7fffd4' } // aquamarine
-      });
+      this.moveTo(source);
     }
 
   // If not in target room, find exit and move towards it
