@@ -75,10 +75,26 @@ module.exports = {
       */
     } else {
 
+      // Do not waste resources dropped by dying creeps
+      const dropped_resources = creep.pos.findInRange(FIND_DROPPED_RESOURCES,10);
+
+      // If dropped resource nearby...
+      if (dropped_resources.length) {
+
+        // Find closest one
+        let dropped_resource = creep.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
+
+        // Go get it!
+        if (creep.pickup(dropped_resource) == ERR_NOT_IN_RANGE) {
+          creep.moveTo(dropped_resource);
+          return; // Stay on path
+        }
+      }
+
       // If Creep is in target room
       if (creep.room.name == creep.memory.target) {
-        // const source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
-        // const source = creep.room.find(FIND_SOURCES)[1];
+
+        // Find active source
         const source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
 
         // Try harvesting from source

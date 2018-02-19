@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.3] - 2018-02-19
+### Changed
+- role.longHarvester.js, Long Range Harvester can now pick up dropped resource
+
 ## [2.5.2] - 2018-02-19
 ### Changed
 - main.js, added "use strict"
