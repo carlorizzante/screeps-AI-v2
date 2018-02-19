@@ -20,8 +20,9 @@ module.exports = {
           structure.structureType == STRUCTURE_SPAWN
           || structure.structureType == STRUCTURE_EXTENSION
           || structure.structureType == STRUCTURE_TOWER)
-          && structure.energy < structure.energyCapacity) // structure low in energy
-        });
+          && structure.energy < structure.energyCapacity
+        ) // structure low in energy
+      });
 
       // Backup to storage if all other structure are fully charged
       if (!structure) structure = creep.room.storage;
@@ -31,9 +32,7 @@ module.exports = {
         // try transfer energy to it
         if (creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
           // if not in range, move closer
-          creep.moveTo(structure, {
-          visualizePathStyle: { stroke: '#ffffff' }
-          });
+          creep.moveTo(structure);
         }
       }
 

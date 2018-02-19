@@ -1,7 +1,7 @@
 const roles = [
   "harvester",
-  "upgrader",
   "builder",
+  "upgrader",
   "repairer",
   "longHarvester"
 ];
@@ -26,6 +26,14 @@ StructureSpawn.prototype.logic = function() {
 
   // Spawn only the best creeps available
   if (currentEnergy < maxEnergy) return;
+
+  // Delete from memory creeps not longer existing
+  for (let name in Memory.creeps) {
+    if (!Game.creeps[name]) {
+      console.log(name, "deleted from memory.");
+      delete Memory.creeps[name];
+    }
+  }
 
   for (let role of roles) {
     creepCount[role] = _.sum(creeps, c => c.memory.role == role);
@@ -55,24 +63,16 @@ StructureSpawn.prototype.logic = function() {
     for (let index in nearbyRooms) {
       targets.push(nearbyRooms[index]);
     }
-    this.spawnCreepTier1("longHarvester", _.sample(targets));
+    this.spawnLongRangeHarvester("longHarvester", _.sample(targets));
   }
 }
 
 // String -> void
 StructureSpawn.prototype.spawnCreepTier1 = function(role, target) {
 
-  // Delete from memory creeps not longer existing
-  for (let name in Memory.creeps) {
-    if (!Game.creeps[name]) {
-      console.log(name, "deleted from memory.");
-      delete Memory.creeps[name];
-    }
-  }
-
   const room = this.room;
   const home = this.room.name
-  
+
   // Max energy capped for Creeps Tier 1
   const maxEnergy = _.min([settings.tier1_energy_cap(), room.energyCapacityAvailable]);
   let energyAvailable = maxEnergy;
@@ -82,6 +82,65 @@ StructureSpawn.prototype.spawnCreepTier1 = function(role, target) {
 
   // Reserve half energy for WORK capacity
   while (energyAvailable > maxEnergy / 2) {
+    skills.push(WORK);
+    energyAvailable -= 100;
+    energyUsed += 100;
+  }
+
+  // Distribute remaining energy among CARRY and then MOVE
+  let energyBlocks = energyAvailable / 50;
+  // let carry = Math.floor(energyBlocks / 2 + energyBlocks % 2);
+  let move = Math.floor(energyBlocks / 2);
+  let carry = energyBlocks - move;
+
+  while (carry) {
+    skills.push(CARRY);
+    carry -= 1;
+    energyAvailable -= 50;
+    energyUsed += 50;
+  }
+
+  while (move) {
+    skills.push(MOVE);
+    move -= 1;
+    energyAvailable -= 50;
+    energyUsed += 50;
+  }
+
+  // Output specs new creep
+  const specs = "["
+    + _.sum(skills, s => s == WORK) + " WORK, "
+    + _.sum(skills, s => s == CARRY) + " CARRY, "
+    + _.sum(skills, s => s == MOVE) + " MOVE]";
+  let name = role + energyUsed + "-" + Game.time;
+
+  console.log("Spawning", name, specs, "Target:", target);
+
+  // Spawning new creep
+  const result = Game.spawns["Spawn1"].spawnCreep(skills, name, {
+    memory: {
+      role: role,
+      home: home,
+      target: target
+    }
+  });
+}
+
+// String -> void
+StructureSpawn.prototype.spawnLongRangeHarvester = function(role, target) {
+
+  const room = this.room;
+  const home = this.room.name
+
+  // Max energy capped for Creeps Tier 1
+  const maxEnergy = room.energyCapacityAvailable;
+  let energyAvailable = maxEnergy;
+
+  let energyUsed = 0;
+  const skills = [];
+
+  // Use 300 for WORK modules
+  for (let i = 0; i < 3; i++) {
     skills.push(WORK);
     energyAvailable -= 100;
     energyUsed += 100;

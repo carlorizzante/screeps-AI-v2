@@ -16,9 +16,8 @@ module.exports = {
     // When charged, carry Energy to Spawn or storage
     if (creep.memory.charged) {
 
-      const structure = creep.pos.findClosestByRange(FIND_MY_STRUCTURES, {
-        filter: s => s.hits < (s.hitMax * 0.8)
-          && s.structureType != STRUCTURE_WALL
+      const structure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
+        filter: s => s.hits < (s.hitsMax * 0.8) && s.structureType != STRUCTURE_WALL
       });
 
       // If not structure in need to repair, see if you can help building
@@ -27,8 +26,9 @@ module.exports = {
 
       } else {
         if (creep.repair(structure) == ERR_NOT_IN_RANGE) {
+          creep.say("Repair!");
           creep.moveTo(structure, {
-            visualizePathStyle: { stroke: '#ffffff' }
+            visualizePathStyle: { stroke: '#ffff00' } // yellow
           });
         }
       }

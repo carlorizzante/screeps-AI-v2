@@ -18,9 +18,24 @@ Creep.prototype.recharge = function(useSource, useStorage) {
 
   // Use storage logic
   if (useStorage) {
+    storage = this.pos.findClosestByRange(FIND_STRUCTURES, {
+      filter: structure => ((
+        structure == this.room.storage
+        || structure.structureType == STRUCTURE_CONTAINER
+        || structure.structureType == STRUCTURE_STORAGE)
+        && structure.store[RESOURCE_ENERGY] > 0
+      )
+    })
+
+    // If storage found, try using it
+    if (storage) {
+      if (this.withdraw(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+        this.moveTo(storage);
+      }
+    }
   }
 
-  // Use Energy sources logic
+  // Otherwise, use Energy sources logic
   if (!storage && useSource) {
 
     // Find closest source

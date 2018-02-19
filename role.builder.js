@@ -24,7 +24,7 @@ module.exports = {
       } else {
         if (creep.build(constructionSite) == ERR_NOT_IN_RANGE) {
           creep.moveTo(constructionSite, {
-            visualizePathStyle: { stroke: '#ffffff' }
+            visualizePathStyle: { stroke: '#ffa500' } // orange
           });
         }
       }

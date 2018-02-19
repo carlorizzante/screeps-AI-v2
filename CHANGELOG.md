@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.0] - 2018-02-19
+### Changed
+- prototype.creep.js, Creeps can now recharge from Storage
+- prototype.spawn.js, Long Range Harvesters in Tier 2
+- role.longHarvester.js, search energy source by path instead of by range
+- role.repairer.js, fix repair bug, now Repairs actually repair structures
+
 ## [2.4.1] - 2018-02-19
 ### Changed
 - prototype.spawn.js, implements energy cap limit for Creeps tier 1
