@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.5.1] - 2018-02-19
+### Changed
+- role.longHarvester.js, bug fix
+
 ## [2.5.0] - 2018-02-19
 ### Changed
 - prototype.creep.js, Creeps can now recharge from Storage

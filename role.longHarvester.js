@@ -19,6 +19,7 @@ module.exports = {
       If charged, go on duty
       */
     if (creep.memory.charged) {
+
       // Verify that creep is in its native room
       if (creep.room.name == creep.memory.home) {
 
@@ -41,13 +42,14 @@ module.exports = {
         // If no structure found, try find a storage unit
         if (!structure) {
           structure = creep.room.storage;
-          creep.say("Storage!");
         }
 
         // If found a valid structure, transfer energy to it
         if (structure) {
+
           // try transfer energy to it
           if (creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+
             // if not in range, move closer
             creep.moveTo(structure, {
             visualizePathStyle: { stroke: '#7fffd4' } // aquamarine
@@ -72,12 +74,12 @@ module.exports = {
       Otherwise go recharging
       */
     } else {
-      // Release creep from duty
-      creep.memory.onduty = false;
 
+      // If Creep is in target room
       if (creep.room.name == creep.memory.target) {
         // const source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
-        const source = creep.room.find(FIND_SOURCES)[1];
+        // const source = creep.room.find(FIND_SOURCES)[1];
+        const source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
 
         // Try harvesting from source
         if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
