@@ -7,8 +7,12 @@ const roles = {
 }
 
 Creep.prototype.logic = function() {
+
+  // Take a break and save us some CPU
+  if (this.fatigue) return;
+
+  // Get to work!
   roles[this.memory.role].run(this);
-  // roles["harvester"].run(this);
 }
 
 // Boolean Boolean -> void

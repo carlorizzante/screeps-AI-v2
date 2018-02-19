@@ -3,6 +3,7 @@ require("prototype.spawn");
 require("prototype.tower");
 
 module.exports.loop = function() {
+  "use strict";
 
   // Run creeps logic
   for (let name in Game.creeps) {
