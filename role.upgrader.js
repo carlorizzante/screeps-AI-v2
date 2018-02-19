@@ -3,24 +3,15 @@ module.exports = {
   // Creep -> void
   run: creep => {
 
-    // Switch state: charged
-    if (creep.carry.energy <= 0) {
-      creep.memory.charged = false;
+    if (creep.isCharged()) {
 
-    } else if (creep.carry.energy == creep.carryCapacity) {
-      creep.memory.charged = true;
-    }
-
-    // When charged, carry Energy to Spawn or storage
-    if (creep.memory.charged) {
+      // Try upgrade Room Controller
       if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-        // if not in range, move closer
-        creep.moveTo(creep.room.controller, {
-        visualizePathStyle: { stroke: '#ffffff' }
-        });
+
+        // If not in range, move closer
+        creep.moveTo(creep.room.controller);
       }
 
-    // Go recharging
     } else {
       creep.recharge(true, false);
     }

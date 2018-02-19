@@ -18,13 +18,13 @@ module.exports = {
 
   /**
     Harvesters are spawn in presence of active energy sources
-    Range [4, 12]
+    Range [6, 12]
     */
   harvesters_cap: function(room) {
     // const maxEnergy = room.energyCapacityAvailable;
     const sources = room.find(FIND_SOURCES_ACTIVE);
-    if (sources.length) return 12;
-    return 4;
+    if (sources.length > 1) return 12;
+    return 6;
   },
 
   /**

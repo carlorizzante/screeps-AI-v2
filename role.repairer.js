@@ -5,16 +5,7 @@ module.exports = {
   // Creep -> void
   run: creep => {
 
-    // Switch state: charged
-    if (creep.carry.energy <= 0) {
-      creep.memory.charged = false;
-
-    } else if (creep.carry.energy == creep.carryCapacity) {
-      creep.memory.charged = true;
-    }
-
-    // When charged, carry Energy to Spawn or storage
-    if (creep.memory.charged) {
+    if (creep.isCharged()) {
 
       const structure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
         filter: s => s.hits < (s.hitsMax * 0.8) && s.structureType != STRUCTURE_WALL
@@ -26,14 +17,10 @@ module.exports = {
 
       } else {
         if (creep.repair(structure) == ERR_NOT_IN_RANGE) {
-          creep.say("Repair!");
-          creep.moveTo(structure, {
-            visualizePathStyle: { stroke: '#ffff00' } // yellow
-          });
+          creep.moveTo(structure);
         }
       }
 
-    // Go recharging
     } else {
       creep.recharge(true, true);
     }

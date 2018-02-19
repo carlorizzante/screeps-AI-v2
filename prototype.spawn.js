@@ -43,7 +43,7 @@ StructureSpawn.prototype.logic = function() {
     console.log(role, creepCount[role]);
   }
 
-  if (creepCount["harvester"] < 3) {
+  if (creepCount["harvester"] < HARVESTERS_CAP) {
     this.spawnCreepTier1("harvester", this.room.name);
 
   } else if (creepCount["builder"] < BUILDERS_CAP) {
@@ -55,7 +55,6 @@ StructureSpawn.prototype.logic = function() {
   } else if (creepCount["repairer"] < REPAIRERS_CAP) {
     this.spawnCreepTier1("repairer", this.room.name);
 
-  // } else if (creepCount["longHarvester"] < 16) {
   } else {
     // Choosing as target one of the adjacent reooms
     const nearbyRooms = Game.map.describeExits(this.room.name);
@@ -63,7 +62,7 @@ StructureSpawn.prototype.logic = function() {
     for (let index in nearbyRooms) {
       targets.push(nearbyRooms[index]);
     }
-    this.spawnLongRangeHarvester("longHarvester", _.sample(targets));
+    this.spawnCreepTier2("longHarvester", _.sample(targets));
   }
 }
 
@@ -89,7 +88,6 @@ StructureSpawn.prototype.spawnCreepTier1 = function(role, target) {
 
   // Distribute remaining energy among CARRY and then MOVE
   let energyBlocks = energyAvailable / 50;
-  // let carry = Math.floor(energyBlocks / 2 + energyBlocks % 2);
   let move = Math.floor(energyBlocks / 2);
   let carry = energyBlocks - move;
 
@@ -127,7 +125,7 @@ StructureSpawn.prototype.spawnCreepTier1 = function(role, target) {
 }
 
 // String -> void
-StructureSpawn.prototype.spawnLongRangeHarvester = function(role, target) {
+StructureSpawn.prototype.spawnCreepTier2 = function(role, target) {
 
   const room = this.room;
   const home = this.room.name

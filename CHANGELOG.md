@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.6.0] - 2018-02-19
+### Changed
+- prototype.creep.js, refactored Creeps' logic
+- prototype.spawn.js, bug fix
+- role.builder.js, refactored Creeps' logic
+- role.harvester.js, refactored Creeps' logic
+- role.longHarvester.js, refactored Creeps' logic
+- role.repairer.js, refactored Creeps' logic
+- role.upgrader.js, refactored Creeps' logic
+- settings.js, bug fix
+
 ## [2.5.3] - 2018-02-19
 ### Changed
 - role.longHarvester.js, Long Range Harvester can now pick up dropped resource
