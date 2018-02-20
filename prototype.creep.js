@@ -1,16 +1,20 @@
 const roles = {
-  harvester: require("role.harvester"),
-  upgrader: require("role.upgrader"),
   builder: require("role.builder"),
-  repairer: require("role.repairer"),
+  defender: require("role.defender"),
+  harvester: require("role.harvester"),
   longBuilder: require("role.longBuilder"),
-  longHarvester: require("role.longHarvester")
+  longHarvester: require("role.longHarvester"),
+  repairer: require("role.repairer"),
+  upgrader: require("role.upgrader")
 }
 
 Creep.prototype.logic = function() {
 
   // Take a break and save us some CPU
   if (this.fatigue) return;
+
+  // TO DO: Call for help
+  // if (this.hits < this.hitsMax) this.say("Help!");
 
   // Get to work!
   roles[this.memory.role].run(this);

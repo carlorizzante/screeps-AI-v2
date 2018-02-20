@@ -16,7 +16,6 @@ module.exports = {
         const constructionSite = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
 
         if (!constructionSite) {
-          creep.say("???");
           longHarvester.run(creep);
 
         } else {
@@ -28,8 +27,8 @@ module.exports = {
       // Otherwise, creep has to move towards its native room
       } else {
 
-        // Find path to native room, and move towards it
-        const exit = creep.room.findExitTo(creep.memory.home);
+        // Find path to target room and move towards it
+        const exit = creep.room.findExitTo(creep.memory.target);
         creep.moveTo(creep.pos.findClosestByRange(exit));
       }
 

@@ -17,6 +17,13 @@ module.exports = {
   },
 
   /**
+    Creeps Tier 2 allowed only at 1000 energy max capacity for current room
+    */
+  tier2_energy_threshold: function() {
+    return 900;
+  },
+
+  /**
     Harvesters are spawn in presence of active energy sources
     Range [6, 12]
     */

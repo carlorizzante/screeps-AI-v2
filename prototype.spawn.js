@@ -1,22 +1,27 @@
 const roles = [
-  "harvester",
   "builder",
-  "upgrader",
-  "repairer",
+  "defender",
+  "harvester",
   "longBuilder",
-  "longHarvester"
+  "longHarvester",
+  "repairer",
+  "upgrader"
 ];
 
 const settings = require("settings");
 
 StructureSpawn.prototype.logic = function() {
 
+  // return; // Temporary block
+
   const room = this.room;
+  const home = this.room.name;
 
   const HARVESTERS_CAP = settings.harvesters_cap(room);
   const BUILDERS_CAP = settings.builders_cap(room);
   const UPGRADERS_CAP = settings.upgraders_cap(room);
   const REPAIRERS_CAP = settings.repairers_cap(room);
+  const TIER2_ENERGY_THRESHOLD = settings.tier2_energy_threshold(room);
 
   // Find all creeps in this room
   const creeps = room.find(FIND_MY_CREEPS);
@@ -56,18 +61,24 @@ StructureSpawn.prototype.logic = function() {
   } else if (creepCount["repairer"] < REPAIRERS_CAP) {
     this.spawnCreepTier1("repairer", this.room.name);
 
-  } else if (true) {
-    // Choosing as target one of the adjacent reooms
+  // Creeps Tier 2 allowed only if enough energyCapacityAvailable
+  } else if (maxEnergy < TIER2_ENERGY_THRESHOLD) {
+    return;
+
+  // TO DO: automatic spawn of Defenders
+  } else if (false) {
+    this.spawnCreepTier3("defender", home, home);
+
+  // Currently give 50/50 % to spawn a LR Builder or LR Harvester
+  } else if (_.sample([true, false])) {
     const nearbyRooms = Game.map.describeExits(this.room.name);
     let targets = [];
     for (let index in nearbyRooms) {
       targets.push(nearbyRooms[index]);
     }
-    const home = _.sample(targets);
-    this.spawnCreepTier2("longBuilder", home, home);
+    this.spawnCreepTier2("longBuilder", home, _.sample(targets));
 
   } else {
-    // Choosing as target one of the adjacent reooms
     const nearbyRooms = Game.map.describeExits(this.room.name);
     let targets = [];
     for (let index in nearbyRooms) {
@@ -139,9 +150,6 @@ StructureSpawn.prototype.spawnCreepTier1 = function(role, target) {
 StructureSpawn.prototype.spawnCreepTier2 = function(role, home, target) {
 
   const room = this.room;
-  // const home = this.room.name;
-
-  // Max energy capped for Creeps Tier 1
   const maxEnergy = room.energyCapacityAvailable;
   let energyAvailable = maxEnergy;
 
@@ -180,6 +188,69 @@ StructureSpawn.prototype.spawnCreepTier2 = function(role, home, target) {
     + _.sum(skills, s => s == WORK) + " WORK, "
     + _.sum(skills, s => s == CARRY) + " CARRY, "
     + _.sum(skills, s => s == MOVE) + " MOVE]";
+  let name = role + energyUsed + "-" + Game.time;
+
+  console.log("Spawning", name, specs, "Target:", target);
+
+  // Spawning new creep
+  const result = Game.spawns["Spawn1"].spawnCreep(skills, name, {
+    memory: {
+      role: role,
+      home: home,
+      target: target
+    }
+  });
+}
+
+// String -> void
+StructureSpawn.prototype.spawnCreepTier3 = function(role, home, target) {
+
+  const room = this.room;
+  const maxEnergy = room.energyCapacityAvailable;
+  let energyAvailable = maxEnergy;
+
+  let energyUsed = 0;
+  const skills = [];
+
+  // TO DO: automatic skills set
+
+  for (let i = 0; i < 9; i++) {
+    skills.push(TOUGH);
+    energyAvailable -= 10;
+    energyUsed += 10;
+  }
+
+  for (let i = 0; i < 4; i++) {
+    skills.push(MOVE);
+    energyAvailable -= 50;
+    energyUsed += 50;
+  }
+
+  for (let i = 0; i < 2; i++) {
+    skills.push(ATTACK);
+    energyAvailable -= 80;
+    energyUsed += 80;
+  }
+
+  for (let i = 0; i < 2; i++) {
+    skills.push(RANGED_ATTACK);
+    energyAvailable -= 150;
+    energyUsed += 150;
+  }
+
+  for (let i = 0; i < 1; i++) {
+    skills.push(HEAL);
+    energyAvailable -= 250;
+    energyUsed += 250;
+  }
+
+  // Output specs new creep
+  const specs = "["
+    + _.sum(skills, s => s == TOUGH) + " TOUGH, "
+    + _.sum(skills, s => s == MOVE) + " MOVE, "
+    + _.sum(skills, s => s == ATTACK) + " ATTACK, "
+    + _.sum(skills, s => s == RANGED_ATTACK) + " RANGED_ATTACK, "
+    + _.sum(skills, s => s == HEAL) + " HEAL" + "]";
   let name = role + energyUsed + "-" + Game.time;
 
   console.log("Spawning", name, specs, "Target:", target);

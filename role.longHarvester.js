@@ -16,7 +16,7 @@ module.exports = {
       // Otherwise, creep has to move towards its native room
       } else {
 
-        // Find path to native room, and move towards it
+        // Find path to home room and move towards it
         const exit = creep.room.findExitTo(creep.memory.home);
         creep.moveTo(creep.pos.findClosestByRange(exit));
       }
