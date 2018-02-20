@@ -4,7 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.7.0] - 2018-02-19
+## [2.8.1] - 2018-02-20
+### Changed
+- role.longBuilder.js, LR Builder can now repair, makes maintenance
+
+## [2.8.0] - 2018-02-20
 ### Added
 - role.defender.js, Adds Tier 3 for Creeps, Defenders, work in progress
 
