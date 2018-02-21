@@ -4,7 +4,7 @@ require("prototype.tower");
 
 module.exports.loop = function() {
   "use strict";
-
+  
   // Run creeps logic
   for (let name in Game.creeps) {
     // console.log(Game.creeps[name], Game.creeps[name].memory.role);

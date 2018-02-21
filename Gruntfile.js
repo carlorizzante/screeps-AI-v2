@@ -4,7 +4,7 @@ module.exports = function(grunt) {
 
   const config = {
     src: ["Gruntfile.js", "src/**/*.js"],
-    dest: "build/"
+    dest: "/Users/carlorizzante/Library/Application Support/Screeps/scripts/127_0_0_1___21025/default"
   }
 
   grunt.initConfig({
@@ -24,7 +24,7 @@ module.exports = function(grunt) {
             expand: true,
             flatten: true,
             src: ['src/**'],
-            dest: 'dest/',
+            dest: config.dest,
             filter: 'isFile'
           }
         ]
