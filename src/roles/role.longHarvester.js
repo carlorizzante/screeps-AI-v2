@@ -6,7 +6,7 @@ module.exports = {
     if (creep.isCharged()) {
 
       // Verify that creep is in its native room
-      if (creep.room.name == creep.memory.home) {
+      if (creep.room.name == creep.memory.homeroom) {
 
         // const containers = creep.pos.findInRange(FIND_STRUCTURES, 10, {filter: {structureType: STRUCTURE_CONTAINER}});
         // console.log("containers:", containers);
@@ -17,7 +17,7 @@ module.exports = {
       } else {
 
         // Find path to home room and move towards it
-        const exit = creep.room.findExitTo(creep.memory.home);
+        const exit = creep.room.findExitTo(creep.memory.homeroom);
         creep.moveTo(creep.pos.findClosestByRange(exit));
       }
 

@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.11.0] - 2018-02-21
+### Changed
+- prototype.creep.js, makes use of new Creeps' Memory properties, homeroom and workroom
+- prototype.spawn.js, makes use of new Creeps' Memory properties, homeroom and workroom
+- role.longBuilder.js, makes use of new Creeps' Memory properties, homeroom and workroom
+- role.longHarvester.js, makes use of new Creeps' Memory properties, homeroom and workroom
+
 ## [2.10.2] - 2018-02-21
 ### Changed
 - Gruntfile.js, Grunt can now copy into proper Screeps game folder.

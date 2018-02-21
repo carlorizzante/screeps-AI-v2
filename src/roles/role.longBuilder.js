@@ -7,8 +7,8 @@ module.exports = {
 
     if (creep.isCharged()) {
 
-      // Verify that creep is in its target room
-      if (creep.room.name == creep.memory.target) {
+      // Verify that creep is in its workroom room
+      if (creep.room.name == creep.memory.workroom) {
 
         // const containers = creep.pos.findInRange(FIND_STRUCTURES, 10, {filter: {structureType: STRUCTURE_CONTAINER}});
         // console.log("containers:", containers);
@@ -45,14 +45,14 @@ module.exports = {
           */
         } else {
           // Hopefully Creep will also move toward home room
-          longHarvester.run(creep);
+          return longHarvester.run(creep);
         }
 
       // Otherwise, creep has to move towards its native room
       } else {
 
-        // Find path to target room and move towards it
-        const exit = creep.room.findExitTo(creep.memory.target);
+        // Find path to workroom room and move towards it
+        const exit = creep.room.findExitTo(creep.memory.workroom);
         creep.moveTo(creep.pos.findClosestByRange(exit));
       }
 

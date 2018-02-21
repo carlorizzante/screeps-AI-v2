@@ -45,11 +45,11 @@ Creep.prototype.recharge = function(useSource, useStorage) {
   // Use storage logic
   if (useStorage) {
     storage = this.pos.findClosestByRange(FIND_STRUCTURES, {
-      filter: structure => ((
-        structure == this.room.storage
-        || structure.structureType == STRUCTURE_CONTAINER
-        || structure.structureType == STRUCTURE_STORAGE)
-        && structure.store[RESOURCE_ENERGY] > 0
+      filter: s => ((
+        s == this.room.storage
+        || s.structureType == STRUCTURE_CONTAINER
+        || s.structureType == STRUCTURE_STORAGE)
+        && s.store[RESOURCE_ENERGY] > 0
       )
     })
 
@@ -75,13 +75,13 @@ Creep.prototype.recharge = function(useSource, useStorage) {
   }
 }
 
-// Boolean -> void
+// @param pickUpDroppedResources Boolean
 Creep.prototype.longRecharge = function(pickUpDroppedResources) {
 
   if (pickUpDroppedResources) {
 
     // Scan for any dropped resources nearby
-    const dropped_resources = this.pos.findInRange(FIND_DROPPED_RESOURCES,10);
+    const dropped_resources = this.pos.findInRange(FIND_DROPPED_RESOURCES, 10);
 
     // If found any
     if (dropped_resources.length) {
@@ -99,8 +99,8 @@ Creep.prototype.longRecharge = function(pickUpDroppedResources) {
     }
   }
 
-  // If Creep is in target room
-  if (this.room.name == this.memory.target) {
+  // If Creep is in workroom room
+  if (this.room.name == this.memory.workroom) {
 
     // Find active source
     const source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
@@ -111,9 +111,9 @@ Creep.prototype.longRecharge = function(pickUpDroppedResources) {
       this.moveTo(source);
     }
 
-  // If not in target room, find exit and move towards it
+  // If not in workroom room, find exit and move towards it
   } else {
-    const exit = this.room.findExitTo(this.memory.target);
+    const exit = this.room.findExitTo(this.memory.workroom);
     this.moveTo(this.pos.findClosestByPath(exit));
   }
 }
@@ -122,11 +122,11 @@ Creep.prototype.transferEnergyToStructure = function() {
 
   let structure = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
     // Filter results by appropriate structure type, as follow
-    filter: structure => ((
-      structure.structureType == STRUCTURE_SPAWN
-      || structure.structureType == STRUCTURE_EXTENSION
-      || structure.structureType == STRUCTURE_TOWER)
-      && structure.energy < structure.energyCapacity
+    filter: s => ((
+      s.structureType == STRUCTURE_SPAWN
+      || s.structureType == STRUCTURE_EXTENSION
+      || s.structureType == STRUCTURE_TOWER)
+      && s.energy < s.energyCapacity
     )
   });
 

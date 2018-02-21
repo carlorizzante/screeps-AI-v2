@@ -25,7 +25,6 @@ StructureSpawn.prototype.logic = function() {
   // return; // Temporary block
 
   const room = this.room;
-  const home = this.room.name;
 
   const maxEnergy = room.energyCapacityAvailable;
   const currentEnergy = room.energyAvailable;
@@ -63,16 +62,16 @@ StructureSpawn.prototype.logic = function() {
   }
 
   if (creepCount[HARVESTER] < HARVESTERS_CAP) {
-    this.spawnCreepTier1(HARVESTER, this.room.name);
+    this.spawnCreepTier1(HARVESTER, this.room.name, this.room.name);
 
   } else if (creepCount[BUILDER] < BUILDERS_CAP) {
-    this.spawnCreepTier1(BUILDER, this.room.name);
+    this.spawnCreepTier1(BUILDER, this.room.name, this.room.name);
 
   } else if (creepCount[UPGRADER] < UPGRADERS_CAP) {
-    this.spawnCreepTier1(UPGRADER, this.room.name);
+    this.spawnCreepTier1(UPGRADER, this.room.name, this.room.name);
 
   } else if (creepCount[REPAIRER] < REPAIRERS_CAP) {
-    this.spawnCreepTier1(REPAIRER, this.room.name);
+    this.spawnCreepTier1(REPAIRER, this.room.name, this.room.name);
 
   // Creeps Tier 2 allowed only if enough energyCapacityAvailable
   } else if (maxEnergy < TIER2_ENERGY_THRESHOLD) {
@@ -80,7 +79,7 @@ StructureSpawn.prototype.logic = function() {
 
   // TO DO: automatic spawn of Defenders
   } else if (false) {
-    this.spawnCreepTier3(DEFENDER, home, home);
+    this.spawnCreepTier3(DEFENDER, this.room.name, this.room.name);
 
   // Currently give 50/50 % to spawn a LR Builder or LR Harvester
 } else if (_.sample([true, false, false, false])) { // 25% ExoBuilders
@@ -89,7 +88,7 @@ StructureSpawn.prototype.logic = function() {
     for (let index in nearbyRooms) {
       targets.push(nearbyRooms[index]);
     }
-    this.spawnCreepTier2("longBuilder", home, _.sample(targets));
+    this.spawnCreepTier2("longBuilder", this.room.name, _.sample(targets));
 
   } else {
     const nearbyRooms = Game.map.describeExits(this.room.name);
@@ -97,12 +96,12 @@ StructureSpawn.prototype.logic = function() {
     for (let index in nearbyRooms) {
       targets.push(nearbyRooms[index]);
     }
-    this.spawnCreepTier2("longHarvester", home, _.sample(targets));
+    this.spawnCreepTier2("longHarvester", this.room.name, _.sample(targets));
   }
 }
 
 // String -> void
-StructureSpawn.prototype.spawnCreepTier1 = function(role, target) {
+StructureSpawn.prototype.spawnCreepTier1 = function(role, homeroom, workroom, target) {
 
   const room = this.room;
   const home = this.room.name
@@ -147,20 +146,24 @@ StructureSpawn.prototype.spawnCreepTier1 = function(role, target) {
     + _.sum(skills, s => s == MOVE) + " MOVE]";
   let name = role + energyUsed + "-" + Game.time;
 
-  if (PRINT) console.log("Spawning", name, specs, "Target:", target);
+  if (PRINT) console.log("Spawning", name, specs, "Workroom:", workroom);
 
   // Spawning new creep
   const result = Game.spawns.Spawn1.spawnCreep(skills, name, {
     memory: {
       role: role,
-      home: home,
-      target: target
+      // Legacy properties, to be removed soon
+      // home: homeroom,
+      // target: workroom,
+      // New properties, to be used
+      homeroom: homeroom,
+      workroom: workroom
     }
   });
 }
 
 // String -> void
-StructureSpawn.prototype.spawnCreepTier2 = function(role, home, target) {
+StructureSpawn.prototype.spawnCreepTier2 = function(role, homeroom, workroom, target) {
 
   const room = this.room;
   const maxEnergy = room.energyCapacityAvailable;
@@ -203,20 +206,24 @@ StructureSpawn.prototype.spawnCreepTier2 = function(role, home, target) {
     + _.sum(skills, s => s == MOVE) + " MOVE]";
   let name = role + energyUsed + "-" + Game.time;
 
-  if (PRINT) console.log("Spawning", name, specs, "Target:", target);
+  if (PRINT) console.log("Spawning", name, specs, "Workroom:", workroom);
 
   // Spawning new creep
   const result = Game.spawns.Spawn1.spawnCreep(skills, name, {
     memory: {
       role: role,
-      home: home,
-      target: target
+      // Legacy properties, to be removed soon
+      // home: homeroom,
+      // target: workroom,
+      // New properties, to be used
+      homeroom: homeroom,
+      workroom: workroom
     }
   });
 }
 
 // String -> void
-StructureSpawn.prototype.spawnCreepTier3 = function(role, home, target) {
+StructureSpawn.prototype.spawnCreepTier3 = function(role, homeroom, workroom, target) {
 
   const room = this.room;
   const maxEnergy = room.energyCapacityAvailable;
@@ -266,14 +273,18 @@ StructureSpawn.prototype.spawnCreepTier3 = function(role, home, target) {
     + _.sum(skills, s => s == HEAL) + " HEAL" + "]";
   let name = role + energyUsed + "-" + Game.time;
 
-  if (PRINT) console.log("Spawning", name, specs, "Target:", target);
+  if (PRINT) console.log("Spawning", name, specs, homeroom, workroom, target);
 
   // Spawning new creep
   const result = Game.spawns.Spawn1.spawnCreep(skills, name, {
     memory: {
       role: role,
-      home: home,
-      target: target
+      // Legacy properties, to be removed soon
+      // home: homeroom,
+      // target: workroom,
+      // New properties, to be used
+      homeroom: homeroom,
+      workroom: workroom
     }
   });
 }

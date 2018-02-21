@@ -1,5 +1,5 @@
 # Screeps!
-Release 2.10.2
+Release 2.11.0
 
 AI for Screeps, version 2.
 
