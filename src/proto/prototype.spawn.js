@@ -1,24 +1,44 @@
 const roles = [
+
+  // Tier 1
   "builder",
-  "defender",
   "harvester",
+  "repairer",
+  "upgrader",
+
+  // Tier 2
+  "exoharvester",
+  "exobuilder",
+
+  // LEGACY Tier 2
   "longBuilder",
   "longHarvester",
-  "repairer",
-  "upgrader"
+
+  // Tier 3
+  "defender"
 ];
 
 const config = require("config");
 const PRINT = true;
 
 /**
-  Creeps' roles available at moment
+  Creeps Tier 1
   */
-const HARVESTER  = "harvester";
-const BUILDER    = "builder";
-const UPGRADER   = "upgrader";
-const REPAIRER   = "repairer";
-const DEFENDER    = "defender";
+const BUILDER   = "builder";
+const HARVESTER = "harvester";
+const REPAIRER  = "repairer";
+const UPGRADER  = "upgrader";
+
+/**
+  Creeps Tier 2
+  */
+const EXOHARVESTER = "exoharvester";
+const EXOBUILDER   = "exobuilder";
+
+/**
+  Creeps Tier 3
+  */
+const DEFENDER = "defender";
 
 StructureSpawn.prototype.logic = function() {
 
@@ -88,7 +108,7 @@ StructureSpawn.prototype.logic = function() {
     for (let index in nearbyRooms) {
       targets.push(nearbyRooms[index]);
     }
-    this.spawnCreepTier2("longBuilder", this.room.name, _.sample(targets));
+    this.spawnCreepTier2("exobuilder", this.room.name, _.sample(targets));
 
   } else {
     const nearbyRooms = Game.map.describeExits(this.room.name);
@@ -96,11 +116,16 @@ StructureSpawn.prototype.logic = function() {
     for (let index in nearbyRooms) {
       targets.push(nearbyRooms[index]);
     }
-    this.spawnCreepTier2("longHarvester", this.room.name, _.sample(targets));
+    this.spawnCreepTier2("exoharvester", this.room.name, _.sample(targets));
   }
 }
 
-// String -> void
+/**
+  @param role String
+  @param homeroom String
+  @param workroom String
+  @param target null
+  */
 StructureSpawn.prototype.spawnCreepTier1 = function(role, homeroom, workroom, target) {
 
   const room = this.room;
@@ -162,7 +187,12 @@ StructureSpawn.prototype.spawnCreepTier1 = function(role, homeroom, workroom, ta
   });
 }
 
-// String -> void
+/**
+  @param role String
+  @param homeroom String
+  @param workroom String
+  @param target null
+  */
 StructureSpawn.prototype.spawnCreepTier2 = function(role, homeroom, workroom, target) {
 
   const room = this.room;
@@ -222,7 +252,12 @@ StructureSpawn.prototype.spawnCreepTier2 = function(role, homeroom, workroom, ta
   });
 }
 
-// String -> void
+/**
+  @param role String
+  @param homeroom String
+  @param workroom String
+  @param target null
+  */
 StructureSpawn.prototype.spawnCreepTier3 = function(role, homeroom, workroom, target) {
 
   const room = this.room;

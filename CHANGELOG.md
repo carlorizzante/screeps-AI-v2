@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.11.1] - 2018-02-21
+### Added
+- role.exobuilder.js, replaces role.longBuilder.js
+- role.exoharvester.js, replaces role.longHarvester.js
+
+### Changed
+- prototype.creep.js, uses new Exo Builders and Exo Harvesters
+- prototype.spawn.js, uses new Exo Builders and Exo Harvesters
+
 ## [2.11.0] - 2018-02-21
 ### Changed
 - prototype.creep.js, makes use of new Creeps' Memory properties, homeroom and workroom

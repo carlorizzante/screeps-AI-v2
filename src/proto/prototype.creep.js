@@ -1,11 +1,21 @@
 const roles = {
+
+  // Tier 1
   builder: require("role.builder"),
-  defender: require("role.defender"),
   harvester: require("role.harvester"),
+  repairer: require("role.repairer"),
+  upgrader: require("role.upgrader"),
+
+  // Tier 2
+  exobuilder: require("role.exobuilder"),
+  exoharvester: require("role.exoharvester"),
+
+  // LEGACY Tier 2
   longBuilder: require("role.longBuilder"),
   longHarvester: require("role.longHarvester"),
-  repairer: require("role.repairer"),
-  upgrader: require("role.upgrader")
+
+  // Tier 3
+  defender: require("role.defender")
 }
 
 Creep.prototype.logic = function() {
