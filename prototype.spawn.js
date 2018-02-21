@@ -8,7 +8,7 @@ const roles = [
   "upgrader"
 ];
 
-const settings = require("settings");
+const config = require("config");
 
 StructureSpawn.prototype.logic = function() {
 
@@ -17,11 +17,11 @@ StructureSpawn.prototype.logic = function() {
   const room = this.room;
   const home = this.room.name;
 
-  const HARVESTERS_CAP = settings.harvesters_cap(room);
-  const BUILDERS_CAP = settings.builders_cap(room);
-  const UPGRADERS_CAP = settings.upgraders_cap(room);
-  const REPAIRERS_CAP = settings.repairers_cap(room);
-  const TIER2_ENERGY_THRESHOLD = settings.tier2_energy_threshold(room);
+  const HARVESTERS_CAP = config.harvesters_cap(room);
+  const BUILDERS_CAP = config.builders_cap(room);
+  const UPGRADERS_CAP = config.upgraders_cap(room);
+  const REPAIRERS_CAP = config.repairers_cap(room);
+  const TIER2_ENERGY_THRESHOLD = config.tier2_energy_threshold(room);
 
   // Find all creeps in this room
   const creeps = room.find(FIND_MY_CREEPS);
@@ -70,7 +70,7 @@ StructureSpawn.prototype.logic = function() {
     this.spawnCreepTier3("defender", home, home);
 
   // Currently give 50/50 % to spawn a LR Builder or LR Harvester
-  } else if (_.sample([true, false])) {
+} else if (_.sample([true, false, false, false])) { // 25% ExoBuilders
     const nearbyRooms = Game.map.describeExits(this.room.name);
     let targets = [];
     for (let index in nearbyRooms) {
@@ -95,7 +95,7 @@ StructureSpawn.prototype.spawnCreepTier1 = function(role, target) {
   const home = this.room.name
 
   // Max energy capped for Creeps Tier 1
-  const maxEnergy = _.min([settings.tier1_energy_cap(), room.energyCapacityAvailable]);
+  const maxEnergy = _.min([config.tier1_energy_cap(), room.energyCapacityAvailable]);
   let energyAvailable = maxEnergy;
 
   let energyUsed = 0;

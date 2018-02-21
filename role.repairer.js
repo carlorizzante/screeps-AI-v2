@@ -1,4 +1,7 @@
+const config = require("config");
 const builder = require("role.builder");
+
+const REPAIR_THESHOLD = config.repair_threshold();
 
 module.exports = {
 
@@ -7,11 +10,14 @@ module.exports = {
 
     if (creep.isCharged()) {
 
+      // Repairer do not repair walls or rampats, too expensive!
       const structure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-        filter: s => s.hits < (s.hitsMax * 0.8) && s.structureType != STRUCTURE_WALL
+        filter: s => s.hits < (s.hitsMax * REPAIR_THESHOLD)
+        && s.structureType != STRUCTURE_WALL
+        && s.structureType != STRUCTURE_RAMPART
       });
 
-      // If not structure in need to repair, see if you can help building
+      // If not structure in need of repair, switch to builder
       if (!structure) {
         builder.run(creep);
 

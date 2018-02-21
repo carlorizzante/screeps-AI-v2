@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.9.0] - 2018-02-21
+### Added
+- config.js, wall_threshold() and rampart_threshold()
+- prototype.tower.js, Towers can now repair structures and heal creeps
+
+### Changed
+- prototype.spawn.js, LongBuilder priority set to 25% over longHarvester
+- role.repair.js, bug fix
+- settings.js into config.js
+
 ## [2.8.1] - 2018-02-20
 ### Changed
 - role.longBuilder.js, LR Builder can now repair, makes maintenance

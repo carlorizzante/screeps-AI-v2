@@ -1,10 +1,11 @@
 # Screeps!
-Release 2.8.1
+Release 2.9.0
 
 AI for Screeps, version 2.
 
 ## File structure
 - basics.js
+- config.js
 - main.js
 - prototype.creep.js
 - prototype.spawn.js
@@ -16,4 +17,3 @@ AI for Screeps, version 2.
 - role.longHarvester.js
 - role.repairer.js
 - role.upgrader.js
-- settings.js
