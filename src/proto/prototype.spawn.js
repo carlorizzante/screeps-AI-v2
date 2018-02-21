@@ -101,8 +101,8 @@ StructureSpawn.prototype.logic = function() {
   } else if (false) {
     this.spawnCreepTier3(DEFENDER, this.room.name, this.room.name);
 
-  // Currently give 50/50 % to spawn a LR Builder or LR Harvester
-} else if (_.sample([true, false, false, false])) { // 25% ExoBuilders
+// Spawn 25% ExoBuilders, 75% ExoHarvesters
+} else if (_.sample([true, false, false, false])) {
     const nearbyRooms = Game.map.describeExits(this.room.name);
     let targets = [];
     for (let index in nearbyRooms) {

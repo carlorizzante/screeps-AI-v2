@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.11.2] - 2018-02-21
+### Changed
+- role.defender.js, Defenders can now heal friendly creeps
+
 ## [2.11.1] - 2018-02-21
 ### Added
 - role.exobuilder.js, replaces role.longBuilder.js

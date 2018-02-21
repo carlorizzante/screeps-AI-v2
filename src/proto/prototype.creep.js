@@ -23,6 +23,10 @@ Creep.prototype.logic = function() {
   // Take a break and save us some CPU
   if (this.fatigue) return;
 
+  // LEGACY
+  if (!this.memory.homeroom) this.memory.homeroom = this.memory.home;
+  if (!this.memory.workroom) this.memory.workroom = this.memory.target;
+
   // TO DO: Call for help
   if (this.hits < this.hitsMax) {
     this.say("Help!");

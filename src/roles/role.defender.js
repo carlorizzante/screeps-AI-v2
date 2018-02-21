@@ -8,6 +8,9 @@ module.exports = {
       // Verify that creep is in its target room
       if (creep.room.name == creep.memory.target) {
 
+        /**
+          Offensive Routine
+          */
         const targets = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 20);
 
         if (targets.length) {
@@ -22,25 +25,39 @@ module.exports = {
             }
           }
 
-        } else {
-          if (creep.hits < creep.hitsMax) {
+        /**
+          Self Healing Routine
+          */
+        } else if (creep.hits < creep.hitsMax) {
             creep.heal(creep);
+
+        /**
+          Friendly Healing Routine
+          */
+        } else {
+
+          console.log("Friendly Healing Routine"); // TO DO, may need fix
+
+          const friendly = creep.pos.findClosestByPath(FIND_MY_CREEPS, {
+            filter: c => c.hits < c.hitsMax
+          });
+
+          if (friendly) {
+            if (creep.heal(friendly) == ERR_NOT_IN_RANGE) {
+              creep.moveTo(friendly);
+            }
           }
         }
 
-      // Otherwise, creep has to move towards its native room
+      /**
+        Travel to assigned/workroom if required to do so
+        */
       } else {
 
         // Find path to target room and move towards it
         const exit = creep.room.findExitTo(creep.memory.target);
         creep.moveTo(creep.pos.findClosestByRange(exit));
       }
-
-    /**
-      Otherwise go recharging
-      */
-    } else {
-      creep.recharge(true);
     }
   }
 }
