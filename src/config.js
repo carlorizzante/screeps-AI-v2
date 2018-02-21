@@ -8,6 +8,24 @@ module.exports = {
     return {}
   },
 
+  roles: function() {
+    return [
+
+      // Tier 1
+      "builder",
+      "harvester",
+      "repairer",
+      "upgrader",
+
+      // Tier 2
+      "exoharvester",
+      "exobuilder",
+
+      // Tier 3
+      "defender"
+    ];
+  },
+
   /**
     Max energy available for Creeps Tier 1.
     capped to 600

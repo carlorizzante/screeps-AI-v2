@@ -35,9 +35,6 @@ module.exports = {
           Friendly Healing Routine
           */
         } else {
-
-          console.log("Friendly Healing Routine"); // TO DO, may need fix
-
           const friendly = creep.pos.findClosestByPath(FIND_MY_CREEPS, {
             filter: c => c.hits < c.hitsMax
           });

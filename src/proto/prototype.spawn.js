@@ -1,25 +1,11 @@
-const roles = [
-
-  // Tier 1
-  "builder",
-  "harvester",
-  "repairer",
-  "upgrader",
-
-  // Tier 2
-  "exoharvester",
-  "exobuilder",
-
-  // LEGACY Tier 2
-  "longBuilder",
-  "longHarvester",
-
-  // Tier 3
-  "defender"
-];
-
 const config = require("config");
-const PRINT = true;
+const utils = require("utils");
+
+// List of active Creeps' roles
+const roles = config.roles();
+
+// Enable feedback into the console of the game
+const VERBOSE = true;
 
 /**
   Creeps Tier 1
@@ -44,28 +30,24 @@ StructureSpawn.prototype.logic = function() {
 
   // return; // Temporary block
 
-  const room = this.room;
+  // Can't spawn more than one Creep at the time
+  if (this.spawning) return;
 
+  const room = this.room;
   const maxEnergy = room.energyCapacityAvailable;
   const currentEnergy = room.energyAvailable;
 
   // Exit if insufficient Energy
   if (currentEnergy < maxEnergy) return;
 
-  const HARVESTERS_CAP = config.harvesters_cap(room);
-  const BUILDERS_CAP = config.builders_cap(room);
-  const UPGRADERS_CAP = config.upgraders_cap(room);
-  const REPAIRERS_CAP = config.repairers_cap(room);
-  const TIER2_ENERGY_THRESHOLD = config.tier2_energy_threshold(room);
-
   // Find all creeps in this room
   const creeps = room.find(FIND_MY_CREEPS);
   const creepCount = {}
 
-  // Delete from memory creeps not longer existing
+  // Delete from memory Creeps that do not longer exist
   for (let name in Memory.creeps) {
     if (!Game.creeps[name]) {
-      if (PRINT) console.log("Creep", name, "deleted from memory.");
+      if (VERBOSE) console.log("Creep", name, "deleted from memory.");
       delete Memory.creeps[name];
     }
   }
@@ -77,10 +59,26 @@ StructureSpawn.prototype.logic = function() {
     creepCount[role] = _.sum(creeps, c => c.memory.role == role);
   }
 
-  for (let role in creepCount) {
-    if (PRINT) console.log(role, creepCount[role]);
+  // Print Creeps' roles and their quantity
+  if (VERBOSE) {
+    for (let role in creepCount) {
+      console.log(role, creepCount[role]);
+    }
   }
 
+  /**
+    Calculate cap and threshold values for Creep type/role
+    Those contansts are used to determine which types will be spawn
+    */
+  const HARVESTERS_CAP = config.harvesters_cap(room);
+  const BUILDERS_CAP   = config.builders_cap(room);
+  const UPGRADERS_CAP  = config.upgraders_cap(room);
+  const REPAIRERS_CAP  = config.repairers_cap(room);
+  const TIER2_ENERGY_THRESHOLD = config.tier2_energy_threshold(room);
+
+  /**
+    Spawn Creeps accordingly to rules calculated above
+    */
   if (creepCount[HARVESTER] < HARVESTERS_CAP) {
     this.spawnCreepTier1(HARVESTER, this.room.name, this.room.name);
 
@@ -101,8 +99,8 @@ StructureSpawn.prototype.logic = function() {
   } else if (false) {
     this.spawnCreepTier3(DEFENDER, this.room.name, this.room.name);
 
-// Spawn 25% ExoBuilders, 75% ExoHarvesters
-} else if (_.sample([true, false, false, false])) {
+  // Spawn 25% ExoBuilders, 75% ExoHarvesters
+  } else if (_.sample([true, false, false, false])) {
     const nearbyRooms = Game.map.describeExits(this.room.name);
     let targets = [];
     for (let index in nearbyRooms) {
@@ -164,27 +162,19 @@ StructureSpawn.prototype.spawnCreepTier1 = function(role, homeroom, workroom, ta
     energyUsed += 50;
   }
 
-  // Output specs new creep
-  const specs = "["
-    + _.sum(skills, s => s == WORK) + " WORK, "
-    + _.sum(skills, s => s == CARRY) + " CARRY, "
-    + _.sum(skills, s => s == MOVE) + " MOVE]";
-  let name = role + energyUsed + "-" + Game.time;
-
-  if (PRINT) console.log("Spawning", name, specs, "Workroom:", workroom);
-
   // Spawning new creep
+  let name = role + energyUsed + "-" + Game.time;
   const result = Game.spawns.Spawn1.spawnCreep(skills, name, {
     memory: {
       role: role,
-      // Legacy properties, to be removed soon
-      // home: homeroom,
-      // target: workroom,
-      // New properties, to be used
       homeroom: homeroom,
       workroom: workroom
     }
   });
+
+  if (result == OK && VERBOSE) {
+    console.log("Spawning", name, utils.listSkills(skills), homeroom, workroom, target);
+  }
 }
 
 /**
@@ -229,27 +219,19 @@ StructureSpawn.prototype.spawnCreepTier2 = function(role, homeroom, workroom, ta
     energyUsed += 50;
   }
 
-  // Output specs new creep
-  const specs = "["
-    + _.sum(skills, s => s == WORK) + " WORK, "
-    + _.sum(skills, s => s == CARRY) + " CARRY, "
-    + _.sum(skills, s => s == MOVE) + " MOVE]";
-  let name = role + energyUsed + "-" + Game.time;
-
-  if (PRINT) console.log("Spawning", name, specs, "Workroom:", workroom);
-
   // Spawning new creep
+  let name = role + energyUsed + "-" + Game.time;
   const result = Game.spawns.Spawn1.spawnCreep(skills, name, {
     memory: {
       role: role,
-      // Legacy properties, to be removed soon
-      // home: homeroom,
-      // target: workroom,
-      // New properties, to be used
       homeroom: homeroom,
       workroom: workroom
     }
   });
+
+  if (result == OK && VERBOSE) {
+    console.log("Spawning", name, utils.listSkills(skills), homeroom, workroom, target);
+  }
 }
 
 /**
@@ -299,27 +281,17 @@ StructureSpawn.prototype.spawnCreepTier3 = function(role, homeroom, workroom, ta
     energyUsed += 250;
   }
 
-  // Output specs new creep
-  const specs = "["
-    + _.sum(skills, s => s == TOUGH) + " TOUGH, "
-    + _.sum(skills, s => s == MOVE) + " MOVE, "
-    + _.sum(skills, s => s == ATTACK) + " ATTACK, "
-    + _.sum(skills, s => s == RANGED_ATTACK) + " RANGED_ATTACK, "
-    + _.sum(skills, s => s == HEAL) + " HEAL" + "]";
-  let name = role + energyUsed + "-" + Game.time;
-
-  if (PRINT) console.log("Spawning", name, specs, homeroom, workroom, target);
-
   // Spawning new creep
+  let name = role + energyUsed + "-" + Game.time;
   const result = Game.spawns.Spawn1.spawnCreep(skills, name, {
     memory: {
       role: role,
-      // Legacy properties, to be removed soon
-      // home: homeroom,
-      // target: workroom,
-      // New properties, to be used
       homeroom: homeroom,
       workroom: workroom
     }
   });
+
+  if (result == OK && VERBOSE) {
+    console.log("Spawning", name, utils.listSkills(skills), homeroom, workroom, target);
+  }
 }

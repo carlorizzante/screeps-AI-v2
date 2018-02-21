@@ -1,5 +1,5 @@
 # Screeps!
-Release 2.11.2
+Release 2.11.3
 
 AI for Screeps, version 2.
 
@@ -29,4 +29,5 @@ AI for Screeps, version 2.
     - role.longHarvester.js
     - role.repairer.js
     - role.upgrader.js
+  - utils.js
 - TODO.md

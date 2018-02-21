@@ -3,6 +3,10 @@ module.exports = {
   // Creep -> void
   run: creep => {
 
+    if (this.hits < this.hitsMax) {
+      // TO DO: Request Military Support
+    }
+
     if (creep.isCharged()) {
 
       // Verify that creep is in its native room

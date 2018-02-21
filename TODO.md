@@ -1,7 +1,7 @@
 # TO DO
 Planned future improvements and refactoring, in not any specific order.
 
-- Grunt, implement, output in a file directly into game folder.
+- Implement test suit, at least for utils
 
 - Naming: Automate, Empire, Small, Simple, Hive.
 

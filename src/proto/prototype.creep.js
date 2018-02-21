@@ -18,21 +18,27 @@ const roles = {
   defender: require("role.defender")
 }
 
+/**
+  Main AI for Creeps
+  */
 Creep.prototype.logic = function() {
 
   // Take a break and save us some CPU
   if (this.fatigue) return;
 
+  // TO DO: For some reason, some creep loses their role and all system crash
+  if (!this.memory.role) {
+    this.say("☠☠☠");
+    console.log("Creep with no role, body:", this.body.toString());
+    // this.suicide();
+    return;
+  }
+
   // LEGACY
   if (!this.memory.homeroom) this.memory.homeroom = this.memory.home;
   if (!this.memory.workroom) this.memory.workroom = this.memory.target;
 
-  // TO DO: Call for help
-  if (this.hits < this.hitsMax) {
-    this.say("Help!");
-  }
-
-  // Get to work!
+  // If it's all good, get to work!
   roles[this.memory.role].run(this);
 }
 
@@ -161,4 +167,39 @@ Creep.prototype.transferEnergyToStructure = function() {
   } else {
     upgrader.run(creep);
   }
+}
+
+Creep.prototype.requestMilitarySupport = function() {
+
+  // Watch out for foes nearby
+  const foes = this.pos.findInRange(FIND_HOSTILE_CREEPS, 20);
+
+  // If so...
+  if (foes.length) {
+    // TO DO: Call for military support
+
+    // Request on the board for support
+    // - request ID
+    // - request type
+    // - request timestamp
+    // - request room
+    // - request status
+  }
+}
+
+/**
+  Returns Creep's details as follow
+  ID [BODY PARTS] homeroom workroom
+  */
+Creep.prototype.details = function() {
+  const body = {};
+  let specs = " [";
+  for (let part of this.body) {
+    body[part.type] = body[part.type] ? body[part.type] + 1 : 1;
+  }
+  for (let part in body) {
+    specs += body[part] + " " + part.toUpperCase() + ", ";
+  }
+  specs = specs.slice(0,-2) + "] ";
+  return this.name + specs + this.memory.homeroom + " " + this.memory.workroom;
 }

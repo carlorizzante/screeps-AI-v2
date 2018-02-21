@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.11.3] - 2018-02-22
+### Added
+- utils.js, collection of short and sweet utilities
+
+### Changed
+- prototype.creep.js, work in progress for Memory.board
+- prototype.spawn.js, refactored spawning
+
 ## [2.11.2] - 2018-02-21
 ### Changed
 - role.defender.js, Defenders can now heal friendly creeps
