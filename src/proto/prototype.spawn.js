@@ -9,6 +9,16 @@ const roles = [
 ];
 
 const config = require("config");
+const PRINT = true;
+
+/**
+  Creeps' roles available at moment
+  */
+const HARVESTER  = "harvester";
+const BUILDER    = "builder";
+const UPGRADER   = "upgrader";
+const REPAIRER   = "repairer";
+const DEFENDER    = "defender";
 
 StructureSpawn.prototype.logic = function() {
 
@@ -16,6 +26,12 @@ StructureSpawn.prototype.logic = function() {
 
   const room = this.room;
   const home = this.room.name;
+
+  const maxEnergy = room.energyCapacityAvailable;
+  const currentEnergy = room.energyAvailable;
+
+  // Exit if insufficient Energy
+  if (currentEnergy < maxEnergy) return;
 
   const HARVESTERS_CAP = config.harvesters_cap(room);
   const BUILDERS_CAP = config.builders_cap(room);
@@ -27,39 +43,36 @@ StructureSpawn.prototype.logic = function() {
   const creeps = room.find(FIND_MY_CREEPS);
   const creepCount = {}
 
-  const maxEnergy = room.energyCapacityAvailable;
-  const currentEnergy = room.energyAvailable;
-
-  // Spawn only the best creeps available
-  if (currentEnergy < maxEnergy) return;
-
   // Delete from memory creeps not longer existing
   for (let name in Memory.creeps) {
     if (!Game.creeps[name]) {
-      console.log(name, "deleted from memory.");
+      if (PRINT) console.log("Creep", name, "deleted from memory.");
       delete Memory.creeps[name];
     }
   }
 
+  // TO DO: Clean expired requests and tasks
+
+  // Count Creeps in the current room
   for (let role of roles) {
     creepCount[role] = _.sum(creeps, c => c.memory.role == role);
   }
 
   for (let role in creepCount) {
-    console.log(role, creepCount[role]);
+    if (PRINT) console.log(role, creepCount[role]);
   }
 
-  if (creepCount["harvester"] < HARVESTERS_CAP) {
-    this.spawnCreepTier1("harvester", this.room.name);
+  if (creepCount[HARVESTER] < HARVESTERS_CAP) {
+    this.spawnCreepTier1(HARVESTER, this.room.name);
 
-  } else if (creepCount["builder"] < BUILDERS_CAP) {
-    this.spawnCreepTier1("builder", this.room.name);
+  } else if (creepCount[BUILDER] < BUILDERS_CAP) {
+    this.spawnCreepTier1(BUILDER, this.room.name);
 
-  } else if (creepCount["upgrader"] < UPGRADERS_CAP) {
-    this.spawnCreepTier1("upgrader", this.room.name);
+  } else if (creepCount[UPGRADER] < UPGRADERS_CAP) {
+    this.spawnCreepTier1(UPGRADER, this.room.name);
 
-  } else if (creepCount["repairer"] < REPAIRERS_CAP) {
-    this.spawnCreepTier1("repairer", this.room.name);
+  } else if (creepCount[REPAIRER] < REPAIRERS_CAP) {
+    this.spawnCreepTier1(REPAIRER, this.room.name);
 
   // Creeps Tier 2 allowed only if enough energyCapacityAvailable
   } else if (maxEnergy < TIER2_ENERGY_THRESHOLD) {
@@ -67,7 +80,7 @@ StructureSpawn.prototype.logic = function() {
 
   // TO DO: automatic spawn of Defenders
   } else if (false) {
-    this.spawnCreepTier3("defender", home, home);
+    this.spawnCreepTier3(DEFENDER, home, home);
 
   // Currently give 50/50 % to spawn a LR Builder or LR Harvester
 } else if (_.sample([true, false, false, false])) { // 25% ExoBuilders
@@ -134,10 +147,10 @@ StructureSpawn.prototype.spawnCreepTier1 = function(role, target) {
     + _.sum(skills, s => s == MOVE) + " MOVE]";
   let name = role + energyUsed + "-" + Game.time;
 
-  console.log("Spawning", name, specs, "Target:", target);
+  if (PRINT) console.log("Spawning", name, specs, "Target:", target);
 
   // Spawning new creep
-  const result = Game.spawns["Spawn1"].spawnCreep(skills, name, {
+  const result = Game.spawns.Spawn1.spawnCreep(skills, name, {
     memory: {
       role: role,
       home: home,
@@ -190,10 +203,10 @@ StructureSpawn.prototype.spawnCreepTier2 = function(role, home, target) {
     + _.sum(skills, s => s == MOVE) + " MOVE]";
   let name = role + energyUsed + "-" + Game.time;
 
-  console.log("Spawning", name, specs, "Target:", target);
+  if (PRINT) console.log("Spawning", name, specs, "Target:", target);
 
   // Spawning new creep
-  const result = Game.spawns["Spawn1"].spawnCreep(skills, name, {
+  const result = Game.spawns.Spawn1.spawnCreep(skills, name, {
     memory: {
       role: role,
       home: home,
@@ -253,10 +266,10 @@ StructureSpawn.prototype.spawnCreepTier3 = function(role, home, target) {
     + _.sum(skills, s => s == HEAL) + " HEAL" + "]";
   let name = role + energyUsed + "-" + Game.time;
 
-  console.log("Spawning", name, specs, "Target:", target);
+  if (PRINT) console.log("Spawning", name, specs, "Target:", target);
 
   // Spawning new creep
-  const result = Game.spawns["Spawn1"].spawnCreep(skills, name, {
+  const result = Game.spawns.Spawn1.spawnCreep(skills, name, {
     memory: {
       role: role,
       home: home,

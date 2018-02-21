@@ -1,6 +1,8 @@
 # TO DO
 Planned future improvements and refactoring, in not any specific order.
 
+- Grunt, implement, output in a file directly into game folder.
+
 - Naming: Automate, Empire, Small, Simple, Hive.
 
 - Group prototype.xyz.js and role.xyz.js into folders, nominally /prototypes and /units.

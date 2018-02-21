@@ -14,7 +14,9 @@ Creep.prototype.logic = function() {
   if (this.fatigue) return;
 
   // TO DO: Call for help
-  // if (this.hits < this.hitsMax) this.say("Help!");
+  if (this.hits < this.hitsMax) {
+    this.say("Help!");
+  }
 
   // Get to work!
   roles[this.memory.role].run(this);

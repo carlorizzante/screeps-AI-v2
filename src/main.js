@@ -7,6 +7,7 @@ module.exports.loop = function() {
 
   // Run creeps logic
   for (let name in Game.creeps) {
+    // console.log(Game.creeps[name], Game.creeps[name].memory.role);
     Game.creeps[name].logic();
   }
 
