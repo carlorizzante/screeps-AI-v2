@@ -98,7 +98,7 @@ Creep.prototype.longRecharge = function(pickUpDroppedResources) {
 
   if (pickUpDroppedResources) {
 
-    // Scan for any dropped resources nearby
+    // Scan for any dropped resources nearby, within a short range
     const dropped_resources = this.pos.findInRange(FIND_DROPPED_RESOURCES, 10);
 
     // If found any
@@ -186,7 +186,7 @@ Creep.prototype.requestMilitarySupport = function(foes) {
   const request = {
     id: id,
     type: type,
-    priority: 10 * foes,
+    priority: foes,
     time: Game.time,
     room: room,
     status: "filed"

@@ -11,6 +11,8 @@ module.exports = {
       // If so...
       if (foes.length) {
         // TO DO: Request Military Support
+        creep.say("help!");
+        creep.requestMilitarySupport(foes.length);
       }
     }
 
@@ -29,14 +31,16 @@ module.exports = {
 
       /**
         Prioritize repair over construction
+        This is setup to repair over time only structures that are actually used
+        Repair acts on a 3 squares range
         */
-      const structure = creep.pos.findClosestByRange(FIND_STRUCTURES, {
-        filter: s => s.hits < (s.hitsMax * 0.5) && s.structureType != STRUCTURE_WALL
+      const structures = creep.pos.findInRange(FIND_STRUCTURES, 3, {
+        filter: s => s.hits < (s.hitsMax * 0.3) && s.structureType != STRUCTURE_WALL
       });
 
-      if (structure) {
-        if (creep.repair(structure) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(structure);
+      if (structures.length) {
+        if (creep.repair(structures[0]) == ERR_NOT_IN_RANGE) {
+          creep.moveTo(structures[0]);
         }
         return; // Stay on duty - repair before construct
 

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.12.1] - 2018-02-23
+### Changed
+- prototype.creep.js, reduced range for picking up dropped resources, to 10 squares
+- role.hero.js, reduced range for repairing structures, to 3 squares
+
 ## [2.12.0] - 2018-02-23
 ### Added
 - prototype.creep.js, adds requestRoad() method
