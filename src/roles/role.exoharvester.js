@@ -3,8 +3,15 @@ module.exports = {
   // Creep -> void
   run: creep => {
 
-    if (this.hits < this.hitsMax) {
-      // TO DO: Request Military Support
+    if (creep.hits < creep.hitsMax) {
+
+      // Watch out for foes nearby
+      const foes = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 20);
+
+      // If so...
+      if (foes.length) {
+        // TO DO: Request Military Support
+      }
     }
 
     if (creep.isCharged()) {

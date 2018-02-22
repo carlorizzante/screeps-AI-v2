@@ -7,6 +7,7 @@ const roles = {
   upgrader: require("role.upgrader"),
 
   // Tier 2
+  hero: require("role.hero"),
   exobuilder: require("role.exobuilder"),
   exoharvester: require("role.exoharvester"),
 
@@ -23,11 +24,8 @@ const roles = {
   */
 Creep.prototype.logic = function() {
 
-  // Take a break and save us some CPU
-  if (this.fatigue) return;
-
   // TO DO: For some reason, some creep loses their role and all system crash
-  if (!this.memory.role) {
+  if (this.memory.role == undefined) {
     this.say("☠☠☠");
     console.log("Creep with no role, body:", this.body.toString());
     // this.suicide();
@@ -169,22 +167,40 @@ Creep.prototype.transferEnergyToStructure = function() {
   }
 }
 
-Creep.prototype.requestMilitarySupport = function() {
+/**
+  Send a call to all spawns to send military units in room under attack
+  @param foes Array
+  */
+Creep.prototype.requestMilitarySupport = function(foes) {
 
-  // Watch out for foes nearby
-  const foes = this.pos.findInRange(FIND_HOSTILE_CREEPS, 20);
+  const type = "military support";
+  const room = this.room.name
+  const id = name + "_" + type;
 
-  // If so...
-  if (foes.length) {
-    // TO DO: Call for military support
-
-    // Request on the board for support
-    // - request ID
-    // - request type
-    // - request timestamp
-    // - request room
-    // - request status
+  // Do not duplicate or override an already sent request
+  for (let request in Memory.board.requests) {
+    if (request == id) return;
   }
+
+  // All good, make a new request buddy
+  const request = {
+    id: id,
+    type: type,
+    priority: 10 * foes,
+    time: Game.time,
+    room: room,
+    status: "filed"
+  }
+
+  Memory.board[id] = request;
+}
+
+/**
+  Place a marker for construction: STRUCTURE_ROAD
+  */
+Creep.prototype.requestRoad = function() {
+  this.say("Road!!");
+  this.pos.createConstructionSite(STRUCTURE_ROAD);
 }
 
 /**

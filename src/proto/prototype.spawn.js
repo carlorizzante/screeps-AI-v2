@@ -18,6 +18,7 @@ const UPGRADER  = "upgrader";
 /**
   Creeps Tier 2
   */
+const HERO         = "hero";
 const EXOHARVESTER = "exoharvester";
 const EXOBUILDER   = "exobuilder";
 
@@ -99,22 +100,16 @@ StructureSpawn.prototype.logic = function() {
   } else if (false) {
     this.spawnCreepTier3(DEFENDER, this.room.name, this.room.name);
 
-  // Spawn 25% ExoBuilders, 75% ExoHarvesters
-  } else if (_.sample([true, false, false, false])) {
-    const nearbyRooms = Game.map.describeExits(this.room.name);
-    let targets = [];
-    for (let index in nearbyRooms) {
-      targets.push(nearbyRooms[index]);
-    }
-    this.spawnCreepTier2("exobuilder", this.room.name, _.sample(targets));
-
+  /**
+    Spawn Hero units and assign them randomly to nearby rooms
+    */
   } else {
     const nearbyRooms = Game.map.describeExits(this.room.name);
     let targets = [];
     for (let index in nearbyRooms) {
       targets.push(nearbyRooms[index]);
     }
-    this.spawnCreepTier2("exoharvester", this.room.name, _.sample(targets));
+    this.spawnCreepTier2("hero", this.room.name, _.sample(targets));
   }
 }
 

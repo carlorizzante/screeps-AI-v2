@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.12.0] - 2018-02-23
+### Added
+- prototype.creep.js, adds requestRoad() method
+- prototype.spawn.js, replace exobuilder and exoharvester with hero units
+- role.hero.js, Hero units replace ExoBuilders and ExoHarvesters
+
 ## [2.11.3] - 2018-02-22
 ### Added
 - utils.js, collection of short and sweet utilities

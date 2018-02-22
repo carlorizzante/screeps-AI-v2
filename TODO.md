@@ -1,11 +1,18 @@
 # TO DO
 Planned future improvements and refactoring, in not any specific order.
 
+- Setup a board, or todo list, or requests object
+
 - Implement test suit, at least for utils
 
 - Naming: Automate, Empire, Small, Simple, Hive.
 
-- Group prototype.xyz.js and role.xyz.js into folders, nominally /prototypes and /units.
+- New unit: Hero
+-- Heros can harvest in nearby rooms, request for roads, and build them.
+-- Heros replace Exoharvesters and Exobuilders.
+
+- New unit: Guard
+-- Guards are like Defenders but more powerful, and stationary in the room they've been requested to.
 
 - Refactor prototype.spawn.js: Automatic spawn of Long Range Builders.
 -- Long Range Builders should be spawn only if necessary, aka if construction areas are on site.
@@ -22,20 +29,19 @@ Planned future improvements and refactoring, in not any specific order.
 -- Target should be the structure or unit to act upon, not the room where the unit is expected to go on duty.
 -- Suggestions for alternative to target: office, area, district, homeroom/workroom, workshop, base, headquarter, room1/room2, source/destination...
 
-- Rename units: Long Range into Exo.
--- Rename Long Range units into Exo units, as for exo planet or, in our case, exo rooms.
-
 - Refactor unit: Builder.
 -- Builder should be able to repair structures as well as building them, therefore removing the necessity of the Repairer.
 
 - Refactor unit: Long Range Builder.
 -- Long Range Builder should fallback to Long Range Harvester if no construction or maintenance/repair is needed.
 
+- Design new unit: Miner
+-- Miner has only one MOVE part, which is uses to get to the Extraction point. Once there it drops extracted resource into a nearby Container. Haulers then take care of picking up the resource and hauling it where required.
+-- Balance between Energy Source and other kinds.
+
 - Design new unit: Hauler.
 -- Haulers move resources (probably mainly Energy) across various key points on the map, mainly Containers, Storage, Spawn, and Extensions.
-
-- Design new unit: Harvester Tier 2.
--- Harvester Tier 2 has only one MOVE part, which is uses to get to the Energy Source. Once there it drops Energy into a nearby Container. Haulers then take care of picking up Energy and hauling where required.
+-- Balance between Energy Source and other kinds.
 
 - Design new unit: Reclaimer.
 -- Reclaimer goes into empty rooms and reclaims them for further use / investigate how to do so.

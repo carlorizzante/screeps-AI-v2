@@ -18,6 +18,7 @@ module.exports = {
       "upgrader",
 
       // Tier 2
+      "hero",
       "exoharvester",
       "exobuilder",
 
