@@ -169,27 +169,27 @@ Creep.prototype.transferEnergyToStructure = function() {
 
 /**
   Send a call to all spawns to send military units in room under attack
-  @param foes Array
+  @param foesLength Integer
   */
-Creep.prototype.requestMilitarySupport = function(foes) {
+Creep.prototype.requestMilitarySupport = function(foesLength) {
 
-  const type = "military support";
+  const type = "military_support";
   const room = this.room.name
-  const id = name + "_" + type;
+  const id = room + "_" + type;
 
   // Do not duplicate or override an already sent request
-  for (let request in Memory.board.requests) {
-    if (request == id) return;
+  for (let r_id in Memory.board.requests) {
+    if (r_id == id) return;
   }
-
-  // All good, make a new request buddy
+  console.log("New request:", id, "Priority:", foesLength);
+  // All good, you're free to make a New Request buddy
   const request = {
     id: id,
     type: type,
-    priority: foes,
+    priority: foesLength, // array.length
     time: Game.time,
     room: room,
-    status: "filed"
+    status: "sent" // new requests are handled by main.js
   }
 
   Memory.board[id] = request;

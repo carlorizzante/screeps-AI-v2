@@ -27,27 +27,32 @@ module.exports = {
     /**
       If Creep is fully charged and in workroom
       */
-    if (creep.isCharged() && creep.room.name == creep.memory.workroom) {
+    if (creep.isCharged()) {
 
       /**
-        Prioritize repair over construction
-        This is setup to repair over time only structures that are actually used
-        Repair acts on a 3 squares range
+        If Creep is in workroom, perform chores
         */
-      const structures = creep.pos.findInRange(FIND_STRUCTURES, 3, {
-        filter: s => s.hits < (s.hitsMax * 0.3) && s.structureType != STRUCTURE_WALL
-      });
+      if (creep.room.name == creep.memory.workroom) {
 
-      if (structures.length) {
-        if (creep.repair(structures[0]) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(structures[0]);
+        /**
+          Prioritize repair over construction
+          This is setup to repair over time only structures that are actually used
+          Repair acts on a 3 squares range
+          */
+        const structures = creep.pos.findInRange(FIND_STRUCTURES, 3, {
+          filter: s => s.hits < (s.hitsMax * 0.3) && s.structureType != STRUCTURE_WALL
+        });
+
+        if (structures.length) {
+          if (creep.repair(structures[0]) == ERR_NOT_IN_RANGE) {
+            creep.moveTo(structures[0]);
+          }
+          return; // Stay on duty - repair before construct
         }
-        return; // Stay on duty - repair before construct
 
-      /**
-        Otherwise, look for costruction sites
-        */
-      } else {
+        /**
+          Otherwise, look for costruction sites
+          */
         const constructionSite = creep.pos.findClosestByRange(FIND_CONSTRUCTION_SITES);
 
         if (constructionSite) {
@@ -56,24 +61,20 @@ module.exports = {
           }
           return; // Stay on duty, go building stuffs
         }
+
+        /**
+          Else, if nothing left to do in workroom,
+          move back to homeroom
+          */
+        const exit = creep.room.findExitTo(creep.memory.homeroom);
+        creep.moveTo(creep.pos.findClosestByPath(exit));
+
+      /**
+        Else, creep should be in homeroom
+        */
+      } else {
+        creep.transferEnergyToStructure();
       }
-
-    /**
-      Else, if Creep is fully charged and in homeroow
-      */
-    } else if (creep.isCharged() && creep.room.name == creep.memory.homeroom) {
-
-      // Transfer Energy to Structures
-      creep.transferEnergyToStructure();
-
-    /**
-      Else, if Creep is charged and not in homeroom
-      */
-    } else if (creep.isCharged()) {
-
-      // Find path to homeroom and move towards it
-      const exit = creep.room.findExitTo(creep.memory.homeroom);
-      creep.moveTo(creep.pos.findClosestByRange(exit));
 
     /**
       Else, Creep is out of charge, so go recharging
