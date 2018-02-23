@@ -6,12 +6,12 @@ module.exports = {
     if (!creep.isCharged()) {
 
       // Verify that creep is in its target room
-      if (creep.room.name == creep.memory.target) {
+      if (creep.room.name == creep.memory.workroom) {
 
         /**
           Offensive Routine
           */
-        const targets = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 20);
+        const targets = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 30);
 
         if (targets.length) {
           const target = creep.pos.findClosestByRange(targets);
@@ -52,7 +52,7 @@ module.exports = {
       } else {
 
         // Find path to target room and move towards it
-        const exit = creep.room.findExitTo(creep.memory.target);
+        const exit = creep.room.findExitTo(creep.memory.workroom);
         creep.moveTo(creep.pos.findClosestByRange(exit));
       }
     }

@@ -66,7 +66,7 @@ module.exports = {
     only below a specific limit of sustained damage.
     */
   repair_threshold: function() {
-    return 0.7; // 70%
+    return 0.5; // 50%
   },
 
   /**

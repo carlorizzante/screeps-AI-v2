@@ -5,7 +5,7 @@ const roles = {
   // Tier 1
   builder: require("role.builder"),
   harvester: require("role.harvester"),
-  repairer: require("role.repairer"),
+  repairer: require("role.repairer"),  // LEGACY
   upgrader: require("role.upgrader"),
 
   // Tier 2
@@ -13,7 +13,7 @@ const roles = {
 
   // Tier 3
   defender: require("role.defender")
-}
+};
 
 /**
   Main AI for Creeps
@@ -52,7 +52,10 @@ Creep.prototype.isCharged = function() {
   return this.memory.charged;
 }
 
-// Boolean Boolean -> void
+/**
+  @param useSource Boolean
+  @param useStorage Boolean
+  */
 Creep.prototype.recharge = function(useSource, useStorage) {
 
   let storage; // undefined so far
@@ -90,7 +93,9 @@ Creep.prototype.recharge = function(useSource, useStorage) {
   }
 }
 
-// @param pickUpDroppedResources Boolean
+/**
+  @param pickUpDroppedResources Boolean
+  */
 Creep.prototype.longRecharge = function(pickUpDroppedResources) {
 
   if (pickUpDroppedResources) {
@@ -165,28 +170,34 @@ Creep.prototype.transferEnergyToStructure = function() {
 }
 
 /**
-  Send a call to all spawns to send military units in room under attack
+  Register a request into board, calling for military support in the sender room
   @param foesLength Integer
   */
 Creep.prototype.requestMilitarySupport = function(foesLength) {
 
   const type = "military_support";
-  const room = this.room.name
+  const room = this.room.name;
   const id = room + "_" + type;
 
   // Do not duplicate or override an already sent request
-  for (let r_id in Memory.board.requests) {
-    if (r_id == id) return;
+  for (let entry in Memory.board) {
+    if (entry == id) {
+      Memory.board[id].priority = foesLength;
+      console.log("Updating request, foes:", foesLength);
+      return
+    }
   }
-  console.log("New request:", id, "Priority:", foesLength);
-  // All good, you're free to make a New Request buddy
+
+  console.log("Making new request:", id, "Priority:", foesLength);
+
+  // Record not found, make a new one buddy!
   const request = {
     id: id,
     type: type,
     priority: foesLength, // array.length
     time: Game.time,
     room: room,
-    status: "sent" // new requests are handled by main.js
+    status: "pending"
   }
 
   Memory.board[id] = request;

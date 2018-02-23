@@ -7,7 +7,7 @@ const roles = [
   // Tier 1
   "builder",
   "harvester",
-  "repairer",
+  "repairer",  // LEGACY
   "upgrader",
 
   // Tier 2
@@ -22,7 +22,7 @@ const roles = [
   */
 const BUILDER   = "builder";
 const HARVESTER = "harvester";
-const REPAIRER  = "repairer";
+const REPAIRER  = "repairer";  // LEGACY
 const UPGRADER  = "upgrader";
 
 /**
@@ -52,10 +52,24 @@ StructureSpawn.prototype.logic = function() {
   // Exit if insufficient Energy
   if (currentEnergy < maxEnergy) return;
 
-  // TO DO: fulfill first item in queue
-  if (Memory.queue.length) {
-    console.log("Spawn queue");
-    // Right now we have only one possible item type in queue: military_support
+  // Fulfill pending requests
+  if (Memory.board) {
+    for (let entry in Memory.board) {
+      entry = Memory.board[entry];
+
+      // Skip already fulfilled requests
+      if (Memory.board[entry.id].status != "fulfilled") {
+
+        // Fulfill request
+        this.spawnCreepTier3(DEFENDER, entry.room, entry.room);
+
+        // Update entry status to "fulfilled"
+        Memory.board[entry.id].status = "fulfilled";
+
+        // Done, move to the next cicle
+        return;
+      }
+    }
   }
 
   // Find all creeps in this room
@@ -78,7 +92,7 @@ StructureSpawn.prototype.logic = function() {
   }
 
   // Print Creeps' roles and their quantity
-  if (true) {
+  if (false) {
     for (let role in creepCount) {
       console.log(role, creepCount[role]);
     }
@@ -106,8 +120,8 @@ StructureSpawn.prototype.logic = function() {
   } else if (creepCount[UPGRADER] < UPGRADERS_CAP) {
     this.spawnCreepTier1(UPGRADER, this.room.name, this.room.name);
 
-  } else if (creepCount[REPAIRER] < REPAIRERS_CAP) {
-    this.spawnCreepTier1(REPAIRER, this.room.name, this.room.name);
+  // } else if (creepCount[REPAIRER] < REPAIRERS_CAP) {
+  //   this.spawnCreepTier1(REPAIRER, this.room.name, this.room.name);
 
   // Creeps Tier 2 allowed only if enough energyCapacityAvailable
   } else if (maxEnergy < TIER2_ENERGY_THRESHOLD) {

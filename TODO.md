@@ -7,16 +7,26 @@ Planned future improvements and refactoring, in not any specific order.
 
 - Naming: Automate, Empire, Small, Simple, Hive.
 
-- New unit: Hero
--- Heros can harvest in nearby rooms, request for roads, and build them.
--- Heros replace Exoharvesters and Exobuilders.
+- Optimize Creeps' actions, perform multiple actions per tick as for http://docs.screeps.com/simultaneous-actions.html
+
+- Optimize Hero body parts
+
+- Towers should auto-build their own Ramparts.
+	-- A square all around them, size 3x3 with the Tower in the middle.
+
+- Critical structures, like Towers, should auto-request for their own Ramparts.
+	-- A square all around them, size 3x3 with the structure in the middle.
+
+- Implements jobs {target, action}
+	-- Jobs will require a coordinator.
+	-- The coordinator assigns job to each individual creep and they perform the task until completion, done that they are free to take another job.
+	-- Coordinator, Supervisor, AI, Mind, Genius...
+
+- Setup recycling routine for creeps
+	-- When Creeps's life gets below 50 or so ticks, have it going to a container closed to the Spawn, once there the Spawn recycles them, and the residual energy from the Creep is dropped into the container - not lost.
 
 - New unit: Guard
--- Guards are like Defenders but more powerful, and stationary in the room they've been requested to.
-
-- Refactor prototype.spawn.js: Automatic spawn of Long Range Builders.
--- Long Range Builders should be spawn only if necessary, aka if construction areas are on site.
--- Otherwise, one single Long Range Builder might be sufficient to repair/maintain exo structures.
+	-- Guards are like Defenders but more powerful, and stationary in the room they've been requested to.
 
 - Refactor prototype.spawn.js: Automatic spawn of Harvester Tier 2.
 -- Harvesters Tier 2 should be spawn automatically when the necessary Energy Level is available/reached.
@@ -28,9 +38,6 @@ Planned future improvements and refactoring, in not any specific order.
 - Refactor prototype.creep.js: Better use of target as variable.
 -- Target should be the structure or unit to act upon, not the room where the unit is expected to go on duty.
 -- Suggestions for alternative to target: office, area, district, homeroom/workroom, workshop, base, headquarter, room1/room2, source/destination...
-
-- Refactor unit: Builder.
--- Builder should be able to repair structures as well as building them, therefore removing the necessity of the Repairer.
 
 - Refactor unit: Long Range Builder.
 -- Long Range Builder should fallback to Long Range Harvester if no construction or maintenance/repair is needed.
@@ -52,20 +59,33 @@ Planned future improvements and refactoring, in not any specific order.
 -- Tier 2: 1.500
 -- Tier 3: ?
 
-## Tier 1 - basic units
+## Tier 1 - starter units
 -- Harvester
 -- Upgrader / Sustainer
 -- Builder, can Repair, fallback to Upgrader
 
-## Tier 2 - advanced units
--- Lorry
--- Harvester
--- Upgrader
--- Builder
--- Long Range Harvester
--- Long Range Builder, fallback to Long Range Harvester
+## Tier 2 - efficiency units
+-- Hero
+-- Defender
+-- Miner + Hauler
 
 ## Tier 3 - military units
--- Defender
 -- Claimer
+-- Guard ?
 -- Healer ?
+
+## Progression
+- Phase 1. Tier 1 / Energy 300 -> 700...?
+	Harvesters get energy for spawning initial creeps.
+	Upgraders maintain/upgrade Room Controller.
+	Builders build infrastructures.
+	
+- Phase 2. Tier 2 / Energy 700 -> 1500...?
+	Heros add additional energy income from nearby rooms.
+	Defenders spawned on necessity when Heros under threat.
+	Miners + Haulers improve energy management in Home room.
+	Miners + Haulers also mine Minerals.
+
+- Phase 3. Tier 3 / Energy 1000 -> ...?
+	To be defined, but basically Phase 3 is about expansion.
+

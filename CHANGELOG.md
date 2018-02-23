@@ -4,11 +4,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.13.0] - 2018-02-23
+### Added
+- main.js, Main loop properly handles entries in Memory.board
+- prototype.creep.js, requestMilitarySupport finally functional
+- prorotype.spawn.js, implements Memory.board scan for pending requests
+- role.builder.js, bug fix
+- role.defender.js, bug fix in homeroom, removed target property from Creep's memory
+
 ## [2.12.3] - 2018-02-23
 ### Changed
+- config.js, roles list moved in prototype.spawn.js, repair_threshold 0.5
 - prototype.creep.js, removed obsolete roles, bug fix
-- prototype.spawn.js, removed obsolete, refactored roles list
-- config.js, removed roles list, moved now in prototype.spawn.js
+- prototype.spawn.js, removed obsolete, refactored roles list, removed Repairers
+- role.builder.js, Builders can now repair, no need for Repairers any longer
+- role.exobuilder.js, deleted
+- role.exoharvester.js, deleted
+- role.repairer.js, role is now obsolete, replaced by Builders
 
 ## [2.12.2] - 2018-02-23
 ### Changed

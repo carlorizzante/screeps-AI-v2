@@ -1,5 +1,5 @@
 # Screeps!
-Release 2.12.3
+Release 2.13.0
 
 AI for Screeps, version 2.
 
@@ -17,16 +17,10 @@ AI for Screeps, version 2.
     - prototype.spawn.js
     - prototype.tower.js
   - roles/
-    - prototype.creep.js
-    - prototype.spawn.js
-    - prototype.tower.js
     - role.builder.js
     - role.defender.js
-    - role.exobuilder.js LEGACY
-    - role.exoharvester.js LEGACY
     - role.hero.js
-    - role.longHarvester.js
-    - role.repairer.js
+    - role.repairer.js LEGACY
     - role.upgrader.js
   - utils.js
 - TODO.md
