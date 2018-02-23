@@ -2,10 +2,20 @@ const config = require("config");
 const utils = require("utils");
 
 // List of active Creeps' roles
-const roles = config.roles();
+const roles = [
 
-// Enable feedback into the console of the game
-const VERBOSE = true;
+  // Tier 1
+  "builder",
+  "harvester",
+  "repairer",
+  "upgrader",
+
+  // Tier 2
+  "hero",
+
+  // Tier 3
+  "defender"
+];
 
 /**
   Creeps Tier 1
@@ -18,14 +28,15 @@ const UPGRADER  = "upgrader";
 /**
   Creeps Tier 2
   */
-const HERO         = "hero";
-const EXOHARVESTER = "exoharvester";
-const EXOBUILDER   = "exobuilder";
+const HERO = "hero";
 
 /**
   Creeps Tier 3
   */
 const DEFENDER = "defender";
+
+// Enable feedback into the console of the game
+const VERBOSE = true;
 
 StructureSpawn.prototype.logic = function() {
 
@@ -40,6 +51,12 @@ StructureSpawn.prototype.logic = function() {
 
   // Exit if insufficient Energy
   if (currentEnergy < maxEnergy) return;
+
+  // TO DO: fulfill first item in queue
+  if (Memory.queue.length) {
+    console.log("Spawn queue");
+    // Right now we have only one possible item type in queue: military_support
+  }
 
   // Find all creeps in this room
   const creeps = room.find(FIND_MY_CREEPS);
@@ -61,7 +78,7 @@ StructureSpawn.prototype.logic = function() {
   }
 
   // Print Creeps' roles and their quantity
-  if (VERBOSE) {
+  if (true) {
     for (let role in creepCount) {
       console.log(role, creepCount[role]);
     }

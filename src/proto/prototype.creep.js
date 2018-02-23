@@ -1,3 +1,5 @@
+const upgrader = require("role.upgrader");
+
 const roles = {
 
   // Tier 1
@@ -8,12 +10,6 @@ const roles = {
 
   // Tier 2
   hero: require("role.hero"),
-  exobuilder: require("role.exobuilder"),
-  exoharvester: require("role.exoharvester"),
-
-  // LEGACY Tier 2
-  longBuilder: require("role.longBuilder"),
-  longHarvester: require("role.longHarvester"),
 
   // Tier 3
   defender: require("role.defender")
@@ -27,7 +23,8 @@ Creep.prototype.logic = function() {
   // TO DO: For some reason, some creep loses their role and all system crash
   if (this.memory.role == undefined) {
     this.say("☠☠☠");
-    console.log("Creep with no role, body:", this.body.toString());
+    // console.log("Creep with no role, body:", this.details());
+    this.memory.role = "harvester"; // Fallback to harvesters
     // this.suicide();
     return;
   }
@@ -163,7 +160,7 @@ Creep.prototype.transferEnergyToStructure = function() {
 
   // If any target available, try to upgrade controller
   } else {
-    upgrader.run(creep);
+    upgrader.run(this);
   }
 }
 

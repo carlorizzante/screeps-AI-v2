@@ -8,25 +8,6 @@ module.exports = {
     return {}
   },
 
-  roles: function() {
-    return [
-
-      // Tier 1
-      "builder",
-      "harvester",
-      "repairer",
-      "upgrader",
-
-      // Tier 2
-      "hero",
-      "exoharvester",
-      "exobuilder",
-
-      // Tier 3
-      "defender"
-    ];
-  },
-
   /**
     Max energy available for Creeps Tier 1.
     capped to 600
@@ -55,12 +36,12 @@ module.exports = {
 
   /**
     Builders are spawn only if required.
-    Range [2, 5]
+    Range [0, 5]
     */
   builders_cap: function(room) {
     // const maxEnergy = room.energyCapacityAvailable;
     const constructionSites = room.find(FIND_CONSTRUCTION_SITES);
-    return _.min([5, 2 + constructionSites.length]);
+    return _.min([constructionSites.length, 5]);
   },
 
   /**
