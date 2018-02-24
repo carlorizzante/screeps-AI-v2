@@ -14,7 +14,9 @@ module.exports = {
       If charged, transfer Energy to Structures
       */
     if (creep.isCharged()) {
-      creep.transferEnergyToStructure();
+      
+      // Include Towers
+      creep.rechargeStructures(true);
 
     /**
       Else, go recharging

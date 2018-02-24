@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.13.2] - 2018-02-24
+### Changed
+- prototype.creep.js, Recharging structures now can exclude Towers
+- role.harvester.js, Harvesters allowed to recharge Towers
+- role.hero.js, Heros NOT allowed to recharge Towers
+
 ## [2.13.1] - 2018-02-24
 ### Added
 - prototype.creep.js, Creeps can use Containers

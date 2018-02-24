@@ -72,7 +72,9 @@ module.exports = {
         Else, creep should be in homeroom
         */
       } else {
-        creep.transferEnergyToStructure();
+        
+        // Do not recharge Towers
+        creep.rechargeStructures(false);
       }
 
     /**

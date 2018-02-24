@@ -150,13 +150,16 @@ Creep.prototype.longRecharge = function(pickUpDroppedResources) {
   }
 }
 
-Creep.prototype.transferEnergyToStructure = function() {
+/**
+  @param includeTowers Boolean
+  */
+Creep.prototype.rechargeStructures = function(includeTowers) {
 
   let structure = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
     filter: s => ((
       s.structureType == STRUCTURE_SPAWN
       || s.structureType == STRUCTURE_EXTENSION
-      || s.structureType == STRUCTURE_TOWER)
+      || (includeTowers && s.structureType == STRUCTURE_TOWER))
       && s.energy < s.energyCapacity
     )
   });
