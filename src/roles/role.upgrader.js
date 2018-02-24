@@ -12,7 +12,8 @@ module.exports = {
       }
 
     } else {
-      creep.recharge(true, true);
+      // Recharge using Sources, Storage, NOT Containers
+      creep.recharge(true, true, false);
     }
   }
 }

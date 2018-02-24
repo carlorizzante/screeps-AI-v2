@@ -8,6 +8,7 @@ const roles = {
   upgrader: require("role.upgrader"),
 
   // Tier 2
+  hauler: require("role.hauler"),
   hero: require("role.hero"),
   miner: require("role.miner"),
 
@@ -56,19 +57,18 @@ Creep.prototype.isCharged = function() {
   */
 Creep.prototype.isLocked = function() {
   if (this.memory.locked) {
-    this.say("L!");
+    // this.say("L!");
     return true;
   }
   const container = this.pos.findInRange(FIND_STRUCTURES, 1, {
     filter: s => s.structureType == STRUCTURE_CONTAINER
   });
   const source = this.pos.findInRange(FIND_SOURCES, 1);
-  // console.log("container:", container, "source:", source);
   if (container.length && source.length) {
-    this.say("L?");
+    // this.say("L?");
     this.memory.locked = true;
     this.memory.container = container[0];
-    this.memory.source = source[0];
+    this.memory.source = this.pos.findClosestByRange(FIND_SOURCES);
     return true;
   } else {
     return false;
@@ -78,8 +78,9 @@ Creep.prototype.isLocked = function() {
 /**
   @param useSource Boolean
   @param useStorage Boolean
+  @param useContainers Boolean
   */
-Creep.prototype.recharge = function(useSource, useStorage) {
+Creep.prototype.recharge = function(useSource, useStorage, useContainers) {
 
   let storage; // undefined so far
 
@@ -88,7 +89,7 @@ Creep.prototype.recharge = function(useSource, useStorage) {
     storage = this.pos.findClosestByRange(FIND_STRUCTURES, {
       filter: s => ((
         s == this.room.storage
-        || s.structureType == STRUCTURE_CONTAINER
+        || s.structureType == STRUCTURE_CONTAINER && useContainers
         || s.structureType == STRUCTURE_STORAGE)
         && s.store[RESOURCE_ENERGY] > 0
       )
@@ -122,27 +123,7 @@ Creep.prototype.recharge = function(useSource, useStorage) {
 Creep.prototype.longRecharge = function(pickUpDroppedResources) {
 
   if (pickUpDroppedResources) {
-
-    // Scan for any dropped resources nearby, within a short range
-    const dropped_resources = this.pos.findInRange(FIND_DROPPED_RESOURCES, 10);
-
-    // If found any
-    if (dropped_resources.length) {
-
-      // Find closest one
-      let dropped_resource = this.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
-        // Condider only Energy, not minerals
-        filter: r => r.resourceType == RESOURCE_ENERGY
-      });
-
-      // Go get it!
-      if (this.pickup(dropped_resource) == ERR_NOT_IN_RANGE) {
-        this.moveTo(dropped_resource);
-
-        // Do not go for harvesting energy sources
-        return;
-      }
-    }
+    this.pickUpDroppedResources(10);
   }
 
   // If Creep is in workroom room
@@ -227,6 +208,36 @@ Creep.prototype.rechargeContainers = function() {
 }
 
 /**
+  Causes the Creep to stop by any spotted dropped resources and pick it up
+  @param range Integer range to scan for any dropped resource
+  */
+Creep.prototype.pickUpDroppedResources = function(range) {
+
+  range = range ? range : 10; // default to 10
+
+  // Scan for any dropped resources nearby, within a short range
+  const dropped_resources = this.pos.findInRange(FIND_DROPPED_RESOURCES, range);
+
+  // If found any
+  if (dropped_resources.length) {
+
+    // Find closest one
+    let dropped_resource = this.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
+      // Condider only Energy, not minerals
+      filter: r => r.resourceType == RESOURCE_ENERGY
+    });
+
+    // Go get it!
+    if (this.pickup(dropped_resource) == ERR_NOT_IN_RANGE) {
+      this.moveTo(dropped_resource);
+
+      // Do not go for harvesting energy sources
+      return;
+    }
+  }
+}
+
+/**
   Register a request into board, calling for military support in the sender room
   @param foesLength Integer
   */
@@ -240,12 +251,12 @@ Creep.prototype.requestMilitarySupport = function(foesLength) {
   for (let entry in Memory.board) {
     if (entry == id) {
       Memory.board[id].priority = foesLength;
-      console.log("Updating request, foes:", foesLength);
+      // console.log("Updating request:", id, "Room:", room, "Priority:", foesLength);
       return
     }
   }
 
-  console.log("Making new request:", id, "Priority:", foesLength);
+  console.log("Making new request:", id, "Room:", room, "Priority:", foesLength);
 
   // Record not found, make a new one buddy!
   const request = {

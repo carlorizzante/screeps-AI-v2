@@ -25,13 +25,15 @@ module.exports = {
 
   /**
     Harvesters are spawn in presence of active energy sources.
-    Range [6, 12]
+    Range [0, 12]
+    @param room ROOM
+    @param creepCount Object, key/value count of creeps in the current room
     */
-  harvesters_cap: function(room) {
-    // const maxEnergy = room.energyCapacityAvailable;
+  harvesters_cap: function(room, creepCount) {
+    const tier2 = creepCount.hauler + creepCount.miner;
     const sources = room.find(FIND_SOURCES_ACTIVE);
-    if (sources.length > 1) return 12;
-    return 6;
+    if (sources.length > 1) return 8 - tier2;
+    return 4 - tier2;
   },
 
   /**
@@ -55,10 +57,17 @@ module.exports = {
   },
 
   /**
-    Temporarly only 2 Miners are spawned
+    Temporarly Haluers are capped to a fixed amount
+    */
+  haulers_cap: function(room) {
+    return this.miners_cap(room) * 2;
+  },
+
+  /**
+    Temporarly Miners are capped to a fixed amount
     */
   miners_cap: function(room) {
-    return 3;
+    return room.find(FIND_SOURCES).length + 1;
   },
 
   /**

@@ -10,6 +10,7 @@ const roles = [
   "upgrader",
 
   // Tier 2
+  "hauler",
   "hero",
   "miner",
 
@@ -28,6 +29,7 @@ const TIER1_ENERGY_CAP = config.tier1_energy_cap();
 /**
   Creeps Tier 2
   */
+const HAULER = "hauler";
 const HERO = "hero";
 const MINER = "miner";
 
@@ -50,13 +52,9 @@ StructureSpawn.prototype.logic = function() {
   const maxEnergy = room.energyCapacityAvailable;
   const currentEnergy = room.energyAvailable;
 
-  // Exit if insufficient Energy
-  if (currentEnergy < maxEnergy) return;
-
-  // Emergency settings - Manual spawning of Defender
-  // if (true) this.spawnDEFENDER(DEFENDER, this.room.name, this.room.name);
-
-  // Fulfill pending requests
+  /**
+    Requests for Military Support need to be prioritized
+    */
   if (Memory.board) {
     for (let entry in Memory.board) {
       entry = Memory.board[entry];
@@ -64,17 +62,24 @@ StructureSpawn.prototype.logic = function() {
       // Skip already fulfilled requests
       if (Memory.board[entry.id].status != "fulfilled") {
 
-        // Fulfill request
-        this.spawnDEFENDER(DEFENDER, entry.room, entry.room);
+        // Try to fullfill request
+        if (OK == this.spawnDEFENDER(DEFENDER, entry.room, entry.room)) {
 
-        // Update entry status to "fulfilled"
-        Memory.board[entry.id].status = "fulfilled";
+          // If positive, set request as fulfilled
+          Memory.board[entry.id].status = "fulfilled";
 
-        // Done, move to the next cicle
-        return;
+          // quit execution for this cicle
+          return;
+        }
       }
     }
   }
+
+  // Exit if insufficient Energy
+  if (currentEnergy < maxEnergy) return;
+
+  // Emergency settings - Manual spawning of Defender
+  // if (true) this.spawnDEFENDER(DEFENDER, this.room.name, this.room.name);
 
   // Find all creeps in this room
   const creeps = room.find(FIND_MY_CREEPS);
@@ -106,11 +111,15 @@ StructureSpawn.prototype.logic = function() {
     Calculate cap and threshold values for Creep type/role
     Those contansts are used to determine which types will be spawn
     */
-  const HARVESTERS_CAP = config.harvesters_cap(room);
+
+  // Tier 1
+  const HARVESTERS_CAP = config.harvesters_cap(room, creepCount);
   const BUILDERS_CAP   = config.builders_cap(room);
   const UPGRADERS_CAP  = config.upgraders_cap(room);
+  // Tier 2
   const TIER2_ENERGY_THRESHOLD = config.tier2_energy_threshold(room);
-  const MINER_CAP = config.miners_cap(room);
+  const HAULER_CAP     = config.haulers_cap(room);
+  const MINER_CAP      = config.miners_cap(room);
 
   /**
     Spawn Creeps accordingly to rules calculated above
@@ -128,9 +137,12 @@ StructureSpawn.prototype.logic = function() {
   } else if (maxEnergy < TIER2_ENERGY_THRESHOLD) {
     return;
 
-  // TO DO: Spawn Miners
-} else if (creepCount[MINER] < MINER_CAP) {
+
+  } else if (creepCount[MINER] < MINER_CAP) {
     this.spawnTier2(MINER, this.room.name, this.room.name);
+
+  } else if (creepCount[HAULER] < HAULER_CAP) {
+    this.spawnTier2(HAULER, this.room.name, this.room.name);
 
   /**
     Spawn Hero units and assign them randomly to nearby rooms
@@ -224,12 +236,13 @@ StructureSpawn.prototype.spawnTier2 = function(role, homeroom, workroom, target)
     Miners are all about WORK parts
     Heros need a more balance setup, 25% WORK parts
     */
-  let use = energyAvailable / 4; // default, just in case
-  if (role == MINER) use = energyAvailable - 250;
-  if (role == HERO)  use = energyAvailable / 4;
+  let use;
+  if (role == HAULER) use = 0;   // Haulers do not need WORK parts
+  if (role == HERO)   use = energyAvailable / 4 + 1;
+  if (role == MINER)  use = energyAvailable - 250;
 
   // Add WORK parts accordingly to role
-  while (energyUsed <= use) {
+  while (energyUsed < use) {
     skills.push(WORK);
     energyUsed += 100;
   }

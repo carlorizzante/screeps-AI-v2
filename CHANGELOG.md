@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.15.0] - 2018-02-24
+### Added
+- prototype.creep.js, refactor pickUpDroppedResources
+- prototype.spawn.js, priority given to requests
+- role.hauler.js, Haulers added to the pool of Tier 2 units
+
 ## [2.14.0] - 2018-02-24
 ### Added
 - config.js, added miners_cap() method
