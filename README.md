@@ -1,5 +1,5 @@
 # Screeps!
-Release 2.13.2
+Release 2.14.0
 
 AI for Screeps, version 2.
 
@@ -20,6 +20,7 @@ AI for Screeps, version 2.
     - role.builder.js
     - role.defender.js
     - role.hero.js
+    - role.miner.js
     - role.upgrader.js
   - utils.js
 - TODO.md2

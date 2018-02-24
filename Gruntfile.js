@@ -17,8 +17,18 @@ module.exports = function(grunt) {
         loopfunc: true  // Suppress warnings for func declaration within loops
       }
     },
+    sync: {
+      main: {
+        files: [{
+          cwd: "default",
+          src: ["**"],
+          dest: config.dest
+        }],
+        verbose: true
+      }
+    },
     clean: {
-      contents: [config.dest],
+      contents: ["default"],
       options: {
         force: true
       }
@@ -30,7 +40,7 @@ module.exports = function(grunt) {
             expand: true,
             flatten: true,
             src: ['src/**'],
-            dest: config.dest,
+            dest: "default",
             filter: 'isFile'
           }
         ]
@@ -42,7 +52,7 @@ module.exports = function(grunt) {
     },
     wait: {
       options: {
-        delay: 500
+        delay: 1500
       },
       pause: {
         options: {
@@ -58,5 +68,5 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask("default", ["jshint"]);
-  grunt.registerTask("update", ["clean", "wait", "copy"]);
+  grunt.registerTask("update", ["clean", "wait", "copy", "wait", "sync"]);
 }

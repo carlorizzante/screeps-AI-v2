@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.14.0] - 2018-02-24
+### Added
+- config.js, added miners_cap() method
+- role.miner.js, Fully functional Miner role
+- prototype.creep.js, added isLocked() method
+- prototype.spawn.js, spawnTier2() method can now spawn Miners as well
+
+### Changed
+- Gruntfile.js, refactor, sync and update tasks added
+
 ## [2.13.2] - 2018-02-24
 ### Changed
 - prototype.creep.js, Recharging structures now can exclude Towers
