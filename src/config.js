@@ -10,10 +10,10 @@ module.exports = {
 
   /**
     Max energy available for Creeps Tier 1.
-    capped to 600
+    capped to 800
     */
   tier1_energy_cap: function() {
-    return 600;
+    return 800;
   },
 
   /**

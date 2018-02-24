@@ -3,7 +3,6 @@ const upgrader = require("role.upgrader");
 
 module.exports = {
 
-  // Creep -> void
   run: creep => {
 
     const REPAIR_THESHOLD = config.repair_threshold();

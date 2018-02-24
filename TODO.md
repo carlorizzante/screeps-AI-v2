@@ -1,8 +1,6 @@
 # TO DO
 Planned future improvements and refactoring, in not any specific order.
 
-- Setup a board, or todo list, or requests object
-
 - Implement test suit, at least for utils
 
 - Naming: Automate, Empire, Small, Simple, Hive.

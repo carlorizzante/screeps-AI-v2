@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.13.1] - 2018-02-24
+### Added
+- prototype.creep.js, Creeps can use Containers
+- prototype.spawn.js, refactored spawning of Creep Tier 2
+- role.miner.js, Miner, work in progress
+
+### Changed
+- config.js, Creep Tier 2 Energy Available increased to 800
+- main.js, Main loop properly handles entries in Memory.board
+
+### Removed
+- role.repairer.js
+
 ## [2.13.0] - 2018-02-23
 ### Added
 - main.js, Main loop properly handles entries in Memory.board

@@ -12,6 +12,7 @@ const roles = [
 
   // Tier 2
   "hero",
+  "miner",
 
   // Tier 3
   "defender"
@@ -24,11 +25,13 @@ const BUILDER   = "builder";
 const HARVESTER = "harvester";
 const REPAIRER  = "repairer";  // LEGACY
 const UPGRADER  = "upgrader";
+const TIER1_ENERGY_CAP = config.tier1_energy_cap();
 
 /**
   Creeps Tier 2
   */
 const HERO = "hero";
+const MINER = "miner";
 
 /**
   Creeps Tier 3
@@ -52,6 +55,9 @@ StructureSpawn.prototype.logic = function() {
   // Exit if insufficient Energy
   if (currentEnergy < maxEnergy) return;
 
+  // Emergency settings - Manual spawning of Defender
+  // if (true) this.spawnDEFENDER(DEFENDER, this.room.name, this.room.name);
+
   // Fulfill pending requests
   if (Memory.board) {
     for (let entry in Memory.board) {
@@ -61,7 +67,7 @@ StructureSpawn.prototype.logic = function() {
       if (Memory.board[entry.id].status != "fulfilled") {
 
         // Fulfill request
-        this.spawnCreepTier3(DEFENDER, entry.room, entry.room);
+        this.spawnDEFENDER(DEFENDER, entry.room, entry.room);
 
         // Update entry status to "fulfilled"
         Memory.board[entry.id].status = "fulfilled";
@@ -112,24 +118,19 @@ StructureSpawn.prototype.logic = function() {
     Spawn Creeps accordingly to rules calculated above
     */
   if (creepCount[HARVESTER] < HARVESTERS_CAP) {
-    this.spawnCreepTier1(HARVESTER, this.room.name, this.room.name);
+    this.spawnTier1(HARVESTER, this.room.name, this.room.name);
 
   } else if (creepCount[BUILDER] < BUILDERS_CAP) {
-    this.spawnCreepTier1(BUILDER, this.room.name, this.room.name);
+    this.spawnTier1(BUILDER, this.room.name, this.room.name);
 
   } else if (creepCount[UPGRADER] < UPGRADERS_CAP) {
-    this.spawnCreepTier1(UPGRADER, this.room.name, this.room.name);
-
-  // } else if (creepCount[REPAIRER] < REPAIRERS_CAP) {
-  //   this.spawnCreepTier1(REPAIRER, this.room.name, this.room.name);
+    this.spawnTier1(UPGRADER, this.room.name, this.room.name);
 
   // Creeps Tier 2 allowed only if enough energyCapacityAvailable
   } else if (maxEnergy < TIER2_ENERGY_THRESHOLD) {
     return;
 
-  // TO DO: automatic spawn of Defenders
-  } else if (false) {
-    this.spawnCreepTier3(DEFENDER, this.room.name, this.room.name);
+  // TO DO: Spawn Miners
 
   /**
     Spawn Hero units and assign them randomly to nearby rooms
@@ -140,7 +141,7 @@ StructureSpawn.prototype.logic = function() {
     for (let index in nearbyRooms) {
       targets.push(nearbyRooms[index]);
     }
-    this.spawnCreepTier2("hero", this.room.name, _.sample(targets));
+    this.spawnTier2(HERO, this.room.name, _.sample(targets));
   }
 }
 
@@ -150,13 +151,13 @@ StructureSpawn.prototype.logic = function() {
   @param workroom String
   @param target null
   */
-StructureSpawn.prototype.spawnCreepTier1 = function(role, homeroom, workroom, target) {
+StructureSpawn.prototype.spawnTier1 = function(role, homeroom, workroom, target) {
 
   const room = this.room;
   const home = this.room.name
 
   // Max energy capped for Creeps Tier 1
-  const maxEnergy = _.min([config.tier1_energy_cap(), room.energyCapacityAvailable]);
+  const maxEnergy = _.min([TIER1_ENERGY_CAP, room.energyCapacityAvailable]);
   let energyAvailable = maxEnergy;
 
   let energyUsed = 0;
@@ -200,6 +201,8 @@ StructureSpawn.prototype.spawnCreepTier1 = function(role, homeroom, workroom, ta
 
   if (result == OK && VERBOSE) {
     console.log("Spawning", name, utils.listSkills(skills), homeroom, workroom, target);
+  } else if (VERBOSE) {
+    console.log("Spawning failed.");
   }
 }
 
@@ -209,27 +212,27 @@ StructureSpawn.prototype.spawnCreepTier1 = function(role, homeroom, workroom, ta
   @param workroom String
   @param target null
   */
-StructureSpawn.prototype.spawnCreepTier2 = function(role, homeroom, workroom, target) {
+StructureSpawn.prototype.spawnTier2 = function(role, homeroom, workroom, target) {
 
-  const room = this.room;
-  const maxEnergy = room.energyCapacityAvailable;
-  let energyAvailable = maxEnergy;
+  const maxEnergy     = this.room.energyCapacityAvailable;
+  let energyAvailable = this.room.energyCapacityAvailable;
 
   let energyUsed = 0;
   const skills = [];
 
-  // Use 300 for WORK modules
-  for (let i = 0; i < 3; i++) {
+  // Use 25% of energy on WORK modules
+  while (energyUsed <= energyAvailable/4) {
     skills.push(WORK);
-    energyAvailable -= 100;
     energyUsed += 100;
   }
 
+  // Update energy still available
+  energyAvailable -= energyUsed;
+
   // Distribute remaining energy among CARRY and then MOVE
   let energyBlocks = energyAvailable / 50;
-  // let carry = Math.floor(energyBlocks / 2 + energyBlocks % 2);
   let move = Math.floor(energyBlocks / 2);
-  let carry = energyBlocks - move;
+  let carry = energyBlocks - move; // Prioritize CARRY over MOVE
 
   while (carry) {
     skills.push(CARRY);
@@ -257,6 +260,8 @@ StructureSpawn.prototype.spawnCreepTier2 = function(role, homeroom, workroom, ta
 
   if (result == OK && VERBOSE) {
     console.log("Spawning", name, utils.listSkills(skills), homeroom, workroom, target);
+  } else if (VERBOSE) {
+    console.log("Spawning failed.");
   }
 }
 
@@ -266,7 +271,7 @@ StructureSpawn.prototype.spawnCreepTier2 = function(role, homeroom, workroom, ta
   @param workroom String
   @param target null
   */
-StructureSpawn.prototype.spawnCreepTier3 = function(role, homeroom, workroom, target) {
+StructureSpawn.prototype.spawnDEFENDER = function(role, homeroom, workroom, target) {
 
   const room = this.room;
   const maxEnergy = room.energyCapacityAvailable;
@@ -319,5 +324,7 @@ StructureSpawn.prototype.spawnCreepTier3 = function(role, homeroom, workroom, ta
 
   if (result == OK && VERBOSE) {
     console.log("Spawning", name, utils.listSkills(skills), homeroom, workroom, target);
+  } else if (VERBOSE) {
+    console.log("Spawning failed.");
   }
 }

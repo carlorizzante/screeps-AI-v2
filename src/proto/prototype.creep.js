@@ -10,6 +10,7 @@ const roles = {
 
   // Tier 2
   hero: require("role.hero"),
+  miner: require("role.miner"),
 
   // Tier 3
   defender: require("role.defender")
@@ -21,17 +22,13 @@ const roles = {
 Creep.prototype.logic = function() {
 
   // TO DO: For some reason, some creep loses their role and all system crash
-  if (this.memory.role == undefined) {
-    this.say("☠☠☠");
-    // console.log("Creep with no role, body:", this.details());
-    this.memory.role = "harvester"; // Fallback to harvesters
-    // this.suicide();
-    return;
-  }
-
-  // LEGACY
-  if (!this.memory.homeroom) this.memory.homeroom = this.memory.home;
-  if (!this.memory.workroom) this.memory.workroom = this.memory.target;
+  // if (this.memory.role == undefined || this.memory.role == "") {
+  //   this.say("☠☠☠");
+  //   // console.log("Creep with no role, body:", this.details());
+  //   this.memory.role = "harvester"; // Fallback to harvesters
+  //   // this.suicide();
+  //   return;
+  // }
 
   // If it's all good, get to work!
   roles[this.memory.role].run(this);
@@ -107,7 +104,10 @@ Creep.prototype.longRecharge = function(pickUpDroppedResources) {
     if (dropped_resources.length) {
 
       // Find closest one
-      let dropped_resource = this.pos.findClosestByRange(FIND_DROPPED_RESOURCES);
+      let dropped_resource = this.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
+        // Condider only Energy, not minerals
+        filter: r => r.resourceType == RESOURCE_ENERGY
+      });
 
       // Go get it!
       if (this.pickup(dropped_resource) == ERR_NOT_IN_RANGE) {
@@ -121,6 +121,18 @@ Creep.prototype.longRecharge = function(pickUpDroppedResources) {
 
   // If Creep is in workroom room
   if (this.room.name == this.memory.workroom) {
+
+    // Look for containers first
+    const container = this.pos.findClosestByPath(FIND_STRUCTURES, {
+      filter: s => s.structureType == STRUCTURE_CONTAINER
+    });
+    if (container) {
+      this.say("container!");
+      if (this.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+        this.moveTo(container);
+        return;
+      }
+    }
 
     // Find active source
     const source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
@@ -141,7 +153,6 @@ Creep.prototype.longRecharge = function(pickUpDroppedResources) {
 Creep.prototype.transferEnergyToStructure = function() {
 
   let structure = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-    // Filter results by appropriate structure type, as follow
     filter: s => ((
       s.structureType == STRUCTURE_SPAWN
       || s.structureType == STRUCTURE_EXTENSION
@@ -165,7 +176,24 @@ Creep.prototype.transferEnergyToStructure = function() {
 
   // If any target available, try to upgrade controller
   } else {
+    // TO DO: remove this and return control to Creep
     upgrader.run(this);
+  }
+}
+
+/**
+  Creep will drop mined resource into closest container
+  */
+Creep.prototype.dropIntoContainer = function() {
+
+  const container = this.pos.findClosestByRange(FIND_STRUCTURES, {
+    filter: s => s.structureType == STRUCTURE_CONTAINER
+  });
+  // console.log(container);
+  if (container) {
+    if (this.transfer(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+      this.moveTo(container);
+    }
   }
 }
 

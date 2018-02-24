@@ -17,6 +17,12 @@ module.exports = function(grunt) {
         loopfunc: true  // Suppress warnings for func declaration within loops
       }
     },
+    clean: {
+      contents: [config.dest],
+      options: {
+        force: true
+      }
+    },
     copy: {
       main: {
         files: [
@@ -33,10 +39,24 @@ module.exports = function(grunt) {
     watch: {
       files: config.src,
       tasks: ["jshint"]
+    },
+    wait: {
+      options: {
+        delay: 500
+      },
+      pause: {
+        options: {
+          before : function(options) {
+            console.log('pausing %dms', options.delay);
+          },
+          after : function() {
+            console.log('pause end');
+          }
+        }
+      }
     }
   });
 
   grunt.registerTask("default", ["jshint"]);
-  // grunt.registerTask("copy", ["copy"]);
-  // grunt.registerTask("watch", ["jshint", "copy"]);
+  grunt.registerTask("update", ["clean", "wait", "copy"]);
 }

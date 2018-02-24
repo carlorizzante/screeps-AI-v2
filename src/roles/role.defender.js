@@ -1,6 +1,5 @@
 module.exports = {
 
-  // Creep -> void
   run: creep => {
 
     if (!creep.isCharged()) {
