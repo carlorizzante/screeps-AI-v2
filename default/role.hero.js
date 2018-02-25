@@ -79,6 +79,7 @@ module.exports = {
 
     /**
       Else, Creep is out of charge, so go recharging
+      this includes moving toward Workroom
       */
     } else {
       creep.longRecharge(true);

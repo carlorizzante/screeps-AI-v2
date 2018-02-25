@@ -5,6 +5,12 @@ Planned future improvements and refactoring, in not any specific order.
 
 - Naming: Automate, Empire, Small, Simple, Hive.
 
+- Move Claimer in Tier 2
+
+- Make Tier 3 automatically build biggest Creep possible
+
+- Have a Guard always ready in absence of a Tower
+
 - Optimize Creeps' actions, perform multiple actions per tick as for http://docs.screeps.com/simultaneous-actions.html
 
 - Optimize Hero body parts

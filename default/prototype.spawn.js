@@ -15,6 +15,7 @@ const roles = [
   "miner",
 
   // Tier 3
+  "claimer",
   "defender"
 ];
 
@@ -36,6 +37,7 @@ const MINER = "miner";
 /**
   Creeps Tier 3
   */
+const CLAIMER = "claimer";
 const DEFENDER = "defender";
 
 // Enable feedback into the console of the game
@@ -52,18 +54,21 @@ StructureSpawn.prototype.logic = function() {
   const maxEnergy = room.energyCapacityAvailable;
   const currentEnergy = room.energyAvailable;
 
+  // Exit if insufficient Energy
+  if (currentEnergy < maxEnergy) return;
+
   /**
-    Requests for Military Support need to be prioritized
+    TO DO: Requests for Military Support need to be prioritized
     */
   if (Memory.board) {
-    for (let entry in Memory.board) {
-      entry = Memory.board[entry];
+    for (let key in Memory.board) {
+      entry = Memory.board[key];
 
       // Skip already fulfilled requests
       if (Memory.board[entry.id].status != "fulfilled") {
 
         // Try to fullfill request
-        if (OK == this.spawnDEFENDER(DEFENDER, entry.room, entry.room)) {
+        if (OK == this.spawnTier3(DEFENDER, entry.room, entry.room)) {
 
           // If positive, set request as fulfilled
           Memory.board[entry.id].status = "fulfilled";
@@ -75,14 +80,17 @@ StructureSpawn.prototype.logic = function() {
     }
   }
 
-  // Exit if insufficient Energy
-  if (currentEnergy < maxEnergy) return;
-
   // Emergency settings - Manual spawning of Defender
-  // if (true) this.spawnDEFENDER(DEFENDER, this.room.name, this.room.name);
+  // if (true) this.spawnTier3(DEFENDER, this.room.name, this.room.name);
 
-  // Find all creeps in this room
-  const creeps = room.find(FIND_MY_CREEPS);
+  // Find the adjacent rooms to the current Spawn
+  const adjacentRooms = this.getAdjacentRooms();
+
+  // Remove already owned rooms from the above list of adjacent rooms
+  // TO DO: Clean up adjacent rooms - see getAdjacentRooms method
+
+  // Find all creeps in the current room
+  const creepsInRoom = room.find(FIND_MY_CREEPS);
   const creepCount = {}
 
   // Delete from memory Creeps that do not longer exist
@@ -93,11 +101,14 @@ StructureSpawn.prototype.logic = function() {
     }
   }
 
+  // TO DO: Hijack Heros coming from other rooms
+  this.hijack(adjacentRooms, creepsInRoom);
+
   // TO DO: Clean expired requests and tasks
 
   // Count Creeps in the current room
   for (let role of roles) {
-    creepCount[role] = _.sum(creeps, c => c.memory.role == role);
+    creepCount[role] = _.sum(creepsInRoom, c => c.memory.role == role);
   }
 
   // Print Creeps' roles and their quantity
@@ -116,10 +127,15 @@ StructureSpawn.prototype.logic = function() {
   const HARVESTERS_CAP = config.harvesters_cap(room, creepCount);
   const BUILDERS_CAP   = config.builders_cap(room);
   const UPGRADERS_CAP  = config.upgraders_cap(room);
+
   // Tier 2
   const TIER2_ENERGY_THRESHOLD = config.tier2_energy_threshold(room);
   const HAULER_CAP     = config.haulers_cap(room);
   const MINER_CAP      = config.miners_cap(room);
+
+  const TIER3_ENERGY_THRESHOLD = config.tier3_energy_threshold(room);
+  const GUARD_CAP   = 2;
+  const CLAIMER_CAP = 0;
 
   /**
     Spawn Creeps accordingly to rules calculated above
@@ -145,15 +161,18 @@ StructureSpawn.prototype.logic = function() {
     this.spawnTier2(HAULER, this.room.name, this.room.name);
 
   /**
+    TO DO: Spawn a Claimer if necessary - GCL > rooms owned
+    That way more developed rooms will support less developed ones
+    */
+  // } else if (_.sample([true, false, false, false, false])) {
+  //   let workroom = _.sample(adjacentRooms);
+  //   this.spawnTier3(CLAIMER, workroom, workroom);
+
+  /**
     Spawn Hero units and assign them randomly to nearby rooms
     */
   } else {
-    const nearbyRooms = Game.map.describeExits(this.room.name);
-    let targets = [];
-    for (let index in nearbyRooms) {
-      targets.push(nearbyRooms[index]);
-    }
-    this.spawnTier2(HERO, this.room.name, _.sample(targets));
+    this.spawnTier2(HERO, this.room.name, _.sample(adjacentRooms));
   }
 }
 
@@ -165,15 +184,19 @@ StructureSpawn.prototype.logic = function() {
   */
 StructureSpawn.prototype.spawnTier1 = function(role, homeroom, workroom, target) {
 
-  const room = this.room;
-  const home = this.room.name
-
   // Max energy capped for Creeps Tier 1
-  const maxEnergy = _.min([TIER1_ENERGY_CAP, room.energyCapacityAvailable]);
+  const maxEnergy = _.min([TIER1_ENERGY_CAP, this.room.energyCapacityAvailable]);
   let energyAvailable = maxEnergy;
 
   let energyUsed = 0;
   const skills = [];
+
+  // if (energyAvailable < 400) {
+  //   skills.push(WORK);
+  //   skills.push(CARRY);
+  //   skills.push(MOVE);
+  //   energyAvailable = 0;
+  // }
 
   // Reserve half energy for WORK capacity
   while (energyAvailable > maxEnergy / 2) {
@@ -203,18 +226,19 @@ StructureSpawn.prototype.spawnTier1 = function(role, homeroom, workroom, target)
 
   // Spawning new creep
   let name = role + energyUsed + "-" + Game.time;
-  const result = Game.spawns.Spawn1.spawnCreep(skills, name, {
+  const result = Game.spawns[this.name].spawnCreep(skills, name, {
     memory: {
       role: role,
       homeroom: homeroom,
       workroom: workroom
     }
   });
+  console.log(utils.listSkills(skills));
 
   if (result == OK && VERBOSE) {
-    console.log("Spawning", name, utils.listSkills(skills), homeroom, workroom, target);
+    console.log(this.name, "is spawning", name, utils.listSkills(skills), homeroom, workroom, target);
   } else if (VERBOSE) {
-    console.log("Spawning failed.");
+    console.log(this.name, "is spawning failed:", result);
   }
 }
 
@@ -271,7 +295,7 @@ StructureSpawn.prototype.spawnTier2 = function(role, homeroom, workroom, target)
 
   // Spawning new creep
   let name = role + energyUsed + "-" + Game.time;
-  const result = Game.spawns.Spawn1.spawnCreep(skills, name, {
+  const result = Game.spawns[this.name].spawnCreep(skills, name, {
     memory: {
       role: role,
       homeroom: homeroom,
@@ -280,9 +304,9 @@ StructureSpawn.prototype.spawnTier2 = function(role, homeroom, workroom, target)
   });
 
   if (result == OK && VERBOSE) {
-    console.log("Spawning", name, utils.listSkills(skills), homeroom, workroom, target);
+    console.log(this.name, "is spawning", name, utils.listSkills(skills), homeroom, workroom, target);
   } else if (VERBOSE) {
-    console.log("Spawning failed.");
+    console.log(this.name, "is spawning failed:", result);
   }
 }
 
@@ -292,9 +316,8 @@ StructureSpawn.prototype.spawnTier2 = function(role, homeroom, workroom, target)
   @param workroom String
   @param target null
   */
-StructureSpawn.prototype.spawnDEFENDER = function(role, homeroom, workroom, target) {
+StructureSpawn.prototype.spawnTier3 = function(role, homeroom, workroom, target) {
 
-  const room = this.room;
   const maxEnergy = room.energyCapacityAvailable;
   let energyAvailable = maxEnergy;
 
@@ -303,39 +326,51 @@ StructureSpawn.prototype.spawnDEFENDER = function(role, homeroom, workroom, targ
 
   // TO DO: automatic skills set
 
-  for (let i = 0; i < 9; i++) {
-    skills.push(TOUGH);
-    energyAvailable -= 10;
-    energyUsed += 10;
+  // Cost 1000
+  if (role == DEFENDER) {
+    for (let i = 0; i < 9; i++) {
+      skills.push(TOUGH);
+      energyAvailable -= 10;
+      energyUsed += 10;
+    }
+
+    for (let i = 0; i < 4; i++) {
+      skills.push(MOVE);
+      energyAvailable -= 50;
+      energyUsed += 50;
+    }
+
+    for (let i = 0; i < 2; i++) {
+      skills.push(ATTACK);
+      energyAvailable -= 80;
+      energyUsed += 80;
+    }
+
+    for (let i = 0; i < 2; i++) {
+      skills.push(RANGED_ATTACK);
+      energyAvailable -= 150;
+      energyUsed += 150;
+    }
+
+    for (let i = 0; i < 1; i++) {
+      skills.push(HEAL);
+      energyAvailable -= 250;
+      energyUsed += 250;
+    }
   }
 
-  for (let i = 0; i < 4; i++) {
+  // Cost 1400
+  if (role == CLAIMER) {
+    skills.push(CLAIM);
+    skills.push(CLAIM);
     skills.push(MOVE);
-    energyAvailable -= 50;
-    energyUsed += 50;
-  }
-
-  for (let i = 0; i < 2; i++) {
-    skills.push(ATTACK);
-    energyAvailable -= 80;
-    energyUsed += 80;
-  }
-
-  for (let i = 0; i < 2; i++) {
-    skills.push(RANGED_ATTACK);
-    energyAvailable -= 150;
-    energyUsed += 150;
-  }
-
-  for (let i = 0; i < 1; i++) {
-    skills.push(HEAL);
-    energyAvailable -= 250;
-    energyUsed += 250;
+    skills.push(MOVE);
+    energyUsed = 2 * 600 + 2 * 50;
   }
 
   // Spawning new creep
   let name = role + energyUsed + "-" + Game.time;
-  const result = Game.spawns.Spawn1.spawnCreep(skills, name, {
+  const result = Game.spawns[this.name].spawnCreep(skills, name, {
     memory: {
       role: role,
       homeroom: homeroom,
@@ -344,8 +379,53 @@ StructureSpawn.prototype.spawnDEFENDER = function(role, homeroom, workroom, targ
   });
 
   if (result == OK && VERBOSE) {
-    console.log("Spawning", name, utils.listSkills(skills), homeroom, workroom, target);
+    console.log(this.name, "is spawning", name, utils.listSkills(skills), homeroom, workroom, target);
   } else if (VERBOSE) {
-    console.log("Spawning failed.");
+    console.log(this.name, "is spawning failed:", result);
+  }
+}
+
+/**
+  Returns an array with the name of the adjacent rooms
+  */
+StructureSpawn.prototype.getAdjacentRooms = function() {
+  const adjacentRooms = Game.map.describeExits(this.room.name);
+  const result = [];
+  for (let key in adjacentRooms) {
+    result.push(adjacentRooms[key]);
+  }
+  // Owned room, for later use
+  const myRooms = [];
+  for (let key in Game.spawns) {
+    myRooms.push(Game.spawns[key].room.name);
+  }
+  return result; // filter this by owned rooms
+}
+
+/**
+  Hijack a Hero unit passing by any already owned room (having a Spawn)
+  @param adjacentRooms Array list of rooms the current room has exit to
+  @param creepsInRoom Array list of creeps currently in sight of the Spawn
+  */
+StructureSpawn.prototype.hijack = function(adjacentRooms, creepsInRoom) {
+
+  // Hijack Heros coming from other rooms,
+  // and reset their homeroom/workroom, ultimately sending them to outher borders
+  for (let name in creepsInRoom) {
+    const creep = creepsInRoom[name];
+
+    // If the creep is an Hero unit and its workroom is where the Spawn is...
+    if (creep.memory.role == "hero" && creep.memory.workroom == this.room.name) {
+      const new_workroom = _.sample(adjacentRooms);
+      console.log("Hijacking hero, new workroom:", new_workroom);
+      // Reset homeroom and workroom (sending it to the border)
+      creep.memory.homeroom = this.room.name;
+      creep.memory.workroom = new_workroom;
+
+      // Unless the creep has already mined enough energy, then transfer it first
+      if (creep.carry.energy >= Math.floor(creep.carryCapacity / 3)) {
+        creep.memory.charged = true;
+      }
+    }
   }
 }

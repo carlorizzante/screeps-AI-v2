@@ -9,10 +9,10 @@ module.exports.loop = function() {
   if (!Memory.board) Memory.board = {}
 
   // Delete entries in Memory.board older than 300 ticks
-  for (let entry in Memory.board) {
+  for (let key in Memory.board) {
     let now = Game.time
-    let then = Memory.board[entry].time;
-    if (now - then > 300) delete Memory.board[entry];
+    let then = Memory.board[key].time;
+    if (now - then > 300) delete Memory.board[key];
   }
 
   /**

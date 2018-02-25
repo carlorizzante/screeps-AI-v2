@@ -13,6 +13,7 @@ const roles = {
   miner: require("role.miner"),
 
   // Tier 3
+  claimer: require("role.claimer"),
   defender: require("role.defender")
 };
 
@@ -134,7 +135,6 @@ Creep.prototype.longRecharge = function(pickUpDroppedResources) {
       filter: s => s.structureType == STRUCTURE_CONTAINER
     });
     if (container) {
-      this.say("container!");
       if (this.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
         this.moveTo(container);
         return;
@@ -277,6 +277,19 @@ Creep.prototype.requestMilitarySupport = function(foesLength) {
 Creep.prototype.requestRoad = function() {
   this.say("Road!!");
   this.pos.createConstructionSite(STRUCTURE_ROAD);
+}
+
+/**
+  Perform actions related to claming a foreign claimController
+  */
+Creep.prototype.goClaimController = function() {
+  if (this.room.controller) {
+    this.say("Claim");
+    console.log(this.room.controller, this.claimController(this.room.controller));
+    if (this.claimController(this.room.controller) == ERR_NOT_IN_RANGE) {
+      this.moveTo(this.room.controller);
+    }
+}
 }
 
 /**

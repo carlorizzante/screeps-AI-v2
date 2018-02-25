@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.16.0] - 2018-02-25
+### Added
+- role.claimer.js, first iteration for Claimer units
+- prototype.spawn.js, refactored spawnTier3 method, can now spawn Claimers
+- prototype.spawn.js, Spawns can now hijack Hero units on passage, resetting their homeroom and workroom
+- config.js, adds Tier 3 Energy Threshold method
+
 ## [2.15.0] - 2018-02-24
 ### Added
 - prototype.creep.js, refactor pickUpDroppedResources

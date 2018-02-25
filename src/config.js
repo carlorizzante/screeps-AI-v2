@@ -24,6 +24,13 @@ module.exports = {
   },
 
   /**
+    Creeps Tier 3 allowed only at 1500 energy max capacity for current room.
+    */
+  tier3_energy_threshold: function() {
+    return 1500;
+  },
+
+  /**
     Harvesters are spawn in presence of active energy sources.
     Range [0, 12]
     @param room ROOM
@@ -67,7 +74,8 @@ module.exports = {
     Temporarly Miners are capped to a fixed amount
     */
   miners_cap: function(room) {
-    return room.find(FIND_SOURCES).length + 1;
+    return room.find(FIND_SOURCES).length;
+    // return room.find(FIND_SOURCES).length + 1;
   },
 
   /**

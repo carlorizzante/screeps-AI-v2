@@ -50,7 +50,7 @@ module.exports = {
         */
       } else {
 
-        // Find path to target room and move towards it
+        // Find path to Workroom and move towards it
         const exit = creep.room.findExitTo(creep.memory.workroom);
         creep.moveTo(creep.pos.findClosestByRange(exit));
       }
