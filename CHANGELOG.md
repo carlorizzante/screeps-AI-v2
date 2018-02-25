@@ -4,12 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.16.1] - 2018-02-25
+### Added
+- prototype.creep.js, new methods findStructure and rechargeStructure
+- prototype.spawn.js, bug fix
+
+### Changed
+- role.harvester.js, refactored structures finding routine
+- role.hero.js, refactored structures finding routine
+
 ## [2.16.0] - 2018-02-25
 ### Added
 - role.claimer.js, first iteration for Claimer units
 - prototype.spawn.js, refactored spawnTier3 method, can now spawn Claimers
 - prototype.spawn.js, Spawns can now hijack Hero units on passage, resetting their homeroom and workroom
-- config.js, adds Tier 3 Energy Threshold method
+- config.js, added Tier 3 Energy Threshold method
 
 ## [2.15.0] - 2018-02-24
 ### Added
@@ -75,7 +84,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.12.0] - 2018-02-23
 ### Added
-- prototype.creep.js, adds requestRoad() method
+- prototype.creep.js, added requestRoad() method
 - prototype.spawn.js, replace exobuilder and exoharvester with hero units
 - role.hero.js, Hero units replace ExoBuilders and ExoHarvesters
 
@@ -140,7 +149,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.8.0] - 2018-02-20
 ### Added
-- role.defender.js, Adds Tier 3 for Creeps, Defenders, work in progress
+- role.defender.js, added Tier 3 for Creeps, Defenders, work in progress
 
 ## [2.7.0] - 2018-02-19
 ### Added
@@ -218,7 +227,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [2.7.0] - 2018-02-18
 ### Added
-- role.longHarvester.js, adds basic Long Range Harvesters
+- role.longHarvester.js, added basic Long Range Harvesters
 
 ## [2.6.1] - 2018-02-17
 ### Changes

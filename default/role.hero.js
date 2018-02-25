@@ -2,6 +2,11 @@ module.exports = {
 
   run: creep => {
 
+    const includeSpawns     = true;
+    const includeExtensions = true;
+    const includeTowers     = false
+    const includeStorage    = false;
+
     if (creep.hits < creep.hitsMax) {
 
       // Watch out for foes nearby
@@ -18,10 +23,7 @@ module.exports = {
     /**
       If fatigued, place a marker for a road block
       */
-    if (creep.fatigue) {
-      creep.requestRoad();
-      return;
-    }
+    creep.requestRoad();
 
     /**
       If Creep is fully charged and in workroom
@@ -73,8 +75,17 @@ module.exports = {
         */
       } else {
 
-        // Do not recharge Towers
-        creep.rechargeStructures(false);
+        if (creep.memory.target_id) {
+          structure = Game.getObjectById(creep.memory.target_id);
+        } else {
+          structure = creep.findStructure(includeSpawns, includeExtensions, includeTowers, includeStorage);
+        }
+
+        if (structure) {
+          creep.rechargeStructure(structure);
+        } else {
+          delete creep.memory.target_id;
+        }
       }
 
     /**

@@ -9,10 +9,7 @@ module.exports = {
     /**
       If fatigued, place a marker for a road block
       */
-    if (creep.fatigue) {
-      creep.requestRoad();
-      return;
-    }
+    creep.requestRoad();
 
     /**
       Haulers transport energy from storages, and containers, to Spawn

@@ -192,6 +192,42 @@ Creep.prototype.rechargeStructures = function(includeTowers) {
 }
 
 /**
+  Finds a suitable structure and returns it to be used as target
+  @param includeSpawns Boolean
+  @param includeExtensions Boolean
+  @param includeTowers Boolean
+  @param includeStorage Boolean
+  */
+Creep.prototype.findStructure = function(includeSpawns, includeExtensions, includeTowers, includeStorage) {
+
+  let structure = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
+    filter: s => ((includeSpawns && s.structureType == STRUCTURE_SPAWN)
+      || (includeExtensions && s.structureType == STRUCTURE_EXTENSION)
+      || (includeTowers && s.structureType == STRUCTURE_TOWER && s.energy < s.energyCapacity * 0.7)
+      || (includeStorage && s.structureType == STRUCTURE_STORAGE))
+      && (s.energy < s.energyCapacity)
+  });
+
+  // Backup to storage if all other structure are fully charged
+  // if (!structure) structure = this.room.storage;
+
+  // Return result
+  return structure;
+}
+
+/**
+  @param structure Structure
+  */
+Creep.prototype.rechargeStructure = function(structure) {
+  if (structure) {
+    if (this.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+      this.moveTo(structure);
+    }
+  }
+}
+
+
+/**
   Creep will drop mined resource into closest container
   */
 Creep.prototype.rechargeContainers = function() {
@@ -272,11 +308,15 @@ Creep.prototype.requestMilitarySupport = function(foesLength) {
 }
 
 /**
-  Place a marker for construction: STRUCTURE_ROAD
+  Places a marker for construction: STRUCTURE_ROAD
+  First veryfies that there has been a similar request before
   */
 Creep.prototype.requestRoad = function() {
-  this.say("Road!!");
-  this.pos.createConstructionSite(STRUCTURE_ROAD);
+  if (this.fatigue > 2) {
+    this.say("Road!");
+    this.pos.createConstructionSite(STRUCTURE_ROAD);
+    return;
+  }
 }
 
 /**

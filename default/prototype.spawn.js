@@ -233,7 +233,6 @@ StructureSpawn.prototype.spawnTier1 = function(role, homeroom, workroom, target)
       workroom: workroom
     }
   });
-  console.log(utils.listSkills(skills));
 
   if (result == OK && VERBOSE) {
     console.log(this.name, "is spawning", name, utils.listSkills(skills), homeroom, workroom, target);
@@ -318,7 +317,7 @@ StructureSpawn.prototype.spawnTier2 = function(role, homeroom, workroom, target)
   */
 StructureSpawn.prototype.spawnTier3 = function(role, homeroom, workroom, target) {
 
-  const maxEnergy = room.energyCapacityAvailable;
+  const maxEnergy = this.room.energyCapacityAvailable;
   let energyAvailable = maxEnergy;
 
   let energyUsed = 0;
@@ -417,7 +416,7 @@ StructureSpawn.prototype.hijack = function(adjacentRooms, creepsInRoom) {
     // If the creep is an Hero unit and its workroom is where the Spawn is...
     if (creep.memory.role == "hero" && creep.memory.workroom == this.room.name) {
       const new_workroom = _.sample(adjacentRooms);
-      console.log("Hijacking hero, new workroom:", new_workroom);
+      console.log("Hijacking hero", creep.name, "new workroom:", new_workroom);
       // Reset homeroom and workroom (sending it to the border)
       creep.memory.homeroom = this.room.name;
       creep.memory.workroom = new_workroom;
