@@ -14,7 +14,7 @@ module.exports = {
 
       // If so...
       if (foes.length) {
-        // TO DO: Request Military Support
+        // TO DO: Improve requests for Military Support
         creep.say("help!");
         creep.requestMilitarySupport(foes.length);
       }

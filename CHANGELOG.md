@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.16.2] - 2018-02-27
+### Added
+- role.miner.js, Unit stores energy source's and container's ids in memory
+
+### Changed
+- prototype.creep.js, refactored isLocked() method
+- prototype.creep.js, rechargeStructures() method renamed into findAndRechargeStructures()
+
 ## [2.16.1] - 2018-02-25
 ### Added
 - prototype.creep.js, new methods findStructure and rechargeStructure

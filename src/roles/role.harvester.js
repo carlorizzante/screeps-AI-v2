@@ -20,10 +20,6 @@ module.exports = {
       */
     if (creep.isCharged()) {
 
-      // 25% chances the Hauler will also take care of Towers
-      // if (creep.memory.includeTowers === undefined) creep.memory.includeTowers = _.sample([true, false, false, false]);
-      // creep.rechargeStructures_2(creep.memory.includeTowers);
-
       if (creep.memory.target_id) {
         structure = Game.getObjectById(creep.memory.target_id);
       } else {

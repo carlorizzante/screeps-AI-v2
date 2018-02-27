@@ -3,7 +3,9 @@ Planned future improvements and refactoring, in not any specific order.
 
 - Implement test suit, at least for utils
 
-- Naming: Automate, Empire, Small, Simple, Hive.
+- Move to Gulp instead of Grunt
+
+- Naming: Little Rascal, Automate, Empire, Small, Simple, Hive.
 
 - Move Claimer in Tier 2
 
@@ -83,7 +85,7 @@ Planned future improvements and refactoring, in not any specific order.
 	Harvesters get energy for spawning initial creeps.
 	Upgraders maintain/upgrade Room Controller.
 	Builders build infrastructures.
-	
+
 - Phase 2. Tier 2 / Energy 700 -> 1500...?
 	Heros add additional energy income from nearby rooms.
 	Defenders spawned on necessity when Heros under threat.
@@ -92,4 +94,3 @@ Planned future improvements and refactoring, in not any specific order.
 
 - Phase 3. Tier 3 / Energy 1000 -> ...?
 	To be defined, but basically Phase 3 is about expansion.
-

@@ -18,7 +18,7 @@ module.exports = {
 
       // 50% chances the Hauler will also take care of Towers
       if (creep.memory.includeTowers === undefined) creep.memory.includeTowers = _.sample([true, false]);
-      creep.rechargeStructures(creep.memory.includeTowers);
+      creep.findAndRechargeStructures(creep.memory.includeTowers);
 
     /**
       If empty, look for the nearest fully charged storage or container

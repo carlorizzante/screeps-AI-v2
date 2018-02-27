@@ -1,4 +1,4 @@
-const upgrader = require("role.upgrader");
+// const upgrader = require("role.upgrader");
 
 const roles = {
 
@@ -53,27 +53,45 @@ Creep.prototype.isCharged = function() {
 }
 
 /**
-  Returns true if the Creep is nearby both an Extraction point and a Container
-  false Otherwise
+  Returns true if the Creep is conditions are met, false otherwise
+  @param ifNearbyEnergySource Boolean default: true
+  @param ifNearbyContainer Boolean
   */
-Creep.prototype.isLocked = function() {
+Creep.prototype.isLocked = function(ifNearbyEnergySource, ifNearbyContainer) {
+
+  ifNearbyEnergySource = ifNearbyEnergySource ? ifNearbyEnergySource : false;
+
+  let energySourceFound;
+  let containerFound;
+  let locked = true;
+
+  // Stay locked is conditions have previously successfully met
   if (this.memory.locked) {
-    // this.say("L!");
+    this.say("L");
     return true;
   }
-  const container = this.pos.findInRange(FIND_STRUCTURES, 1, {
-    filter: s => s.structureType == STRUCTURE_CONTAINER
-  });
-  const source = this.pos.findInRange(FIND_SOURCES, 1);
-  if (container.length && source.length) {
-    // this.say("L?");
+
+  if (ifNearbyEnergySource) {
+    energySourceFound = this.pos.findInRange(FIND_SOURCES, 1);
+  }
+
+  if (ifNearbyContainer) {
+    containerFound = this.pos.findInRange(FIND_STRUCTURES, 1, {
+      filter: s => s.structureType == STRUCTURE_CONTAINER
+    });
+  }
+
+  if (ifNearbyEnergySource) locked = locked && energySourceFound.length;
+  if (ifNearbyContainer)    locked = locked && containerFound.length;
+
+  if (locked) {
+    this.say("L!!");
     this.memory.locked = true;
-    this.memory.container = container[0];
-    this.memory.source = this.pos.findClosestByRange(FIND_SOURCES);
-    return true;
-  } else {
-    return false;
+    if (ifNearbyEnergySource) this.memory.locked_on_energy_source_id = energySourceFound[0].id;
+    if (ifNearbyContainer) this.memory.locked_on_container_id = containerFound[0].id;
   }
+
+  return locked;
 }
 
 /**
@@ -160,7 +178,7 @@ Creep.prototype.longRecharge = function(pickUpDroppedResources) {
 /**
   @param includeTowers Boolean
   */
-Creep.prototype.rechargeStructures = function(includeTowers) {
+Creep.prototype.findAndRechargeStructures = function(includeTowers) {
 
   let structure = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
     filter: s => ((
@@ -216,7 +234,7 @@ Creep.prototype.findStructure = function(includeSpawns, includeExtensions, inclu
 }
 
 /**
-  @param structure Structure
+  @param structure STRUCTURE_*
   */
 Creep.prototype.rechargeStructure = function(structure) {
   if (structure) {
@@ -228,14 +246,9 @@ Creep.prototype.rechargeStructure = function(structure) {
 
 
 /**
-  Creep will drop mined resource into closest container
+  @param container STRUCTURE_CONTAINER
   */
-Creep.prototype.rechargeContainers = function() {
-
-  const container = this.pos.findClosestByRange(FIND_STRUCTURES, {
-    filter: s => s.structureType == STRUCTURE_CONTAINER
-  });
-  // console.log(container);
+Creep.prototype.rechargeContainer = function(container) {
   if (container) {
     if (this.transfer(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
       this.moveTo(container);
