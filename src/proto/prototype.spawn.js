@@ -4,12 +4,12 @@ const utils = require("utils");
 // List of active Creeps' roles
 const roles = [
 
-  // Tier 1
+  // Tier 1 from 300 Energy
   "builder",
   "harvester",
   "upgrader",
 
-  // Tier 2
+  // Tier 2 from 800 Energy
   "hauler",
   "hero",
   "miner",
@@ -191,13 +191,6 @@ StructureSpawn.prototype.spawnTier1 = function(role, homeroom, workroom, target)
   let energyUsed = 0;
   const skills = [];
 
-  // if (energyAvailable < 400) {
-  //   skills.push(WORK);
-  //   skills.push(CARRY);
-  //   skills.push(MOVE);
-  //   energyAvailable = 0;
-  // }
-
   // Reserve half energy for WORK capacity
   while (energyAvailable > maxEnergy / 2) {
     skills.push(WORK);
@@ -224,7 +217,7 @@ StructureSpawn.prototype.spawnTier1 = function(role, homeroom, workroom, target)
     energyUsed += 50;
   }
 
-  // Spawning new creep
+  // Spawn new creep
   let name = role + energyUsed + "-" + Game.time;
   const result = Game.spawns[this.name].spawnCreep(skills, name, {
     memory: {
@@ -292,7 +285,7 @@ StructureSpawn.prototype.spawnTier2 = function(role, homeroom, workroom, target)
     energyUsed += 50;
   }
 
-  // Spawning new creep
+  // Spawn new creep
   let name = role + energyUsed + "-" + Game.time;
   const result = Game.spawns[this.name].spawnCreep(skills, name, {
     memory: {
@@ -367,7 +360,7 @@ StructureSpawn.prototype.spawnTier3 = function(role, homeroom, workroom, target)
     energyUsed = 2 * 600 + 2 * 50;
   }
 
-  // Spawning new creep
+  // Spawn new creep
   let name = role + energyUsed + "-" + Game.time;
   const result = Game.spawns[this.name].spawnCreep(skills, name, {
     memory: {

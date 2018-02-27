@@ -20,7 +20,7 @@ module.exports = {
     Creeps Tier 2 allowed only at 1000 energy max capacity for current room.
     */
   tier2_energy_threshold: function() {
-    return 1000;
+    return 800;
   },
 
   /**

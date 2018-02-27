@@ -4,12 +4,12 @@ const utils = require("utils");
 // List of active Creeps' roles
 const roles = [
 
-  // Tier 1
+  // Tier 1 from 300 Energy
   "builder",
   "harvester",
   "upgrader",
 
-  // Tier 2
+  // Tier 2 from 800 Energy
   "hauler",
   "hero",
   "miner",

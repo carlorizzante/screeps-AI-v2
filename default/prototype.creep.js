@@ -67,7 +67,6 @@ Creep.prototype.isLocked = function(ifNearbyEnergySource, ifNearbyContainer) {
 
   // Stay locked is conditions have previously successfully met
   if (this.memory.locked) {
-    this.say("L");
     return true;
   }
 
@@ -85,7 +84,6 @@ Creep.prototype.isLocked = function(ifNearbyEnergySource, ifNearbyContainer) {
   if (ifNearbyContainer)    locked = locked && containerFound.length;
 
   if (locked) {
-    this.say("L!!");
     this.memory.locked = true;
     if (ifNearbyEnergySource) this.memory.locked_on_energy_source_id = energySourceFound[0].id;
     if (ifNearbyContainer) this.memory.locked_on_container_id = containerFound[0].id;
@@ -201,11 +199,6 @@ Creep.prototype.findAndRechargeStructures = function(includeTowers) {
       // if not in range, move closer
       this.moveTo(structure);
     }
-
-  // If any target available, try to upgrade controller
-  } else {
-    // TO DO: remove this and return control to Creep
-    upgrader.run(this);
   }
 }
 

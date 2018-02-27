@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.16.3] - 2018-02-27
+### Changed
+- config.js, Tier 2 Energy Threshold downgraded from 1000 to 800
+- prototype.creep.js, bug fix
+
 ## [2.16.2] - 2018-02-27
 ### Added
 - role.miner.js, Unit stores energy source's and container's ids in memory
