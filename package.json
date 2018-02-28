@@ -16,6 +16,7 @@
     "grunt-contrib-watch": "^1.0.0",
     "grunt-sync": "^0.7.0",
     "grunt-wait": "^0.1.0",
+    "gulp": "^3.9.1",
     "load-grunt-tasks": "^3.5.2"
   }
 }

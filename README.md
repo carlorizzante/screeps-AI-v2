@@ -1,5 +1,5 @@
 # Screeps!
-Release 2.16.3 - codename Little Rascal
+Release 2.17.0 - codename Little Rascal
 
 AI for Screeps, version 2.
 
@@ -20,6 +20,7 @@ AI for Screeps, version 2.
     - role.builder.js
     - role.claimer.js
     - role.defender.js
+    - role.guard.js
     - role.hauler.js
     - role.hero.js
     - role.miner.js

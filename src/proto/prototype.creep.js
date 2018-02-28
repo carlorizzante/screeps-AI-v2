@@ -14,7 +14,8 @@ const roles = {
 
   // Tier 3
   claimer: require("role.claimer"),
-  defender: require("role.defender")
+  defender: require("role.defender"),
+  guard: require("role.guard")
 };
 
 /**
@@ -137,11 +138,7 @@ Creep.prototype.recharge = function(useSource, useStorage, useContainers) {
 /**
   @param pickUpDroppedResources Boolean
   */
-Creep.prototype.longRecharge = function(pickUpDroppedResources) {
-
-  if (pickUpDroppedResources) {
-    this.pickUpDroppedResources(10);
-  }
+Creep.prototype.longRecharge = function() {
 
   // If Creep is in workroom room
   if (this.room.name == this.memory.workroom) {
@@ -250,32 +247,17 @@ Creep.prototype.rechargeContainer = function(container) {
 }
 
 /**
-  Causes the Creep to stop by any spotted dropped resources and pick it up
-  @param range Integer range to scan for any dropped resource
+  Allows the Creep to look for resources dropped nearby
+  @param range Integer range to scan for resource been dropped
   */
-Creep.prototype.pickUpDroppedResources = function(range) {
-
-  range = range ? range : 10; // default to 10
-
-  // Scan for any dropped resources nearby, within a short range
-  const dropped_resources = this.pos.findInRange(FIND_DROPPED_RESOURCES, range);
-
-  // If found any
-  if (dropped_resources.length) {
-
-    // Find closest one
-    let dropped_resource = this.pos.findClosestByRange(FIND_DROPPED_RESOURCES, {
-      // Condider only Energy, not minerals
+Creep.prototype.lookForAndPickupResource = function(range = 6) {
+  const droppedResources = this.pos.findInRange(FIND_DROPPED_RESOURCES, range);
+  if (droppedResources.length) {
+    const pickup = this.pos.findClosestByPath(FIND_DROPPED_RESOURCES, {
       filter: r => r.resourceType == RESOURCE_ENERGY
     });
-
-    // Go get it!
-    if (this.pickup(dropped_resource) == ERR_NOT_IN_RANGE) {
-      this.moveTo(dropped_resource);
-
-      // Do not go for harvesting energy sources
-      return;
-    }
+    if (this.pickup(pickup) == ERR_NOT_IN_RANGE) this.moveTo(pickup);
+    return;
   }
 }
 
@@ -335,7 +317,15 @@ Creep.prototype.goClaimController = function() {
     if (this.claimController(this.room.controller) == ERR_NOT_IN_RANGE) {
       this.moveTo(this.room.controller);
     }
+  }
 }
+
+/**
+  Forces a Creep to return to homeroom
+  */
+Creep.prototype.headForHomeroom = function() {
+  this.say(">>>");
+  this.memory.workroom = this.memory.homeroom; // Temporary solution
 }
 
 /**

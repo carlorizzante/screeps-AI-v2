@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.17.0] - 2018-02-28
+### Added
+- prototype.creep.js, added headForHomeroom() method
+- role.guard.js, Tier3 Guard units added to the pool of available Creeps
+
+### Changed
+- config.js, includes Guards in units count
+- prototype.spawn.js, refactored spawning to add Guards
+- role.builder.js, Builders can now pickup dropped resources
+- role.harvester.js, Harvesters can now pickup dropped resources
+- role.hauler.js, Haulers no longer pickup dropped resources
+- role.hero.js, Heros head for homeroom if damaged
+- role.upgrader.js, Upgraders can now pickup dropped resources
+
+## [2.16.4] - 2018-02-27
+### Changed
+- config.js, changes Harvesters and Hauler Cap limits.
+
 ## [2.16.3] - 2018-02-27
 ### Changed
 - config.js, Tier 2 Energy Threshold downgraded from 1000 to 800

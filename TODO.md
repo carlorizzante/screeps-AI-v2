@@ -7,9 +7,9 @@ Planned future improvements and refactoring, in not any specific order.
 
 - Naming: Little Rascal, Automate, Empire, Small, Simple, Hive.
 
-- Move Claimer in Tier 2
+- Suicide routine for Creeps
 
-- Make Tier 3 automatically build biggest Creep possible
+- Move Claimer in Tier 2
 
 - Have a Guard always ready in absence of a Tower
 

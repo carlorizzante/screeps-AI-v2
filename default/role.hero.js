@@ -17,6 +17,7 @@ module.exports = {
         // TO DO: Improve requests for Military Support
         creep.say("help!");
         creep.requestMilitarySupport(foes.length);
+        creep.headForHomeroom();
       }
     }
 
@@ -93,6 +94,7 @@ module.exports = {
       this includes moving toward Workroom
       */
     } else {
+      creep.lookForAndPickupResource();
       creep.longRecharge(true);
     }
   }

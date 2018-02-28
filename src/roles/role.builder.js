@@ -47,6 +47,8 @@ module.exports = {
       If depleted, go recharging
       */
     } else {
+      creep.lookForAndPickupResource();
+      
       // Recharge using Sources, Storage, and Containers
       creep.recharge(true, true, true);
     }

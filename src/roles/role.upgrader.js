@@ -12,6 +12,8 @@ module.exports = {
       }
 
     } else {
+      creep.lookForAndPickupResource();
+      
       // Recharge using Sources, Storage, NOT Containers
       creep.recharge(true, true, false);
     }

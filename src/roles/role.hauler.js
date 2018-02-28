@@ -25,8 +25,6 @@ module.exports = {
       */
     } else {
 
-      creep.pickUpDroppedResources(10);
-
       const storage = creep.pos.findClosestByPath(FIND_STRUCTURES, {
         filter: s => ((
           s.structureType == STRUCTURE_CONTAINER)

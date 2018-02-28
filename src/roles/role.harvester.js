@@ -36,6 +36,7 @@ module.exports = {
       Else, go recharging
       */
     } else {
+      creep.lookForAndPickupResource();
       creep.recharge(true, false);
     }
   }

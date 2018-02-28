@@ -37,7 +37,8 @@ module.exports = {
     @param creepCount Object, key/value count of creeps in the current room
     */
   harvesters_cap: function(room, creepCount) {
-    const tier2 = creepCount.hauler + creepCount.miner;
+    // const tier2 = creepCount.hauler + creepCount.miner;
+    const tier2 = creepCount.hauler * 2 + creepCount.miner;
     const sources = room.find(FIND_SOURCES_ACTIVE);
     if (sources.length > 1) return 8 - tier2;
     return 4 - tier2;
@@ -67,7 +68,7 @@ module.exports = {
     Temporarly Haluers are capped to a fixed amount
     */
   haulers_cap: function(room) {
-    return this.miners_cap(room) * 2;
+    return this.miners_cap(room) * 3;
   },
 
   /**
@@ -76,6 +77,13 @@ module.exports = {
   miners_cap: function(room) {
     return room.find(FIND_SOURCES).length;
     // return room.find(FIND_SOURCES).length + 1;
+  },
+
+  /**
+    Guard capped at 1 per room
+    */
+  guard_cap: function(room) {
+    return 1;
   },
 
   /**
