@@ -320,6 +320,9 @@ Creep.prototype.goClaimController = function() {
   }
 }
 
+/**
+  Forces a Creep to return to homeroom
+  */
 Creep.prototype.headForHomeroom = function() {
   this.say(">>>");
   this.memory.workroom = this.memory.homeroom; // Temporary solution
@@ -340,4 +343,24 @@ Creep.prototype.details = function() {
   }
   specs = specs.slice(0,-2) + "] ";
   return this.name + specs + this.memory.homeroom + " " + this.memory.workroom;
+}
+
+/**
+  Move towards the Spawn then life expectancy is below the given amount of ticks
+  @param terminalTicks Integer ticks left to live
+  */
+Creep.prototype.suicideAt = function(terminalTicks) {
+  // this.say(this.ticksToLive);
+  if (this.ticksToLive <= terminalTicks) {
+    this.say("#@$");
+    const spawn = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
+      filter: s => s.structureType == STRUCTURE_SPAWN
+    });
+    if (spawn.recycleCreep(this) == ERR_NOT_IN_RANGE) {
+      this.moveTo(spawn);
+    } else {
+      console.log(this.name + " has been recycled");
+    }
+    return true;
+  }
 }

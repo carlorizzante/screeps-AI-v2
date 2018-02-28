@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.17.1] - 2018-02-28
+### Added
+- prototype.creep.js, suicideAt() method
+- role.builder.js, Builder can now be recycled by Spawn when closer to end of life
+- role.harvester.js, Harvesters can now be recycled by Spawn when closer to end of life
+- role.hauler.js, Haulers can now be recycled by Spawn when closer to end of life
+- role.upgrader.js, Upgraders can now be recycled by Spawn when closer to end of life
+
 ## [2.17.0] - 2018-02-28
 ### Added
 - prototype.creep.js, added headForHomeroom() method

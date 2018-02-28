@@ -2,6 +2,8 @@ module.exports = {
 
   run: creep => {
 
+    if (creep.suicideAt(20)) return;
+
     // creep.say("H");
     // if (creep.memory.includeTowers) creep.say("HT");
     // creep.memory.includeTowers = undefined; // RESET

@@ -1,5 +1,5 @@
 # Screeps!
-Release 2.17.0 - codename Little Rascal
+Release 2.17.1 - codename Little Rascal
 
 AI for Screeps, version 2.
 

@@ -2,6 +2,8 @@ module.exports = {
 
   run: creep => {
 
+    if (creep.suicideAt(20)) return;
+
     if (creep.isCharged()) {
 
       // Try upgrade Room Controller
@@ -13,7 +15,7 @@ module.exports = {
 
     } else {
       creep.lookForAndPickupResource();
-      
+
       // Recharge using Sources, Storage, NOT Containers
       creep.recharge(true, true, false);
     }

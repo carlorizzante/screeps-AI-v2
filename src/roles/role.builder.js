@@ -5,6 +5,8 @@ module.exports = {
 
   run: creep => {
 
+    if (creep.suicideAt(20)) return;
+
     const REPAIR_THESHOLD = config.repair_threshold();
 
     if (creep.isCharged()) {
@@ -48,7 +50,7 @@ module.exports = {
       */
     } else {
       creep.lookForAndPickupResource();
-      
+
       // Recharge using Sources, Storage, and Containers
       creep.recharge(true, true, true);
     }
