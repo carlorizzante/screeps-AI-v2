@@ -2,6 +2,8 @@ module.exports = {
 
   run: creep => {
 
+    if (creep.suicideAt(40)) return;
+
     if (!creep.isCharged()) {
 
       // Verify that creep is in its target room

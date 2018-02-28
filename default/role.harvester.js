@@ -2,7 +2,7 @@ module.exports = {
 
   run: creep => {
 
-    if (creep.suicideAt(20)) return;
+    if (creep.suicideAt(30)) return;
 
     // At spawning Harvesters have 25% chances to be assigned to Towers too
     creep.memory.includeTowers = creep.memory.includeTowers ? creep.memory.includeTowers : _.sample([true, false, false]);

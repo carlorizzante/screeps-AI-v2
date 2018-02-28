@@ -356,11 +356,12 @@ Creep.prototype.suicideAt = function(terminalTicks) {
     const spawn = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
       filter: s => s.structureType == STRUCTURE_SPAWN
     });
-    if (spawn.recycleCreep(this) == ERR_NOT_IN_RANGE) {
+    if (this.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE || spawn.recycleCreep(this) == ERR_NOT_IN_RANGE) {
       this.moveTo(spawn);
     } else {
       console.log(this.name + " has been recycled");
     }
     return true;
   }
+  return false;
 }

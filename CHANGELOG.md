@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.17.2] - 2018-02-28
+### Changed
+- prototype.creep.js, refactored suicideAt() method
+
 ## [2.17.1] - 2018-02-28
 ### Added
 - prototype.creep.js, suicideAt() method

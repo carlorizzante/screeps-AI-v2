@@ -2,7 +2,7 @@ module.exports = {
 
   run: creep => {
 
-    if (creep.suicideAt(20)) return;
+    if (creep.suicideAt(40)) return;
 
     if (creep.isCharged()) {
 

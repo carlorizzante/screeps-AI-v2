@@ -2,7 +2,7 @@ module.exports = {
 
   run: creep => {
 
-    if (creep.suicideAt(20)) return;
+    if (creep.suicideAt(30)) return;
 
     // creep.say("H");
     // if (creep.memory.includeTowers) creep.say("HT");
@@ -26,6 +26,8 @@ module.exports = {
       If empty, look for the nearest fully charged storage or container
       */
     } else {
+
+      creep.lookForAndPickupResource();
 
       const storage = creep.pos.findClosestByPath(FIND_STRUCTURES, {
         filter: s => ((

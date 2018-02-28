@@ -2,7 +2,7 @@ module.exports = {
 
   run: creep => {
 
-    if (creep.fatigue) creep.say("...");
+    if (creep.suicideAt(30)) return;
 
     /**
       Travel to assigned/workroom
