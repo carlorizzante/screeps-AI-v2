@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.17.5] - 2018-03-01
+### Changed
+- prototype.creep.js, renamed recharge() method into getEnergy()
+                      refactored getEnergy(), bug fix
+- role.hero.js, refactored
+
 ## [2.17.4] - 2018-03-01
 ### Changed
 - prototype.creep.js, renamed suicideAt() method into recycleAt()

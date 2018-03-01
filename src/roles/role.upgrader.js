@@ -16,8 +16,8 @@ module.exports = {
     } else {
       creep.lookForAndPickupResource();
 
-      // Recharge using Sources, NOT Containers, Storage
-      creep.recharge(true, false, true);
+      // getEnergy using Sources, NOT Containers, Storage
+      creep.getEnergy(true, false, true);
     }
   }
 }

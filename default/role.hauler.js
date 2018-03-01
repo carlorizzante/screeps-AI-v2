@@ -20,7 +20,7 @@ module.exports = {
 
       // 50% chances the Hauler will also take care of Towers
       if (creep.memory.includeTowers === undefined) creep.memory.includeTowers = _.sample([true, false]);
-      creep.findAndRechargeStructures(creep.memory.includeTowers);
+      creep.findAndrechargeStructures(creep.memory.includeTowers);
 
     /**
       If empty, look for the nearest fully charged storage or container
@@ -29,23 +29,21 @@ module.exports = {
 
       creep.lookForAndPickupResource();
 
-      // Recharge using NOT Sources, Containers, NOT Storage
-      // creep.recharge(false, true, false);
+      // getEnergy using NOT Sources, Containers, NOT Storage
+      creep.getEnergy(false, true, false);
 
-
-
-      const storage = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-        filter: s => ((
-          s.structureType == STRUCTURE_CONTAINER)
-          && s.store[RESOURCE_ENERGY] >= creep.carryCapacity / 2
-        )
-      });
-
-      if (storage) {
-        if (creep.withdraw(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(storage);
-        }
-      }
+      // const storage = creep.pos.findClosestByPath(FIND_STRUCTURES, {
+      //   filter: s => ((
+      //     s.structureType == STRUCTURE_CONTAINER)
+      //     && s.store[RESOURCE_ENERGY] >= creep.carryCapacity / 2
+      //   )
+      // });
+      //
+      // if (storage) {
+      //   if (creep.withdraw(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+      //     creep.moveTo(storage);
+      //   }
+      // }
     }
   }
 }
