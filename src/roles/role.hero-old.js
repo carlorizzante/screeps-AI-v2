@@ -2,10 +2,23 @@ module.exports = {
 
   run: creep => {
 
-    const rechargeSpawns     = true;
-    const rechargeExtensions = true;
-    const rechargeTowers     = false;
-    const rechargeStorage    = true;
+    //
+
+    // const adjacentRooms = Game.map.describeExits(creep.room.name);
+    // const result = [];
+    // for (let key in adjacentRooms) {
+    //   result.push(adjacentRooms[key]);
+    // }
+    // console.log(result);
+
+    // creep.say(creep.memory.workroom);
+
+    //
+
+    const includeSpawns     = true;
+    const includeExtensions = true;
+    const includeTowers     = true
+    const includeStorage    = true;
 
     // Head for home if damaged, that may save the creep
     if (creep.hits < creep.hitsMax) creep.headForHomeroom();
@@ -29,27 +42,9 @@ module.exports = {
     creep.lookForAndPickupResource();
 
     /**
-      If out of charge and not in Workroom
+      If Creep is fully charged and in workroom
       */
-    if (!creep.isCharged() && creep.room.name != creep.memory.workroom) {
-      const exit = creep.room.findExitTo(creep.memory.workroom);
-      creep.moveTo(creep.pos.findClosestByPath(exit));
-
-    /**
-      If out of charge and in Workroom
-      */
-    } else if (!creep.isCharged() && creep.room.name == creep.memory.workroom) {
-
-      // getEnergy using Sources, Containers, NOT Storage
-      const source = creep.getEnergy(true, true, false);
-
-      // Reset Workroom is no Active Source found
-      if (!source) creep.resetWorkroom();
-
-    /**
-      if charged and not in Homeroom
-      */
-    } else if (creep.isCharged() && creep.room.name != creep.memory.homeroom) {
+    if (creep.isCharged() && creep.room.name != creep.memory.homeroom) {
 
       /**
         Prioritize repair over construction
@@ -80,21 +75,45 @@ module.exports = {
       }
 
       /**
-        Finally, move to Homeroom
+        Else, if nothing left to do in workroom,
+        move back to homeroom
         */
       const exit = creep.room.findExitTo(creep.memory.homeroom);
       creep.moveTo(creep.pos.findClosestByPath(exit));
 
     /**
-      If charged and in Homeroom
+      If Creep is out of charge and in Workroom
+      */
+    } else if (!creep.isCharged() && creep.room.name == creep.memory.workroom) {
+
+      // getEnergy using Sources, Containers, NOT Storage
+      creep.getEnergy(true, true, false);
+
+    /**
+      If Creep is out of charge and still not in workroom
+      */
+    } else if (!creep.isCharged() && creep.room.name != creep.memory.workroom) {
+      const exit = creep.room.findExitTo(creep.memory.workroom);
+      creep.moveTo(creep.pos.findClosestByPath(exit));
+
+    /**
+      Finally, if Creep is charged and in Homeroom
       */
     } else if (creep.isCharged() && creep.room.name == creep.memory.homeroom) {
 
-      if (creep.recycleAt(20)) return;
+      if (creep.recycleAt(30)) return;
 
-      structure = creep.findStructure(rechargeSpawns, rechargeExtensions, rechargeTowers, rechargeStorage);
-      if (structure) creep.rechargeStructure(structure);
+      if (creep.memory.target_id) {
+        structure = Game.getObjectById(creep.memory.target_id);
+      } else {
+        structure = creep.findStructure(includeSpawns, includeExtensions, includeTowers, includeStorage);
+      }
+
+      if (structure) {
+        creep.rechargeStructure(structure);
+      } else {
+        delete creep.memory.target_id;
+      }
     }
-
   }
 }

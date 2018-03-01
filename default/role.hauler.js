@@ -2,11 +2,15 @@ module.exports = {
 
   run: creep => {
 
-    if (creep.recycleAt(20)) return;
+    // 50% chances the Hauler will also take care of Towers
+    if (creep.memory.includeTowers === undefined) creep.memory.includeTowers = _.sample([true, false]);
 
-    // creep.say("H");
-    // if (creep.memory.includeTowers) creep.say("HT");
-    // creep.memory.includeTowers = undefined; // RESET
+    const rechargeSpawns     = true;
+    const rechargeExtensions = true;
+    const rechargeTowers     = creep.memory.includeTowers;
+    const rechargeStorage    = true;
+
+    if (creep.recycleAt(20)) return;
 
     /**
       If fatigued, place a marker for a road block
@@ -18,9 +22,17 @@ module.exports = {
       */
     if (creep.isCharged()) {
 
-      // 50% chances the Hauler will also take care of Towers
-      if (creep.memory.includeTowers === undefined) creep.memory.includeTowers = _.sample([true, false]);
-      creep.findAndrechargeStructures(creep.memory.includeTowers);
+      if (creep.memory.target_id) {
+        structure = Game.getObjectById(creep.memory.target_id);
+      } else {
+        structure = creep.findStructure(rechargeSpawns, rechargeExtensions, rechargeTowers, rechargeStorage);
+      }
+
+      if (structure) {
+        creep.rechargeStructure(structure);
+      } else {
+        delete creep.memory.target_id;
+      }
 
     /**
       If empty, look for the nearest fully charged storage or container
@@ -31,19 +43,6 @@ module.exports = {
 
       // getEnergy using NOT Sources, Containers, NOT Storage
       creep.getEnergy(false, true, false);
-
-      // const storage = creep.pos.findClosestByPath(FIND_STRUCTURES, {
-      //   filter: s => ((
-      //     s.structureType == STRUCTURE_CONTAINER)
-      //     && s.store[RESOURCE_ENERGY] >= creep.carryCapacity / 2
-      //   )
-      // });
-      //
-      // if (storage) {
-      //   if (creep.withdraw(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-      //     creep.moveTo(storage);
-      //   }
-      // }
     }
   }
 }

@@ -59,7 +59,7 @@ module.exports = {
   builders_cap: function(room) {
     // const maxEnergy = room.energyCapacityAvailable;
     const constructionSites = room.find(FIND_CONSTRUCTION_SITES);
-    return _.min([constructionSites.length, 5]);
+    return _.min([constructionSites.length, 4]);
   },
 
   /**
@@ -91,7 +91,7 @@ module.exports = {
     Guard capped at 1 per room
     */
   guard_cap: function() {
-    return 1;
+    return 0;
   },
 
   /**

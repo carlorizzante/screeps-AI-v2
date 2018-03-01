@@ -18,6 +18,7 @@ const roles = {
   guard: require("role.guard")
 };
 
+const COMICS = true;
 const VERBOSE = true;
 const DEBUG = false;
 
@@ -25,17 +26,6 @@ const DEBUG = false;
   Main AI for Creeps
   */
 Creep.prototype.logic = function() {
-
-  // TO DO: For some reason, some creep loses their role and all system crash
-  // if (this.memory.role == undefined || this.memory.role == "") {
-  //   this.say("☠☠☠");
-  //   // console.log("Creep with no role, body:", this.details());
-  //   this.memory.role = "harvester"; // Fallback to harvesters
-  //   // this.suicide();
-  //   return;
-  // }
-
-  // If it's all good, get to work!
   roles[this.memory.role].run(this);
 }
 
@@ -118,7 +108,6 @@ Creep.prototype.getEnergy = function(useSource, useContainers, useStorage) {
     if (storage.store[RESOURCE_ENERGY] <= 0) delete this.memory.storage_id;
 
   } else if (useContainers || useStorage) {
-    // this.say("2");
     delete this.memory.storage_id;
     storage = this.pos.findClosestByPath(FIND_STRUCTURES, {
       filter: s => ((
@@ -131,12 +120,10 @@ Creep.prototype.getEnergy = function(useSource, useContainers, useStorage) {
   }
 
   // If no Containers or Storage nearly available, use Energy Sources
-  if (useSource && this.memory.source_id) {
-    // this.say("3");
+  if (!storage && useSource && this.memory.source_id) {
     source = Game.getObjectById(this.memory.source_id);
 
   } else if (useSource) {
-    // this.say("4");
     delete this.memory.source_id;
     source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE, {
       filter: s => s.energy >= 0 // Only if Source has somehow enough to harvest
@@ -144,42 +131,16 @@ Creep.prototype.getEnergy = function(useSource, useContainers, useStorage) {
     if (source) this.memory.source_id = source.id;
   }
 
-  // Go get it
+  // Prioritize Containers and Storage over Sources
   if (storage && this.withdraw(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
     this.moveTo(storage);
 
   } else if (source && this.harvest(source) == ERR_NOT_IN_RANGE) {
     this.moveTo(source);
   }
-}
 
-/**
-  @param includeTowers Boolean
-  */
-Creep.prototype.findAndrechargeStructures = function(includeTowers) {
-
-  let structure = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-    filter: s => ((
-      s.structureType == STRUCTURE_SPAWN
-      || s.structureType == STRUCTURE_EXTENSION
-      || (includeTowers && s.structureType == STRUCTURE_TOWER))
-      && s.energy < s.energyCapacity
-    )
-  });
-
-  // Backup to storage if all other structure are fully charged
-  if (!structure) structure = this.room.storage;
-
-  // If structure found, go transfer energy to it
-  if (structure) {
-
-    // try transfer energy to it
-    if (this.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-
-      // if not in range, move closer
-      this.moveTo(structure);
-    }
-  }
+  // Return true if anything found, false otherwise
+  return (useSource && source) || ((useContainers || useStorage) && storage);
 }
 
 /**
@@ -191,18 +152,18 @@ Creep.prototype.findAndrechargeStructures = function(includeTowers) {
   */
 Creep.prototype.findStructure = function(includeSpawns, includeExtensions, includeTowers, includeStorage) {
 
+  if (this.memory.structure_id) return Game.getObjectById(this.memory.structure_id);
+
+  delete this.memory.structure_id;
+
   let structure = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
-    filter: s => ((includeSpawns && s.structureType == STRUCTURE_SPAWN)
-      || (includeExtensions && s.structureType == STRUCTURE_EXTENSION)
-      || (includeTowers && s.structureType == STRUCTURE_TOWER && s.energy < s.energyCapacity * 0.7)
-      || (includeStorage && s.structureType == STRUCTURE_STORAGE))
-      && (s.energy < s.energyCapacity)
+    filter: s => (includeSpawns && s.structureType == STRUCTURE_SPAWN && s.energy < s.energyCapacity)
+      || (includeExtensions && s.structureType == STRUCTURE_EXTENSION && s.energy < s.energyCapacity)
+      || (includeTowers && s.structureType == STRUCTURE_TOWER         && s.energy < s.energyCapacity * 0.7)
+      || (includeStorage && s.structureType == STRUCTURE_STORAGE      && s.store[RESOURCE_ENERGY] < s.storeCapacity)
   });
 
-  // Backup to storage if all other structure are fully charged
-  // if (!structure) structure = this.room.storage;
-
-  // Return result
+  if (structure) this.memory.structure_id = structure.id;
   return structure;
 }
 
@@ -211,20 +172,10 @@ Creep.prototype.findStructure = function(includeSpawns, includeExtensions, inclu
   */
 Creep.prototype.rechargeStructure = function(structure) {
   if (structure) {
-    if (this.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-      this.moveTo(structure);
-    }
-  }
-}
-
-/**
-  @param container STRUCTURE_CONTAINER
-  */
-Creep.prototype.getEnergyContainer = function(container) {
-  if (container) {
-    if (this.transfer(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-      this.moveTo(container);
-    }
+    const result = this.transfer(structure, RESOURCE_ENERGY);
+    if (result == ERR_NOT_IN_RANGE) this.moveTo(structure);
+    if (result == ERR_FULL) delete this.memory.structure_id;
+    return result;
   }
 }
 
@@ -280,10 +231,12 @@ Creep.prototype.requestMilitarySupport = function(foesLength) {
 /**
   Places a marker for construction: STRUCTURE_ROAD
   First veryfies that there has been a similar request before
+  @param fatigue Interger threshold for placing a road marker
   */
-Creep.prototype.requestRoad = function() {
-  if (this.fatigue > 2) {
-    this.say("Road!");
+Creep.prototype.requestRoad = function(fatigue) {
+  threshold = fatigue ? fatigue : 2
+  if (this.fatigue > threshold) {
+    if (COMICS) this.say("Road!");
     this.pos.createConstructionSite(STRUCTURE_ROAD);
     return;
   }
@@ -294,7 +247,7 @@ Creep.prototype.requestRoad = function() {
   */
 Creep.prototype.goClaimController = function() {
   if (this.room.controller) {
-    this.say("Claim");
+    if (COMICS) this.say("Claim");
     if (DEBUG) console.log(this.room.controller, this.claimController(this.room.controller));
     if (this.claimController(this.room.controller) == ERR_NOT_IN_RANGE) {
       this.moveTo(this.room.controller);
@@ -306,7 +259,7 @@ Creep.prototype.goClaimController = function() {
   Forces a Creep to return to homeroom
   */
 Creep.prototype.headForHomeroom = function() {
-  this.say(">>>");
+  if (COMICS) this.say(">>>");
   this.memory.workroom = this.memory.homeroom; // Temporary solution
 }
 
@@ -314,7 +267,7 @@ Creep.prototype.headForHomeroom = function() {
   Returns Creep's details as follow
   ID [BODY PARTS] homeroom workroom
   */
-Creep.prototype.details = function() {
+Creep.prototype.getDetails = function() {
   const body = {};
   let specs = " [";
   for (let part of this.body) {
@@ -334,7 +287,8 @@ Creep.prototype.details = function() {
 Creep.prototype.recycleAt = function(terminalTicks) {
   // this.say(this.ticksToLive);
   if (this.ticksToLive <= terminalTicks) {
-    this.say("#@$");
+    if (COMICS) this.say("#@$");
+    // if (COMICS) this.say("☠☠☠");
     const spawn = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
       filter: s => s.structureType == STRUCTURE_SPAWN
     });
@@ -346,4 +300,33 @@ Creep.prototype.recycleAt = function(terminalTicks) {
     return true;
   }
   return false;
+}
+
+/**
+  Returns true if the Creep's Workroom memory property has been successfully updated
+  Modifies creep.memory.workroom
+  @param roomname String the name of the room to use as Workroom
+  */
+Creep.prototype.resetWorkroom = function(roomname) {
+
+  if (roomname) {
+    this.memory.workroom = roomname;
+    return this.memory.workroom == roomname;
+  }
+
+  let newWorkroom;
+  const adjacentRooms = Game.map.describeExits(this.room.name);
+
+  const result = [];
+  for (let key in adjacentRooms) {
+    result.push(adjacentRooms[key]);
+  }
+
+  newWorkroom = _.sample(adjacentRooms);
+
+  // TO DO: verify that newWorkroom has not a Spawn in it
+
+  this.memory.workroom = newWorkroom;
+  if (COMICS) this.say(newWorkroom);
+  return this.memory == newWorkroom;
 }

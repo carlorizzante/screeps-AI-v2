@@ -333,10 +333,10 @@ StructureSpawn.prototype.getAdjacentRooms = function() {
     myRooms.push(Game.spawns[key].room.name);
   }
   // TO DO: Get more room programmatically
-  result.push("W7N2");
-  result.push("W8N4");
-  result.push("W6N3");
-  result.push("W5N3");
+  // result.push("W7N2");
+  // result.push("W8N4");
+  // result.push("W6N3");
+  // result.push("W5N3");
   return result; // filter this by owned rooms
 }
 
@@ -352,8 +352,8 @@ StructureSpawn.prototype.hijack = function(adjacentRooms, creepsInRoom) {
   for (let name in creepsInRoom) {
     const creep = creepsInRoom[name];
 
-    // If the creep is an Hero unit and its workroom is where the Spawn is...
-    if (creep.memory.role == "hero" && creep.memory.workroom == this.room.name) {
+    // For every Creep, if their Workroom is in this room, hijack it
+    if (creep.memory.workroom == this.room.name) {
       const new_workroom = _.sample(adjacentRooms);
 
       if (VERBOSE) console.log("Hijacking", creep.name, "new workroom:", new_workroom);

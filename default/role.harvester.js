@@ -2,15 +2,26 @@ module.exports = {
 
   run: creep => {
 
-    if (creep.recycleAt(20)) return;
+    // 50% chances the Hauler will also take care of Towers
+    if (creep.memory.includeTowers === undefined) creep.memory.includeTowers = _.sample([true, false]);
 
-    // At spawning Harvesters have 25% chances to be assigned to Towers too
-    creep.memory.includeTowers = creep.memory.includeTowers ? creep.memory.includeTowers : _.sample([true, false, false]);
+    const rechargeSpawns     = true;
+    const rechargeExtensions = true;
+    const rechargeTowers     = creep.memory.includeTowers;
+    const rechargeStorage    = true;
 
-    const includeSpawns     = true;
-    const includeExtensions = true;
-    const includeTowers     = creep.memory.includeTowers;
-    const includeStorage    = false;
+    // TO DO: Better escape routine
+
+    // Head for home if damaged, that may save the creep
+    if (creep.hits < creep.hitsMax) creep.headForHomeroom();
+
+    // Constanstly look out for foes nearby
+    const foes = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 20);
+
+    // TO DO: Improve requests for Military Support
+
+    // If so...
+    if (foes.length) creep.requestMilitarySupport(foes.length);
 
     /**
       If fatigued, place a marker for a road block
@@ -18,30 +29,45 @@ module.exports = {
     creep.requestRoad();
 
     /**
-      If charged, transfer Energy to Structures
+      Always look up for dropped Energy
       */
-    if (creep.isCharged()) {
-
-      if (creep.memory.target_id) {
-        structure = Game.getObjectById(creep.memory.target_id);
-      } else {
-        structure = creep.findStructure(includeSpawns, includeExtensions, includeTowers, includeStorage);
-      }
-
-      if (structure) {
-        creep.rechargeStructure(structure);
-      } else {
-        delete creep.memory.target_id;
-      }
+    creep.lookForAndPickupResource();
 
     /**
-      Else, go recharging
+      If out of charge and not in Workroom
       */
-    } else {
-      creep.lookForAndPickupResource(6);
+    if (!creep.isCharged() && creep.room.name != creep.memory.workroom) {
+      const exit = creep.room.findExitTo(creep.memory.workroom);
+      creep.moveTo(creep.pos.findClosestByPath(exit));
 
-      // getEnergy using Sources, NOT Containers, NOT Storage
-      creep.getEnergy(true, false, false);
+    /**
+      If out of charge and in Workroom
+      */
+    } else if (!creep.isCharged() && creep.room.name == creep.memory.workroom) {
+
+      // getEnergy using Sources, Containers, NOT Storage
+      const source = creep.getEnergy(true, true, false);
+
+      // Reset Workroom is no Active Source found
+      if (!source) creep.resetWorkroom();
+
+    /**
+      if charged and not in Homeroom
+      */
+    } else if (creep.isCharged() && creep.room.name != creep.memory.homeroom) {
+      const exit = creep.room.findExitTo(creep.memory.homeroom);
+      creep.moveTo(creep.pos.findClosestByPath(exit));
+
+    /**
+      If charged and in Homeroom
+      */
+    } else if (creep.isCharged() && creep.room.name == creep.memory.homeroom) {
+
+      if (creep.recycleAt(20)) return;
+
+      structure = creep.findStructure(rechargeSpawns, rechargeExtensions, rechargeTowers, rechargeStorage);
+      if (structure) creep.rechargeStructure(structure);
     }
+
   }
 }

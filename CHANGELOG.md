@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.17.7] - 2018-03-01
+### Changed
+- config.js, Builders cap reduced from 5 to 4
+- prototype.creep.js, added resetWorkroom() method
+                      refactored requestRoad() method, added param fatigue
+                      refactored getEnergy() method, returns Boolean
+                      refactored findStructure() method, bug fix
+                      refactored rechargeStructure() method, bug fix
+                      renamed details() method into getDetails()
+                      removed findAndrechargeStructures() method
+- role.harvester.js, refactored to enable Harvester work on nearby rooms
+- role.hauler.js, refactored to share more common code with other units
+- role.hero.js, refactored, bug fix and optimization
+
 ## [2.17.6] - 2018-03-01
 ### Changed
 - config.js, better balance of units spawning
