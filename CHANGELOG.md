@@ -8,7 +8,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - config.js, better balance of units spawning
 - prototype.spawn.js, refactored Spawning routine, unified into spawnCustomCreep() method
-                      hardcoded nearby rooms, temporary fix
+                      hardcoded nearby rooms, temporary test
 - role.hero.js, bug fix
 
 ## [2.17.5] - 2018-03-01

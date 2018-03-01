@@ -336,6 +336,7 @@ StructureSpawn.prototype.getAdjacentRooms = function() {
   result.push("W7N2");
   result.push("W8N4");
   result.push("W6N3");
+  result.push("W5N3");
   return result; // filter this by owned rooms
 }
 

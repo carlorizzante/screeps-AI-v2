@@ -11,6 +11,8 @@ module.exports = {
     // }
     // console.log(result);
 
+    // creep.say(creep.memory.workroom);
+
     //
 
     const includeSpawns     = true;
@@ -42,7 +44,7 @@ module.exports = {
     /**
       If Creep is fully charged and in workroom
       */
-    if (creep.isCharged() && creep.room.name == creep.memory.workroom) {
+    if (creep.isCharged() && creep.room.name != creep.memory.homeroom) {
 
       /**
         Prioritize repair over construction
@@ -88,9 +90,9 @@ module.exports = {
       creep.getEnergy(true, true, false);
 
     /**
-      If Creep is out of charge and still in homeroom
+      If Creep is out of charge and still not in workroom
       */
-    } else if (!creep.isCharged() && creep.room.name == creep.memory.homeroom) {
+    } else if (!creep.isCharged() && creep.room.name != creep.memory.workroom) {
       const exit = creep.room.findExitTo(creep.memory.workroom);
       creep.moveTo(creep.pos.findClosestByPath(exit));
 
