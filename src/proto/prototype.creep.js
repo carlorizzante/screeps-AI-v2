@@ -113,12 +113,12 @@ Creep.prototype.getEnergy = function(useSource, useContainers, useStorage) {
 
   // Use first Containers and Storage
   if (this.memory.storage_id) {
-    this.say("1");
+    // this.say("1");
     storage = Game.getObjectById(this.memory.storage_id);
     if (storage.store[RESOURCE_ENERGY] <= 0) delete this.memory.storage_id;
 
   } else if (useContainers || useStorage) {
-    this.say("2");
+    // this.say("2");
     delete this.memory.storage_id;
     storage = this.pos.findClosestByPath(FIND_STRUCTURES, {
       filter: s => ((
@@ -132,11 +132,11 @@ Creep.prototype.getEnergy = function(useSource, useContainers, useStorage) {
 
   // If no Containers or Storage nearly available, use Energy Sources
   if (useSource && this.memory.source_id) {
-    this.say("3");
+    // this.say("3");
     source = Game.getObjectById(this.memory.source_id);
 
   } else if (useSource) {
-    this.say("4");
+    // this.say("4");
     delete this.memory.source_id;
     source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE, {
       filter: s => s.energy >= 0 // Only if Source has somehow enough to harvest

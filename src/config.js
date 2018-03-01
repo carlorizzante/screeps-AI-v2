@@ -17,6 +17,14 @@ module.exports = {
   },
 
   /**
+    Max energy available for Creeps Tier 2.
+    capped to 1500
+    */
+  tier2_energy_cap: function() {
+    return 1500;
+  },
+
+  /**
     Creeps Tier 2 allowed only at 1000 energy max capacity for current room.
     */
   tier2_energy_threshold: function() {
@@ -38,7 +46,7 @@ module.exports = {
     */
   harvesters_cap: function(room, creepCount) {
     // const tier2 = creepCount.hauler + creepCount.miner;
-    const tier2 = creepCount.hauler * 2 + creepCount.miner;
+    const tier2 = creepCount.hauler + creepCount.miner;
     const sources = room.find(FIND_SOURCES_ACTIVE);
     if (sources.length > 1) return 8 - tier2;
     return 4 - tier2;
@@ -61,22 +69,22 @@ module.exports = {
     */
   upgraders_cap: function(room) {
     const constructionSites = room.find(FIND_CONSTRUCTION_SITES);
-    return _.max([2, 4 - constructionSites.length]);
+    return _.max([2, 4 - this.builders_cap(room)]);
   },
 
   /**
-    Temporarly Haluers are capped to a fixed amount
+    Haulers capped to Miners * 2
     */
   haulers_cap: function(room) {
-    return this.miners_cap(room) * 3;
+    return this.miners_cap(room) * 2;
   },
 
   /**
-    Temporarly Miners are capped to a fixed amount
+    Miners capped to number of Energy Sources in the room, + 1
     */
   miners_cap: function(room) {
-    return room.find(FIND_SOURCES).length;
-    // return room.find(FIND_SOURCES).length + 1;
+    // return room.find(FIND_SOURCES).length;
+    return room.find(FIND_SOURCES).length + 1;
   },
 
   /**

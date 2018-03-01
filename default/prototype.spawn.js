@@ -25,6 +25,7 @@ const roles = [
 const BUILDER   = "builder";
 const HARVESTER = "harvester";
 const UPGRADER  = "upgrader";
+const TIER1_ENERGY_CAP = config.tier1_energy_cap(this.room);
 
 /**
   Creeps Tier 2
@@ -32,6 +33,7 @@ const UPGRADER  = "upgrader";
 const HAULER = "hauler";
 const HERO   = "hero";
 const MINER  = "miner";
+const TIER2_ENERGY_CAP = config.tier2_energy_cap(this.room);
 
 /**
   Creeps Tier 3
@@ -79,7 +81,7 @@ StructureSpawn.prototype.logic = function() {
 
         // Try sending a DEFENDER in support as well
         if (currentEnergy >= config.tier3_energy_threshold(room)
-          && OK == this.spawnTier3(DEFENDER, entry.room, entry.room)) {
+          && OK == this.spawnCustomCreep(DEFENDER, entry.room, entry.room)) {
 
           // If positive, set request as fulfilled
           Memory.board[entry.id].status = "fulfilled";
@@ -153,13 +155,13 @@ StructureSpawn.prototype.logic = function() {
     Spawn Creeps accordingly to rules calculated above
     */
   if (creepCount[HARVESTER] < HARVESTERS_CAP) {
-    this.spawnTier1(HARVESTER, this.room.name, this.room.name);
+    this.spawnCustomCreep(HARVESTER, this.room.name, this.room.name);
 
   } else if (creepCount[BUILDER] < BUILDERS_CAP) {
-    this.spawnTier1(BUILDER, this.room.name, this.room.name);
+    this.spawnCustomCreep(BUILDER, this.room.name, this.room.name);
 
   } else if (creepCount[UPGRADER] < UPGRADERS_CAP) {
-    this.spawnTier1(UPGRADER, this.room.name, this.room.name);
+    this.spawnCustomCreep(UPGRADER, this.room.name, this.room.name);
 
   // Creeps Tier 2 allowed only if enough energyCapacityAvailable
   } else if (maxEnergy < TIER2_ENERGY_THRESHOLD) {
@@ -167,13 +169,13 @@ StructureSpawn.prototype.logic = function() {
 
 
   } else if (creepCount[MINER] < MINER_CAP) {
-    this.spawnTier2(MINER, this.room.name, this.room.name);
+    this.spawnCustomCreep(MINER, this.room.name, this.room.name);
 
   } else if (creepCount[HAULER] < HAULER_CAP) {
-    this.spawnTier2(HAULER, this.room.name, this.room.name);
+    this.spawnCustomCreep(HAULER, this.room.name, this.room.name);
 
   } else if (creepCount[GUARD] < GUARD_CAP) {
-    this.spawnTier3(GUARD, this.room.name, this.room.name)
+    this.spawnCustomCreep(GUARD, this.room.name, this.room.name)
 
   /**
     TO DO: Spawn a Claimer if necessary - GCL > rooms owned
@@ -187,7 +189,7 @@ StructureSpawn.prototype.logic = function() {
     Spawn Hero units and assign them randomly to nearby rooms
     */
   } else {
-    this.spawnTier2(HERO, this.room.name, _.sample(adjacentRooms));
+    this.spawnCustomCreep(HERO, this.room.name, _.sample(adjacentRooms));
   }
 }
 
@@ -197,135 +199,7 @@ StructureSpawn.prototype.logic = function() {
   @param workroom String
   @param target null
   */
-StructureSpawn.prototype.spawnTier1 = function(role, homeroom, workroom, target) {
-
-  const TIER1_ENERGY_CAP = config.tier1_energy_cap(this.room);
-
-  // Max energy capped for Creeps Tier 1
-  const maxEnergy = _.min([TIER1_ENERGY_CAP, this.room.energyCapacityAvailable]);
-  let energyAvailable = maxEnergy;
-
-  let energyUsed = 0;
-  const skills = [];
-
-  // Reserve half energy for WORK capacity
-  while (energyAvailable > maxEnergy / 2) {
-    skills.push(WORK);
-    energyAvailable -= 100;
-    energyUsed += 100;
-  }
-
-  // Distribute remaining energy among CARRY and then MOVE
-  let energyBlocks = energyAvailable / 50;
-  let move = Math.floor(energyBlocks / 2);
-  let carry = energyBlocks - move;
-
-  while (carry) {
-    skills.push(CARRY);
-    carry -= 1;
-    energyAvailable -= 50;
-    energyUsed += 50;
-  }
-
-  while (move) {
-    skills.push(MOVE);
-    move -= 1;
-    energyAvailable -= 50;
-    energyUsed += 50;
-  }
-
-  // Spawn new creep
-  let name = role + energyUsed + "-" + Game.time + "-" + homeroom;
-  const result = Game.spawns[this.name].spawnCreep(skills, name, {
-    memory: {
-      role: role,
-      homeroom: homeroom,
-      workroom: workroom
-    }
-  });
-
-  if (result == OK && VERBOSE) {
-    console.log(this.name, "is spawning", name, listSkills(skills), homeroom, workroom, target);
-  } else if (VERBOSE) {
-    console.log(this.name, "is spawning failed:", result);
-  }
-}
-
-/**
-  @param role String
-  @param homeroom String
-  @param workroom String
-  @param target null
-  */
-StructureSpawn.prototype.spawnTier2 = function(role, homeroom, workroom, target) {
-
-  const maxEnergy     = this.room.energyCapacityAvailable;
-  let energyAvailable = this.room.energyCapacityAvailable;
-
-  let energyUsed = 0;
-  const skills = [];
-
-  /**
-    Miners are all about WORK parts
-    Heros need a more balance setup, 25% WORK parts
-    */
-  let use;
-  if (role == HAULER) use = 0;   // Haulers do not need WORK parts
-  if (role == HERO)   use = energyAvailable / 4 + 1;
-  if (role == MINER)  use = energyAvailable - 250;
-
-  // Add WORK parts accordingly to role
-  while (energyUsed < use) {
-    skills.push(WORK);
-    energyUsed += 100;
-  }
-
-  // Update energy still available
-  energyAvailable -= energyUsed;
-
-  // Distribute remaining energy among CARRY and then MOVE
-  let energyBlocks = energyAvailable / 50;
-  let move = Math.floor(energyBlocks / 2);
-  let carry = energyBlocks - move; // Prioritize CARRY over MOVE
-
-  while (carry) {
-    skills.push(CARRY);
-    carry -= 1;
-    energyAvailable -= 50;
-    energyUsed += 50;
-  }
-
-  while (move) {
-    skills.push(MOVE);
-    move -= 1;
-    energyAvailable -= 50;
-    energyUsed += 50;
-  }
-
-  // Spawn new creep
-  let name = role + energyUsed + "-" + Game.time + "-" + homeroom;
-  const result = Game.spawns[this.name].spawnCreep(skills, name, {
-    memory: {
-      role: role,
-      homeroom: homeroom,
-      workroom: workroom
-    }
-  });
-
-  if (result == OK && VERBOSE) {
-    console.log(this.name, "is spawning", name, listSkills(skills), homeroom, workroom, target);
-  } else if (VERBOSE) {
-    console.log(this.name, "is spawning failed:", result);
-  }
-}
-
-/**
-  @param role String
-  @param homeroom String
-  @param workroom String
-  @param target null
-  */
-StructureSpawn.prototype.spawnTier3 = function(role, homeroom, workroom, target) {
+StructureSpawn.prototype.spawnCustomCreep = function(role, homeroom, workroom, target) {
 
   const maxEnergy = this.room.energyCapacityAvailable;
   let energyAvailable = maxEnergy;
@@ -353,8 +227,51 @@ StructureSpawn.prototype.spawnTier3 = function(role, homeroom, workroom, target)
     return energyUsed;
   }
 
-  // Cost 1400
-  if (role == CLAIMER) {
+  // Tier 1
+
+  if (role == BUILDER || role == HARVESTER || role == UPGRADER) {
+    // 50% WORK
+    // 25% CARRY
+    // 25% MOVE
+    let use = _.min([TIER1_ENERGY_CAP, this.room.energyCapacityAvailable]);
+    energyUsed += addParts(WORK, 100, Math.floor(use * 0.50), skills);
+    energyUsed += addParts(CARRY, 50, Math.floor(use * 0.25), skills);
+    energyUsed += addParts(MOVE,  50, Math.floor(use * 0.25), skills);
+  }
+
+  // Tier 2
+
+  if (role == HAULER) {
+    // 50% CARRY
+    // 50% MOVE
+    let use = _.min([TIER2_ENERGY_CAP, this.room.energyCapacityAvailable]);
+    energyUsed += addParts(CARRY, 50, Math.floor(use * 0.50), skills);
+    energyUsed += addParts(MOVE,  50, Math.floor(use * 0.50), skills);
+  }
+
+  if (role == HERO) {
+    // 20% WORK
+    // 40% CARRY
+    // 40% MOVE
+    let use = _.min([TIER2_ENERGY_CAP, this.room.energyCapacityAvailable]);
+    energyUsed += addParts(WORK, 100, Math.floor(use * 0.20), skills);
+    energyUsed += addParts(CARRY, 50, Math.floor(use * 0.40), skills);
+    energyUsed += addParts(MOVE,  50, Math.floor(use * 0.40), skills);
+  }
+
+  if (role == MINER) {
+    // 5 WORK
+    // 2 CARRY
+    // 2 MOVE
+    let use = 500 + 100 + 100;
+    energyUsed += addParts(WORK, 100, Math.floor(500), skills);
+    energyUsed += addParts(CARRY, 50, Math.floor(100), skills);
+    energyUsed += addParts(MOVE,  50, Math.floor(100), skills);
+  }
+
+  // Tier 3
+
+  if (role == CLAIMER) { // Cost 1400
     skills.push(CLAIM);
     skills.push(CLAIM);
     skills.push(MOVE);
@@ -362,7 +279,6 @@ StructureSpawn.prototype.spawnTier3 = function(role, homeroom, workroom, target)
     energyUsed = 2 * 600 + 2 * 50;
   }
 
-  // TO DO: automatic skills set for Defender
   if (role == GUARD) {
     // 10% TOUGH
     // 60% MOVE
@@ -383,39 +299,6 @@ StructureSpawn.prototype.spawnTier3 = function(role, homeroom, workroom, target)
     energyUsed += addParts(MOVE,           50, Math.floor(use * 0.6), skills);
     energyUsed += addParts(RANGED_ATTACK, 150, Math.floor(use * 0.3), skills);
     skills.push(HEAL);
-  }
-
-  // Cost 1000
-  if (false && role == DEFENDER) {
-    for (let i = 0; i < 9; i++) {
-      skills.push(TOUGH);
-      energyAvailable -= 10;
-      energyUsed += 10;
-    }
-
-    for (let i = 0; i < 4; i++) {
-      skills.push(MOVE);
-      energyAvailable -= 50;
-      energyUsed += 50;
-    }
-
-    for (let i = 0; i < 2; i++) {
-      skills.push(ATTACK);
-      energyAvailable -= 80;
-      energyUsed += 80;
-    }
-
-    for (let i = 0; i < 2; i++) {
-      skills.push(RANGED_ATTACK);
-      energyAvailable -= 150;
-      energyUsed += 150;
-    }
-
-    for (let i = 0; i < 1; i++) {
-      skills.push(HEAL);
-      energyAvailable -= 250;
-      energyUsed += 250;
-    }
   }
 
   // Spawn new creep
@@ -449,6 +332,10 @@ StructureSpawn.prototype.getAdjacentRooms = function() {
   for (let key in Game.spawns) {
     myRooms.push(Game.spawns[key].room.name);
   }
+  // TO DO: Get more room programmatically
+  result.push("W7N2");
+  result.push("W8N4");
+  result.push("W6N3");
   return result; // filter this by owned rooms
 }
 

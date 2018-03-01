@@ -2,7 +2,16 @@ module.exports = {
 
   run: creep => {
 
-    if (creep.recycleAt(30)) return;
+    //
+
+    // const adjacentRooms = Game.map.describeExits(creep.room.name);
+    // const result = [];
+    // for (let key in adjacentRooms) {
+    //   result.push(adjacentRooms[key]);
+    // }
+    // console.log(result);
+
+    //
 
     const includeSpawns     = true;
     const includeExtensions = true;
@@ -89,6 +98,8 @@ module.exports = {
       Finally, if Creep is charged and in Homeroom
       */
     } else if (creep.isCharged() && creep.room.name == creep.memory.homeroom) {
+
+      if (creep.recycleAt(30)) return;
 
       if (creep.memory.target_id) {
         structure = Game.getObjectById(creep.memory.target_id);
