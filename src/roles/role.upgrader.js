@@ -2,7 +2,7 @@ module.exports = {
 
   run: creep => {
 
-    if (creep.suicideAt(40)) return;
+    if (creep.recycleAt(20)) return;
 
     if (creep.isCharged()) {
 
@@ -16,8 +16,8 @@ module.exports = {
     } else {
       creep.lookForAndPickupResource();
 
-      // Recharge using Sources, Storage, NOT Containers
-      creep.recharge(true, true, false);
+      // Recharge using Sources, NOT Containers, Storage
+      creep.recharge(true, false, true);
     }
   }
 }

@@ -1,5 +1,4 @@
 const config = require("config");
-const utils = require("utils");
 
 // List of active Creeps' roles
 const roles = [
@@ -41,8 +40,8 @@ const CLAIMER  = "claimer";
 const DEFENDER = "defender";
 const GUARD    = "guard";
 
-// Enable feedback into the console of the game
 const VERBOSE = true;
+const DEBUG = false;
 
 StructureSpawn.prototype.logic = function() {
 
@@ -124,7 +123,7 @@ StructureSpawn.prototype.logic = function() {
   }
 
   // Print Creeps' roles and their quantity
-  if (false) {
+  if (DEBUG) {
     for (let role in creepCount) {
       console.log(role, creepCount[role]);
     }
@@ -246,7 +245,7 @@ StructureSpawn.prototype.spawnTier1 = function(role, homeroom, workroom, target)
   });
 
   if (result == OK && VERBOSE) {
-    console.log(this.name, "is spawning", name, utils.listSkills(skills), homeroom, workroom, target);
+    console.log(this.name, "is spawning", name, listSkills(skills), homeroom, workroom, target);
   } else if (VERBOSE) {
     console.log(this.name, "is spawning failed:", result);
   }
@@ -314,7 +313,7 @@ StructureSpawn.prototype.spawnTier2 = function(role, homeroom, workroom, target)
   });
 
   if (result == OK && VERBOSE) {
-    console.log(this.name, "is spawning", name, utils.listSkills(skills), homeroom, workroom, target);
+    console.log(this.name, "is spawning", name, listSkills(skills), homeroom, workroom, target);
   } else if (VERBOSE) {
     console.log(this.name, "is spawning failed:", result);
   }
@@ -430,7 +429,7 @@ StructureSpawn.prototype.spawnTier3 = function(role, homeroom, workroom, target)
   });
 
   if (result == OK && VERBOSE) {
-    console.log(this.name, "is spawning", name, utils.listSkills(skills), homeroom, workroom, target);
+    console.log(this.name, "is spawning", name, listSkills(skills), homeroom, workroom, target);
   } else if (VERBOSE) {
     console.log(this.name, "is spawning failed:", result);
   }
@@ -468,7 +467,9 @@ StructureSpawn.prototype.hijack = function(adjacentRooms, creepsInRoom) {
     // If the creep is an Hero unit and its workroom is where the Spawn is...
     if (creep.memory.role == "hero" && creep.memory.workroom == this.room.name) {
       const new_workroom = _.sample(adjacentRooms);
-      console.log("Hijacking", creep.name, "new workroom:", new_workroom);
+
+      if (VERBOSE) console.log("Hijacking", creep.name, "new workroom:", new_workroom);
+
       // Reset homeroom and workroom (sending it to the border)
       creep.memory.homeroom = this.room.name;
       creep.memory.workroom = new_workroom;
@@ -479,4 +480,25 @@ StructureSpawn.prototype.hijack = function(adjacentRooms, creepsInRoom) {
       }
     }
   }
+}
+
+/**
+  UTILITIES
+  */
+
+/**
+  Return a count of a Creep body parts as following example
+  [3 WORK, 2 CARRY, 3 MOVE]
+  @param skills Array
+  */
+function listSkills(skills) {
+  const countParts = {}
+  let output = "[";
+  for (let skill of skills) {
+    countParts[skill] = countParts[skill] ? countParts[skill] + 1 : 1;
+  }
+  for (let part in countParts) {
+    output += countParts[part] + " " + part.toUpperCase() + ", ";
+  }
+  return output.slice(0,-2) + "]";
 }

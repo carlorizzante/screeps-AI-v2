@@ -2,7 +2,7 @@ module.exports = {
 
   run: creep => {
 
-    if (creep.suicideAt(30)) return;
+    if (creep.recycleAt(20)) return;
 
     // At spawning Harvesters have 25% chances to be assigned to Towers too
     creep.memory.includeTowers = creep.memory.includeTowers ? creep.memory.includeTowers : _.sample([true, false, false]);
@@ -38,8 +38,10 @@ module.exports = {
       Else, go recharging
       */
     } else {
-      creep.lookForAndPickupResource();
-      creep.recharge(true, false);
+      creep.lookForAndPickupResource(6);
+
+      // Recharge using Sources, NOT Containers, NOT Storage
+      creep.recharge(true, false, false);
     }
   }
 }

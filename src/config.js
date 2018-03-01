@@ -13,7 +13,7 @@ module.exports = {
     capped to 800
     */
   tier1_energy_cap: function() {
-    return 800;
+    return 1000;
   },
 
   /**
@@ -82,7 +82,7 @@ module.exports = {
   /**
     Guard capped at 1 per room
     */
-  guard_cap: function(room) {
+  guard_cap: function() {
     return 1;
   },
 

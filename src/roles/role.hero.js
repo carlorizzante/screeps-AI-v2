@@ -2,24 +2,23 @@ module.exports = {
 
   run: creep => {
 
+    if (creep.recycleAt(30)) return;
+
     const includeSpawns     = true;
     const includeExtensions = true;
     const includeTowers     = false
     const includeStorage    = false;
 
-    if (creep.hits < creep.hitsMax) {
+    // Head for home if damaged, that may save the creep
+    if (creep.hits < creep.hitsMax) creep.headForHomeroom();
 
-      // Watch out for foes nearby
-      const foes = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 20);
+    // Constanstly look out for foes nearby
+    const foes = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 20);
 
-      // If so...
-      if (foes.length) {
-        // TO DO: Improve requests for Military Support
-        creep.say("help!");
-        creep.requestMilitarySupport(foes.length);
-        creep.headForHomeroom();
-      }
-    }
+    // TO DO: Improve requests for Military Support
+
+    // If so...
+    if (foes.length) creep.requestMilitarySupport(foes.length);
 
     /**
       If fatigued, place a marker for a road block
@@ -95,7 +94,9 @@ module.exports = {
       */
     } else {
       creep.lookForAndPickupResource();
-      creep.longRecharge(true);
+
+      // Recharge using Sources, Containers, Storage
+      creep.recharge(true, true, true);
     }
   }
 }

@@ -2,6 +2,8 @@ module.exports = {
 
   run: creep => {
 
+    if (creep.recycleAt(20)) return;
+
     /**
       Miners get nearby an extraction point and focus on mining,
       Resources being mined get dropped into a nearby container.

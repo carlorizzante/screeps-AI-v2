@@ -2,7 +2,7 @@ module.exports = {
 
   run: creep => {
 
-    if (creep.suicideAt(30)) return;
+    if (creep.recycleAt(20)) return;
 
     // creep.say("H");
     // if (creep.memory.includeTowers) creep.say("HT");
@@ -28,6 +28,11 @@ module.exports = {
     } else {
 
       creep.lookForAndPickupResource();
+
+      // Recharge using NOT Sources, Containers, NOT Storage
+      // creep.recharge(false, true, false);
+
+
 
       const storage = creep.pos.findClosestByPath(FIND_STRUCTURES, {
         filter: s => ((

@@ -4,6 +4,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.17.4] - 2018-03-01
+### Changed
+- prototype.creep.js, renamed suicideAt() method into recycleAt()
+                      refactored recharge() method
+                      removed longRecharge() method
+- role.guard.js, implemented recycledAt(30)
+- role.defender.js, implemented recycleAt(30)
+- role.hauler.js, implemented recharge() method
+- role.hero.js, refactored under attack routine
+                added recycleAt(30) method
+                replaced longRecharge() method with recharge()
+- role.miner.js, implemented recycleAt(20);
+
+## [2.17.3] - 2018-02-28
+### Changed
+- config.js, Tier1 Energy Cap increased to 1000 Energy
+- prototype.creep.js, constansts VERBOSE and DEBUG
+- prototype.spawn.js, constansts VERBOSE and DEBUG
+- prototype.tower.js, constansts VERBOSE and DEBUG
+
+### Removed
+- utils.js, not used any longer
+
 ## [2.17.2] - 2018-02-28
 ### Changed
 - prototype.creep.js, refactored suicideAt() method

@@ -18,6 +18,9 @@ const roles = {
   guard: require("role.guard")
 };
 
+const VERBOSE = true;
+const DEBUG = false;
+
 /**
   Main AI for Creeps
   */
@@ -95,78 +98,57 @@ Creep.prototype.isLocked = function(ifNearbyEnergySource, ifNearbyContainer) {
 
 /**
   @param useSource Boolean
-  @param useStorage Boolean
   @param useContainers Boolean
+  @param useStorage Boolean
   */
-Creep.prototype.recharge = function(useSource, useStorage, useContainers) {
+Creep.prototype.recharge = function(useSource, useContainers, useStorage) {
 
-  let storage; // undefined so far
-
-  // Use storage logic
-  if (useStorage) {
-    storage = this.pos.findClosestByRange(FIND_STRUCTURES, {
-      filter: s => ((
-        s == this.room.storage
-        || s.structureType == STRUCTURE_CONTAINER && useContainers
-        || s.structureType == STRUCTURE_STORAGE)
-        && s.store[RESOURCE_ENERGY] > 0
-      )
-    })
-
-    // If storage found, try using it
-    if (storage) {
-      if (this.withdraw(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-        this.moveTo(storage);
-      }
-    }
-  }
-
-  // Otherwise, use Energy sources logic
-  if (!storage && useSource) {
-
-    // Find closest source
-    const source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
-
-    // Try recharge
-    if (this.harvest(source) == ERR_NOT_IN_RANGE) {
-      // Otherwise get closer
-      this.moveTo(source);
-    }
-  }
-}
-
-/**
-  @param pickUpDroppedResources Boolean
-  */
-Creep.prototype.longRecharge = function() {
-
-  // If Creep is in workroom room
-  if (this.room.name == this.memory.workroom) {
-
-    // Look for containers first
-    const container = this.pos.findClosestByPath(FIND_STRUCTURES, {
-      filter: s => s.structureType == STRUCTURE_CONTAINER
-    });
-    if (container) {
-      if (this.withdraw(container, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-        this.moveTo(container);
-        return;
-      }
-    }
-
-    // Find active source
-    const source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
-
-    // Try harvesting from source
-    if (this.harvest(source) == ERR_NOT_IN_RANGE) {
-      // Otherwise get closer to source
-      this.moveTo(source);
-    }
-
-  // If not in workroom room, find exit and move towards it
-  } else {
+  // Move to workroom is not there yet
+  if (this.room.name != this.memory.workroom) {
     const exit = this.room.findExitTo(this.memory.workroom);
     this.moveTo(this.pos.findClosestByPath(exit));
+    return;
+  }
+
+  delete this.memory.source_id;
+  delete this.memory.storage_id;
+
+  let source;  // Energy Sources require harvest()
+  let storage; // Containers and Storage require withdraw()
+
+  // Use first Containers and Storage
+  if (this.memory.storage_id) {
+    storage = Game.getObjectById(this.memory.storage_id);
+
+  } else if (useContainers || useStorage) {
+    delete this.memory.storage_id;
+    storage = this.pos.findClosestByPath(FIND_STRUCTURES, {
+      filter: s => ((
+        (useContainers && s.structureType == STRUCTURE_CONTAINER)
+        || (useStorage && s.structureType == STRUCTURE_STORAGE))
+        && s.store[RESOURCE_ENERGY] > 0
+      )
+    });
+    if (storage) this.memory.storage_id = storage.id;
+
+  // If no Containers or Storage nearly available, use Energy Sources
+  } else if (this.memory.source_id) {
+    source = Game.getObjectById(this.memory.source_id);
+
+  } else if (useSource) {
+    delete this.memory.source_id;
+    source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE, {
+      filter: s => s.energy >= 500 // Only if Source has somehow enough to harvest
+    });
+    if (source) this.memory.source_id = source.id;
+  }
+
+  // Go get it
+  if (storage && this.withdraw(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+    this.moveTo(storage);
+
+  } else if (source && this.harvest(source) == ERR_NOT_IN_RANGE) {
+    this.moveTo(source);
   }
 }
 
@@ -280,7 +262,7 @@ Creep.prototype.requestMilitarySupport = function(foesLength) {
     }
   }
 
-  console.log("Making new request:", id, "Room:", room, "Priority:", foesLength);
+  if (VERBOSE) console.log("Making new request:", id, "Room:", room, "Priority:", foesLength);
 
   // Record not found, make a new one buddy!
   const request = {
@@ -313,7 +295,7 @@ Creep.prototype.requestRoad = function() {
 Creep.prototype.goClaimController = function() {
   if (this.room.controller) {
     this.say("Claim");
-    console.log(this.room.controller, this.claimController(this.room.controller));
+    if (DEBUG) console.log(this.room.controller, this.claimController(this.room.controller));
     if (this.claimController(this.room.controller) == ERR_NOT_IN_RANGE) {
       this.moveTo(this.room.controller);
     }
@@ -349,7 +331,7 @@ Creep.prototype.details = function() {
   Move towards the Spawn then life expectancy is below the given amount of ticks
   @param terminalTicks Integer ticks left to live
   */
-Creep.prototype.suicideAt = function(terminalTicks) {
+Creep.prototype.recycleAt = function(terminalTicks) {
   // this.say(this.ticksToLive);
   if (this.ticksToLive <= terminalTicks) {
     this.say("#@$");
@@ -359,7 +341,7 @@ Creep.prototype.suicideAt = function(terminalTicks) {
     if (this.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE || spawn.recycleCreep(this) == ERR_NOT_IN_RANGE) {
       this.moveTo(spawn);
     } else {
-      console.log(this.name + " has been recycled");
+      if (VERBOSE) console.log(this.name + " has been recycled");
     }
     return true;
   }

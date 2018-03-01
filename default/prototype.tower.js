@@ -1,5 +1,8 @@
 const config = require("config");
 
+const VERBOSE = false;
+const DEBUG = false;
+
 StructureTower.prototype.logic = function() {
 
   const REPAIR_THESHOLD = config.repair_threshold();

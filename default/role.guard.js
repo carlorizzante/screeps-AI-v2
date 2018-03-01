@@ -2,7 +2,13 @@ module.exports = {
 
   run: creep => {
 
-    if (creep.suicideAt(30)) return;
+    if (creep.recycleAt(30)) return;
+
+    // Constanstly look out for foes nearby
+    const foes = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 20);
+
+    // If so...
+    if (foes.length) creep.requestMilitarySupport(foes.length);
 
     /**
       Travel to assigned/workroom
