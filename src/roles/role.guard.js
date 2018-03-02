@@ -2,7 +2,7 @@ module.exports = {
 
   run: creep => {
 
-    if (creep.recycleAt(30)) return;
+    if (creep.recycleAt()) return;
 
     // Constanstly look out for foes nearby
     const foes = creep.pos.findInRange(FIND_HOSTILE_CREEPS, 20);

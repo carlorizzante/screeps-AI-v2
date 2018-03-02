@@ -80,11 +80,10 @@ module.exports = {
   },
 
   /**
-    Miners capped to number of Energy Sources in the room, + 1
+    Miners capped to number of Energy Sources in the room
     */
   miners_cap: function(room) {
-    // return room.find(FIND_SOURCES).length;
-    return room.find(FIND_SOURCES).length + 1;
+    return room.find(FIND_SOURCES).length;
   },
 
   /**

@@ -97,6 +97,7 @@ Creep.prototype.getEnergy = function(useSource, useContainers, useStorage) {
   // TO DO: store source_id and storage_id
   delete this.memory.source_id;
   delete this.memory.storage_id;
+  delete this.memory.structure_id;
 
   let source;  // Energy Sources require harvest()
   let storage; // Containers and Storage require withdraw()
@@ -152,6 +153,10 @@ Creep.prototype.getEnergy = function(useSource, useContainers, useStorage) {
   */
 Creep.prototype.findStructure = function(includeSpawns, includeExtensions, includeTowers, includeStorage) {
 
+  delete this.memory.source_id;
+  delete this.memory.storage_id;
+  delete this.memory.structure_id;
+
   if (this.memory.structure_id) return Game.getObjectById(this.memory.structure_id);
 
   delete this.memory.structure_id;
@@ -172,9 +177,9 @@ Creep.prototype.findStructure = function(includeSpawns, includeExtensions, inclu
   */
 Creep.prototype.rechargeStructure = function(structure) {
   if (structure) {
-    const result = this.transfer(structure, RESOURCE_ENERGY);
-    if (result == ERR_NOT_IN_RANGE) this.moveTo(structure);
-    if (result == ERR_FULL) delete this.memory.structure_id;
+    let result = this.transfer(structure, RESOURCE_ENERGY);
+    if (result == ERR_NOT_IN_RANGE) result = this.moveTo(structure);
+    if (result == ERR_FULL || result == ERR_NO_PATH) delete this.memory.structure_id;
     return result;
   }
 }
@@ -285,10 +290,18 @@ Creep.prototype.getDetails = function() {
   @param terminalTicks Integer ticks left to live
   */
 Creep.prototype.recycleAt = function(terminalTicks) {
+  terminalTicks = terminalTicks ? terminalTicks : 30;
   // this.say(this.ticksToLive);
   if (this.ticksToLive <= terminalTicks) {
     if (COMICS) this.say("#@$");
     // if (COMICS) this.say("☠☠☠");
+
+    if (this.room.name != this.memory.homeroom) {
+      const exit = this.room.findExitTo(this.memory.homeroom);
+      this.moveTo(this.pos.findClosestByPath(exit));
+      return
+    }
+
     const spawn = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
       filter: s => s.structureType == STRUCTURE_SPAWN
     });
@@ -314,19 +327,18 @@ Creep.prototype.resetWorkroom = function(roomname) {
     return this.memory.workroom == roomname;
   }
 
-  let newWorkroom;
   const adjacentRooms = Game.map.describeExits(this.room.name);
-
-  const result = [];
+  const ownedRooms = Memory.spawns;
+  let rooms = [];
   for (let key in adjacentRooms) {
-    result.push(adjacentRooms[key]);
+    rooms.push(adjacentRooms[key]);
   }
 
-  newWorkroom = _.sample(adjacentRooms);
+  rooms = rooms.filter(r => ownedRooms.indexOf(r) < 0);
+  const newWorkroom = _.sample(rooms);
 
-  // TO DO: verify that newWorkroom has not a Spawn in it
+  if (COMICS) this.say(newWorkroom);
 
   this.memory.workroom = newWorkroom;
-  if (COMICS) this.say(newWorkroom);
   return this.memory == newWorkroom;
 }

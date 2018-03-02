@@ -2,7 +2,7 @@ module.exports = {
 
   run: creep => {
 
-    if (creep.recycleAt(30)) return;
+    if (creep.recycleAt()) return;
 
     if (!creep.isCharged()) {
 

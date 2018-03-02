@@ -56,8 +56,8 @@ StructureSpawn.prototype.logic = function() {
   const maxEnergy = room.energyCapacityAvailable;
   const currentEnergy = room.energyAvailable;
 
-  // Exit if insufficient Energy
-  if (currentEnergy < maxEnergy) return;
+  // Exit if insufficient Energy to spawn the smallest Creep
+  if (currentEnergy < 300) return;
 
   /**
     TO DO: Requests for Military Support need to be prioritized
@@ -93,9 +93,6 @@ StructureSpawn.prototype.logic = function() {
     }
   }
 
-  // Emergency settings - Manual spawning of Defender
-  // if (true) this.spawnTier3(DEFENDER, this.room.name, this.room.name);
-
   // Find the adjacent rooms to the current Spawn
   const adjacentRooms = this.getAdjacentRooms();
 
@@ -115,7 +112,7 @@ StructureSpawn.prototype.logic = function() {
   }
 
   // TO DO: Hijack Heros coming from other rooms
-  this.hijack(adjacentRooms, creepsInRoom);
+  // this.hijack(adjacentRooms, creepsInRoom);
 
   // TO DO: Clean expired requests and tasks
 
@@ -163,13 +160,19 @@ StructureSpawn.prototype.logic = function() {
   } else if (creepCount[UPGRADER] < UPGRADERS_CAP) {
     this.spawnCustomCreep(UPGRADER, this.room.name, this.room.name);
 
-  // Creeps Tier 2 allowed only if enough energyCapacityAvailable
-  } else if (maxEnergy < TIER2_ENERGY_THRESHOLD) {
+  /**
+    Creeps Tier 2 allowed only if enough energyCapacityAvailable
+    */
+  } else if (this.room.energyAvailable < TIER2_ENERGY_THRESHOLD) {
     return;
 
-
-  } else if (creepCount[MINER] < MINER_CAP) {
-    this.spawnCustomCreep(MINER, this.room.name, this.room.name);
+  } else if (creepCount[MINER] < MINER_CAP && this.room.energyAvailable >= 700) {
+    // const availableEnergySources = [];
+    const availableEnergySources = this.room.find(FIND_SOURCES);
+    console.log("availableEnergySources:", availableEnergySources);
+    const index = this.memory.miner_index % availableEnergySources.length;
+    const target = availableEnergySources[index];
+    this.spawnCustomCreep(MINER, this.room.name, this.room.name, target);
 
   } else if (creepCount[HAULER] < HAULER_CAP) {
     this.spawnCustomCreep(HAULER, this.room.name, this.room.name);
@@ -233,7 +236,8 @@ StructureSpawn.prototype.spawnCustomCreep = function(role, homeroom, workroom, t
     // 50% WORK
     // 25% CARRY
     // 25% MOVE
-    let use = _.min([TIER1_ENERGY_CAP, this.room.energyCapacityAvailable]);
+    let use = _.min([TIER1_ENERGY_CAP, this.room.energyAvailable]);
+    console.log(this.name, "spawning", role, "with energy", use, "available", this.room.energyAvailable);
     energyUsed += addParts(WORK, 100, Math.floor(use * 0.50), skills);
     energyUsed += addParts(CARRY, 50, Math.floor(use * 0.25), skills);
     energyUsed += addParts(MOVE,  50, Math.floor(use * 0.25), skills);
@@ -244,7 +248,7 @@ StructureSpawn.prototype.spawnCustomCreep = function(role, homeroom, workroom, t
   if (role == HAULER) {
     // 50% CARRY
     // 50% MOVE
-    let use = _.min([TIER2_ENERGY_CAP, this.room.energyCapacityAvailable]);
+    let use = _.min([TIER2_ENERGY_CAP, this.room.energyAvailable]);
     energyUsed += addParts(CARRY, 50, Math.floor(use * 0.50), skills);
     energyUsed += addParts(MOVE,  50, Math.floor(use * 0.50), skills);
   }
@@ -253,13 +257,13 @@ StructureSpawn.prototype.spawnCustomCreep = function(role, homeroom, workroom, t
     // 20% WORK
     // 40% CARRY
     // 40% MOVE
-    let use = _.min([TIER2_ENERGY_CAP, this.room.energyCapacityAvailable]);
+    let use = _.min([TIER2_ENERGY_CAP, this.room.energyAvailable]);
     energyUsed += addParts(WORK, 100, Math.floor(use * 0.20), skills);
     energyUsed += addParts(CARRY, 50, Math.floor(use * 0.40), skills);
     energyUsed += addParts(MOVE,  50, Math.floor(use * 0.40), skills);
   }
 
-  if (role == MINER) {
+  if (role == MINER) { // cost 700
     // 5 WORK
     // 2 CARRY
     // 2 MOVE
@@ -267,6 +271,7 @@ StructureSpawn.prototype.spawnCustomCreep = function(role, homeroom, workroom, t
     energyUsed += addParts(WORK, 100, Math.floor(500), skills);
     energyUsed += addParts(CARRY, 50, Math.floor(100), skills);
     energyUsed += addParts(MOVE,  50, Math.floor(100), skills);
+    // this.memory.miner_index = this.memory.miner_index ? this.memory.miner_index : 1;
   }
 
   // Tier 3
@@ -311,10 +316,14 @@ StructureSpawn.prototype.spawnCustomCreep = function(role, homeroom, workroom, t
     }
   });
 
-  if (result == OK && VERBOSE) {
-    console.log(this.name, "is spawning", name, listSkills(skills), homeroom, workroom, target);
+  if (result == OK) {
+    const key = role + "_index";
+    this.memory[key] = this.memory[key] ? this.memory[key] + 1 : 1;
+    console.log(this.name, "this.memory."+role+"_index:", this.memory[key]);
+    if (VERBOSE) console.log(this.name, "is spawning", name, listSkills(skills), homeroom, workroom, target);
+
   } else if (VERBOSE) {
-    console.log(this.name, "is spawning failed:", result);
+    console.log(this.name, "is spawning", role, "failed:", result);
   }
 }
 
@@ -323,21 +332,13 @@ StructureSpawn.prototype.spawnCustomCreep = function(role, homeroom, workroom, t
   */
 StructureSpawn.prototype.getAdjacentRooms = function() {
   const adjacentRooms = Game.map.describeExits(this.room.name);
-  const result = [];
+  const ownedRooms = Memory.spawns;
+  let rooms = [];
   for (let key in adjacentRooms) {
-    result.push(adjacentRooms[key]);
+    rooms.push(adjacentRooms[key]);
   }
-  // Owned room, for later use
-  const myRooms = [];
-  for (let key in Game.spawns) {
-    myRooms.push(Game.spawns[key].room.name);
-  }
-  // TO DO: Get more room programmatically
-  // result.push("W7N2");
-  // result.push("W8N4");
-  // result.push("W6N3");
-  // result.push("W5N3");
-  return result; // filter this by owned rooms
+  rooms = rooms.filter(r => ownedRooms.indexOf(r) < 0);
+  return rooms;
 }
 
 /**
@@ -356,7 +357,7 @@ StructureSpawn.prototype.hijack = function(adjacentRooms, creepsInRoom) {
     if (creep.memory.workroom == this.room.name) {
       const new_workroom = _.sample(adjacentRooms);
 
-      if (VERBOSE) console.log("Hijacking", creep.name, "new workroom:", new_workroom);
+      if (VERBOSE) console.log(this.name, "is hijacking", creep.name, "new workroom:", new_workroom);
 
       // Reset homeroom and workroom (sending it to the border)
       creep.memory.homeroom = this.room.name;

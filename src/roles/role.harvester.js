@@ -2,6 +2,12 @@ module.exports = {
 
   run: creep => {
 
+    creep.memory.homeroom = "W8N3";
+    delete creep.memory.source_id;
+    delete creep.memory.structure_id;
+
+    if (creep.recycleAt()) return;
+
     // 50% chances the Hauler will also take care of Towers
     if (creep.memory.includeTowers === undefined) creep.memory.includeTowers = _.sample([true, false]);
 
@@ -45,11 +51,11 @@ module.exports = {
       */
     } else if (!creep.isCharged() && creep.room.name == creep.memory.workroom) {
 
-      // getEnergy using Sources, Containers, NOT Storage
-      const source = creep.getEnergy(true, true, false);
+      // getEnergy using Sources, NOT Containers, NOT Storage
+      const source = creep.getEnergy(true, false, false);
 
       // Reset Workroom is no Active Source found
-      if (!source) creep.resetWorkroom();
+      // if (!source) creep.resetWorkroom();
 
     /**
       if charged and not in Homeroom

@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.17.8] - 2018-03-02
+### Changed
+- config.js, changed Miners' Cap to the number of Energy Sources in the room
+- prototype.creep.js, refactored resetWorkroom() method
+                      refactored recycleAt() method
+                      refactored rechargeStructure() method
+- prototype.spawn.js, refactored spawnCustomCreep() method, bug fix
+                      refactored getAdjacentRooms() method
+                      refactored hijack() method
+- role.harvester.js, Harvesters do not get Energy from Containers
+                     Harvesters do not move into nearby rooms
+- role.hero.js, Heros do not get Energy from Containers
+                improved recycling routine when in Workroom
+
 ## [2.17.7] - 2018-03-01
 ### Changed
 - config.js, Builders cap reduced from 5 to 4

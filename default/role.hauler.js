@@ -10,7 +10,7 @@ module.exports = {
     const rechargeTowers     = creep.memory.includeTowers;
     const rechargeStorage    = true;
 
-    if (creep.recycleAt(20)) return;
+    if (creep.recycleAt()) return;
 
     /**
       If fatigued, place a marker for a road block

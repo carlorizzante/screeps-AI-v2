@@ -8,6 +8,12 @@ module.exports.loop = function() {
   // Make sure we have a Board
   if (!Memory.board) Memory.board = {}
 
+  // Make sure to reset Spawn names list
+  Memory.spawns = [];
+  for (let name in Game.spawns) {
+    Memory.spawns.push(Game.spawns[name].room.name)
+  }
+
   // Delete entries in Memory.board older than 300 ticks
   for (let key in Memory.board) {
     let now = Game.time
@@ -16,17 +22,17 @@ module.exports.loop = function() {
   }
 
   /**
-    Run Creeps
-    */
-  for (let name in Game.creeps) {
-    Game.creeps[name].logic();
-  }
-
-  /**
     Run Spawns
     */
   for (let name in Game.spawns) {
     Game.spawns[name].logic();
+  }
+
+  /**
+    Run Creeps
+    */
+  for (let name in Game.creeps) {
+    Game.creeps[name].logic();
   }
 
   /**

@@ -5,7 +5,7 @@ module.exports = {
 
   run: creep => {
 
-    if (creep.recycleAt(20)) return;
+    if (creep.recycleAt()) return;
 
     const REPAIR_THESHOLD = config.repair_threshold();
 

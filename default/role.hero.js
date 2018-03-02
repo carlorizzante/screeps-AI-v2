@@ -28,6 +28,9 @@ module.exports = {
       */
     creep.lookForAndPickupResource();
 
+    if (creep.room.name == creep.memory.homeroom && creep.recycleAt()) return;
+    if (creep.room.name == creep.memory.workroom && creep.recycleAt(100)) return;
+
     /**
       If out of charge and not in Workroom
       */
@@ -40,10 +43,10 @@ module.exports = {
       */
     } else if (!creep.isCharged() && creep.room.name == creep.memory.workroom) {
 
-      // getEnergy using Sources, Containers, NOT Storage
-      const source = creep.getEnergy(true, true, false);
+      // getEnergy using Sources, NOT Containers, NOT Storage
+      const source = creep.getEnergy(true, false, false);
 
-      // Reset Workroom is no Active Source found
+      // If no source found, try another room
       if (!source) creep.resetWorkroom();
 
     /**
@@ -89,9 +92,6 @@ module.exports = {
       If charged and in Homeroom
       */
     } else if (creep.isCharged() && creep.room.name == creep.memory.homeroom) {
-
-      if (creep.recycleAt(20)) return;
-
       structure = creep.findStructure(rechargeSpawns, rechargeExtensions, rechargeTowers, rechargeStorage);
       if (structure) creep.rechargeStructure(structure);
     }
