@@ -189,9 +189,9 @@ StructureSpawn.prototype.logic = function() {
   //   this.spawnTier3(CLAIMER, workroom, workroom);
 
   /**
-    Spawn Hero units and assign them randomly to nearby rooms
+    Spawn Hero to max energy and assign it to a nearby room
     */
-  } else {
+  } else if (this.room.energyAvailable == room.energyCapacityAvailable) {
     this.spawnCustomCreep(HERO, this.room.name, _.sample(adjacentRooms));
   }
 }
@@ -237,7 +237,6 @@ StructureSpawn.prototype.spawnCustomCreep = function(role, homeroom, workroom, t
     // 25% CARRY
     // 25% MOVE
     let use = _.min([TIER1_ENERGY_CAP, this.room.energyAvailable]);
-    console.log(this.name, "spawning", role, "with energy", use, "available", this.room.energyAvailable);
     energyUsed += addParts(WORK, 100, Math.floor(use * 0.50), skills);
     energyUsed += addParts(CARRY, 50, Math.floor(use * 0.25), skills);
     energyUsed += addParts(MOVE,  50, Math.floor(use * 0.25), skills);

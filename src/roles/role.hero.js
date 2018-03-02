@@ -92,8 +92,13 @@ module.exports = {
       If charged and in Homeroom
       */
     } else if (creep.isCharged() && creep.room.name == creep.memory.homeroom) {
+      let result;
       structure = creep.findStructure(rechargeSpawns, rechargeExtensions, rechargeTowers, rechargeStorage);
-      if (structure) creep.rechargeStructure(structure);
+      if (structure) result = creep.rechargeStructure(structure);
+      if (result == OK && creep.carry.energy <= 50) {
+        creep.resetWorkroom();
+        creep.say(creep.memory.workroom);
+      }
     }
 
   }

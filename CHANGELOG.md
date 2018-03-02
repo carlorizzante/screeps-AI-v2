@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.17.9] - 2018-03-02
+### Changed
+- prototype.creep.js, minimal improvements
+- prototype.spawn.js, bug fix
+- role.hero.js, Heros reset Workroom when they transfer all residual Energy to Structures
+- role.miner.js, increased time for recycling / moving towards Spawn
+
+
 ## [2.17.8] - 2018-03-02
 ### Changed
 - config.js, changed Miners' Cap to the number of Energy Sources in the room

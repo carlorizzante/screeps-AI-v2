@@ -189,9 +189,9 @@ StructureSpawn.prototype.logic = function() {
   //   this.spawnTier3(CLAIMER, workroom, workroom);
 
   /**
-    Spawn Hero units and assign them randomly to nearby rooms
+    Spawn Hero to max energy and assign it to a nearby room
     */
-  } else {
+  } else if (this.room.energyAvailable == room.energyCapacityAvailable) {
     this.spawnCustomCreep(HERO, this.room.name, _.sample(adjacentRooms));
   }
 }

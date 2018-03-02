@@ -40,6 +40,7 @@ Creep.prototype.isCharged = function() {
 
   } else if (this.carry.energy == this.carryCapacity) {
     this.memory.charged = true;
+    delete this.memory.source_id;
   }
 
   // Return true/false accordingly

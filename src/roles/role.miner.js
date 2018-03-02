@@ -2,7 +2,7 @@ module.exports = {
 
   run: creep => {
 
-    if (creep.recycleAt()) return;
+    if (creep.recycleAt(45)) return;
 
     /**
       Miners get nearby an extraction point and focus on mining,
