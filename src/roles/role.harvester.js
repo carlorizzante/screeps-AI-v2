@@ -2,7 +2,6 @@ module.exports = {
 
   run: creep => {
 
-    creep.memory.homeroom = "W8N3";
     delete creep.memory.source_id;
     delete creep.memory.structure_id;
 

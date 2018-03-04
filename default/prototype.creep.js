@@ -93,7 +93,11 @@ Creep.prototype.isLocked = function(ifNearbyEnergySource, ifNearbyContainer) {
   @param useContainers Boolean
   @param useStorage Boolean
   */
+  // TO DO: invert order of params
 Creep.prototype.getEnergy = function(useSource, useContainers, useStorage) {
+
+  // Elect only Storage or Containers if there is enough energy to take
+  const threshold = this.carryCapacity / 2;
 
   // TO DO: store source_id and storage_id
   delete this.memory.source_id;
@@ -103,46 +107,57 @@ Creep.prototype.getEnergy = function(useSource, useContainers, useStorage) {
   let source;  // Energy Sources require harvest()
   let storage; // Containers and Storage require withdraw()
 
-  // Use first Containers and Storage
+  // See if there is already a storage in memory
   if (this.memory.storage_id) {
-    // this.say("1");
     storage = Game.getObjectById(this.memory.storage_id);
-    if (storage.store[RESOURCE_ENERGY] <= 0) delete this.memory.storage_id;
+    delete this.memory.storage_id; // reset and later update
 
-  } else if (useContainers || useStorage) {
-    delete this.memory.storage_id;
-    storage = this.pos.findClosestByPath(FIND_STRUCTURES, {
-      filter: s => ((
-        (useContainers && s.structureType == STRUCTURE_CONTAINER)
-        || (useStorage && s.structureType == STRUCTURE_STORAGE))
-        && s.store[RESOURCE_ENERGY] > this.carryCapacity / 2
-      )
-    });
-    if (storage) this.memory.storage_id = storage.id;
+    // If storage empty, reset and start over
+    if (storage.store[RESOURCE_ENERGY] <= threshold) {
+      storage = null;
+    }
   }
 
-  // If no Containers or Storage nearly available, use Energy Sources
+  // Prioritize Storage
+  if (!storage && useStorage && this.room.storage && this.room.storage.store.energy >= threshold) {
+    storage = this.room.storage;
+  }
+
+  // Then Containers
+  if (!storage && useContainers) {
+    storage = this.pos.findClosestByPath(FIND_STRUCTURES, {
+      filter: s => s.structureType == STRUCTURE_CONTAINER && s.store[RESOURCE_ENERGY] > 0
+    });
+  }
+
+  // If no Containers or Storage nearly available, look for an Energy Source
   if (!storage && useSource && this.memory.source_id) {
     source = Game.getObjectById(this.memory.source_id);
+    delete this.memory.source_id; // resent and later update
+  }
 
-  } else if (useSource) {
-    delete this.memory.source_id;
+  // If no Source in memory, look for a nearby one
+  if (!source && useSource) {
     source = this.pos.findClosestByPath(FIND_SOURCES_ACTIVE, {
       filter: s => s.energy >= 0 // Only if Source has somehow enough to harvest
     });
-    if (source) this.memory.source_id = source.id;
   }
 
-  // Prioritize Containers and Storage over Sources
+  // Save for future use
+  if (storage) this.memory.storage_id = storage.id;
+  if (source)  this.memory.source_id = source.id;
+
+  // Prioritize Storage and Containers over Sources
   if (storage && this.withdraw(storage, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
     this.moveTo(storage);
 
+  // Then Sources
   } else if (source && this.harvest(source) == ERR_NOT_IN_RANGE) {
     this.moveTo(source);
   }
 
-  // Return true if anything found, false otherwise
-  return (useSource && source) || ((useContainers || useStorage) && storage);
+  // Return storage/source or false
+  return ((useContainers || useStorage) && storage) || (useSource && source);
 }
 
 /**

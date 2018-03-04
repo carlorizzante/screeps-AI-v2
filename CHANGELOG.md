@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.17.10] - 2018-03-05
+### Changed
+- prototype.creep.js, refactored getEnergy() method
+- prototype.spawn.js, new deleteExpiredCreeps() method
+                      new countCreepsInRoom() method
+                      renamed getAdjacentRooms() into getExits()
+
 ## [2.17.9] - 2018-03-02
 ### Changed
 - prototype.creep.js, minimal improvements
@@ -19,7 +26,7 @@ This project adheres to [Semantic Versioning](http://semver.org/).
                       refactored recycleAt() method
                       refactored rechargeStructure() method
 - prototype.spawn.js, refactored spawnCustomCreep() method, bug fix
-                      refactored getAdjacentRooms() method
+                      refactored getExits() method
                       refactored hijack() method
 - role.harvester.js, Harvesters do not get Energy from Containers
                      Harvesters do not move into nearby rooms

@@ -61,6 +61,7 @@ StructureSpawn.prototype.logic = function() {
 
   /**
     TO DO: Requests for Military Support need to be prioritized
+    TO DO: Clean expired requests and tasks
     */
   if (Memory.board) {
     for (let key in Memory.board) {
@@ -94,47 +95,16 @@ StructureSpawn.prototype.logic = function() {
   }
 
   // Find the adjacent rooms to the current Spawn
-  const adjacentRooms = this.getAdjacentRooms();
-
-  // Remove already owned rooms from the above list of adjacent rooms
-  // TO DO: Clean up adjacent rooms - see getAdjacentRooms method
-
-  // Find all creeps in the current room
-  const creepsInRoom = room.find(FIND_MY_CREEPS);
-  const creepCount = {}
+  const adjacentRooms = this.getExits();
 
   // Delete from memory Creeps that do not longer exist
-  for (let name in Memory.creeps) {
-    if (!Game.creeps[name]) {
-      if (VERBOSE) console.log("Creep", name, "deleted from memory.");
-      delete Memory.creeps[name];
-    }
-  }
+  this.deleteExpiredCreeps();
 
-  // TO DO: Hijack Heros coming from other rooms
-  // this.hijack(adjacentRooms, creepsInRoom);
-
-  // TO DO: Clean expired requests and tasks
-
-  // Count Creeps in the current room
-  for (let role of roles) {
-    creepCount[role] = _.sum(creepsInRoom, c => c.memory.role == role);
-  }
-
-  // Print Creeps' roles and their quantity
-  if (DEBUG) {
-    for (let role in creepCount) {
-      console.log(role, creepCount[role]);
-    }
-  }
-
-  /**
-    Calculate cap and threshold values for Creep type/role
-    Those contansts are used to determine which types will be spawn
-    */
+  // Keep count of Creeps currently in the room
+  const creepsInRoom = this.countCreepsInRoom();
 
   // Tier 1
-  const HARVESTERS_CAP = config.harvesters_cap(room, creepCount);
+  const HARVESTERS_CAP = config.harvesters_cap(room, creepsInRoom);
   const BUILDERS_CAP   = config.builders_cap(room);
   const UPGRADERS_CAP  = config.upgraders_cap(room);
 
@@ -151,13 +121,13 @@ StructureSpawn.prototype.logic = function() {
   /**
     Spawn Creeps accordingly to rules calculated above
     */
-  if (creepCount[HARVESTER] < HARVESTERS_CAP) {
+  if (creepsInRoom[HARVESTER] < HARVESTERS_CAP) {
     this.spawnCustomCreep(HARVESTER, this.room.name, this.room.name);
 
-  } else if (creepCount[BUILDER] < BUILDERS_CAP) {
+  } else if (creepsInRoom[BUILDER] < BUILDERS_CAP) {
     this.spawnCustomCreep(BUILDER, this.room.name, this.room.name);
 
-  } else if (creepCount[UPGRADER] < UPGRADERS_CAP) {
+  } else if (creepsInRoom[UPGRADER] < UPGRADERS_CAP) {
     this.spawnCustomCreep(UPGRADER, this.room.name, this.room.name);
 
   /**
@@ -166,18 +136,14 @@ StructureSpawn.prototype.logic = function() {
   } else if (this.room.energyAvailable < TIER2_ENERGY_THRESHOLD) {
     return;
 
-  } else if (creepCount[MINER] < MINER_CAP && this.room.energyAvailable >= 700) {
-    // const availableEnergySources = [];
-    const availableEnergySources = this.room.find(FIND_SOURCES);
-    console.log("availableEnergySources:", availableEnergySources);
-    const index = this.memory.miner_index % availableEnergySources.length;
-    const target = availableEnergySources[index];
-    this.spawnCustomCreep(MINER, this.room.name, this.room.name, target);
+    // TO DO: distibure minsers equally amoung available Energy Sources in the room
+  } else if (creepsInRoom[MINER] < MINER_CAP && this.room.energyAvailable >= 700) {
+    this.spawnCustomCreep(MINER, this.room.name, this.room.name);
 
-  } else if (creepCount[HAULER] < HAULER_CAP) {
+  } else if (creepsInRoom[HAULER] < HAULER_CAP) {
     this.spawnCustomCreep(HAULER, this.room.name, this.room.name);
 
-  } else if (creepCount[GUARD] < GUARD_CAP) {
+  } else if (creepsInRoom[GUARD] < GUARD_CAP) {
     this.spawnCustomCreep(GUARD, this.room.name, this.room.name)
 
   /**
@@ -200,9 +166,9 @@ StructureSpawn.prototype.logic = function() {
   @param role String
   @param homeroom String
   @param workroom String
-  @param target null
+  @param target_id Object ID, ID of the initial target for this new unit
   */
-StructureSpawn.prototype.spawnCustomCreep = function(role, homeroom, workroom, target) {
+StructureSpawn.prototype.spawnCustomCreep = function(role, homeroom, workroom, target_id) {
 
   const maxEnergy = this.room.energyCapacityAvailable;
   let energyAvailable = maxEnergy;
@@ -237,7 +203,6 @@ StructureSpawn.prototype.spawnCustomCreep = function(role, homeroom, workroom, t
     // 25% CARRY
     // 25% MOVE
     let use = _.min([TIER1_ENERGY_CAP, this.room.energyAvailable]);
-    console.log(this.name, "spawning", role, "with energy", use, "available", this.room.energyAvailable);
     energyUsed += addParts(WORK, 100, Math.floor(use * 0.50), skills);
     energyUsed += addParts(CARRY, 50, Math.floor(use * 0.25), skills);
     energyUsed += addParts(MOVE,  50, Math.floor(use * 0.25), skills);
@@ -264,7 +229,7 @@ StructureSpawn.prototype.spawnCustomCreep = function(role, homeroom, workroom, t
   }
 
   if (role == MINER) { // cost 700
-    // 5 WORK
+    // 5 WORK -> exhaust a 3000 Energy Source right before regeneration
     // 2 CARRY
     // 2 MOVE
     let use = 500 + 100 + 100;
@@ -317,11 +282,7 @@ StructureSpawn.prototype.spawnCustomCreep = function(role, homeroom, workroom, t
   });
 
   if (result == OK) {
-    const key = role + "_index";
-    this.memory[key] = this.memory[key] ? this.memory[key] + 1 : 1;
-    console.log(this.name, "this.memory."+role+"_index:", this.memory[key]);
-    if (VERBOSE) console.log(this.name, "is spawning", name, listSkills(skills), homeroom, workroom, target);
-
+    if (VERBOSE) console.log(this.name, "is spawning", name, listSkills(skills), homeroom, workroom, target_id);
   } else if (VERBOSE) {
     console.log(this.name, "is spawning", role, "failed:", result);
   }
@@ -330,7 +291,7 @@ StructureSpawn.prototype.spawnCustomCreep = function(role, homeroom, workroom, t
 /**
   Returns an array with the name of the adjacent rooms
   */
-StructureSpawn.prototype.getAdjacentRooms = function() {
+StructureSpawn.prototype.getExits = function() {
   const adjacentRooms = Game.map.describeExits(this.room.name);
   const ownedRooms = Memory.spawns;
   let rooms = [];
@@ -372,8 +333,31 @@ StructureSpawn.prototype.hijack = function(adjacentRooms, creepsInRoom) {
 }
 
 /**
-  UTILITIES
+  Deletes from Memory Creeps that do not longer exist
   */
+StructureSpawn.prototype.deleteExpiredCreeps = function() {
+  for (let name in Memory.creeps) {
+    if (!Game.creeps[name]) {
+      if (VERBOSE) console.log("Creep", name, "deleted from memory.");
+      delete Memory.creeps[name];
+    }
+  }
+}
+
+/**
+  Returns the count of Creeps in the current room, grouped by roles
+  @param room String room.name, default to this.room
+  */
+StructureSpawn.prototype.countCreepsInRoom = function(room) {
+  room = room ? room : this.room
+  const creepsInRoom = room.find(FIND_MY_CREEPS);
+  const count = {}
+  for (let role of roles) {
+    count[role] = _.sum(creepsInRoom, c => c.memory.role == role);
+  }
+  if (DEBUG) for (let role in count) console.log(role, count[role]);
+  return count
+}
 
 /**
   Return a count of a Creep body parts as following example

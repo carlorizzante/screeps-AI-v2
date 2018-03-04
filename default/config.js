@@ -1,3 +1,24 @@
+/**
+  Creeps Tier 1
+  */
+const BUILDER   = "builder";
+const HARVESTER = "harvester";
+const UPGRADER  = "upgrader";
+
+/**
+  Creeps Tier 2
+  */
+const HAULER = "hauler";
+const HERO   = "hero";
+const MINER  = "miner";
+
+/**
+  Creeps Tier 3
+  */
+const CLAIMER  = "claimer";
+const DEFENDER = "defender";
+const GUARD    = "guard";
+
 module.exports = {
 
   /**
@@ -40,13 +61,12 @@ module.exports = {
 
   /**
     Harvesters are spawn in presence of active energy sources.
-    Range [0, 12]
+    Range [0, 8]
     @param room ROOM
-    @param creepCount Object, key/value count of creeps in the current room
+    @param creepsCount Object, key/value count of creeps in the current room
     */
-  harvesters_cap: function(room, creepCount) {
-    // const tier2 = creepCount.hauler + creepCount.miner;
-    const tier2 = creepCount.hauler + creepCount.miner;
+  harvesters_cap: function(room, creepsCount) {
+    const tier2 = creepsCount[HAULER] + creepsCount[MINER] * 2;
     const sources = room.find(FIND_SOURCES_ACTIVE);
     if (sources.length > 1) return 8 - tier2;
     return 4 - tier2;
