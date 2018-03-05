@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.17.11] - UNRELEASED
+### Changed
+- config.js, Tier1 Energy Cap reduced from 1000 to 800
+- prototype.creep.js, bug fix recycleAt() and improvements
+- prototype.spawn.js, bug fix, added calcCreepCost() method
+- role.defender.js, Defenders only perform Ranged Attack
+
 ## [2.17.10] - 2018-03-05
 ### Changed
 - prototype.creep.js, refactored getEnergy() method

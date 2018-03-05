@@ -54,10 +54,10 @@ StructureSpawn.prototype.logic = function() {
 
   const room = this.room;
   const maxEnergy = room.energyCapacityAvailable;
-  const currentEnergy = room.energyAvailable;
+  const energyAvailable = room.energyAvailable;
 
   // Exit if insufficient Energy to spawn the smallest Creep
-  if (currentEnergy < 300) return;
+  if (energyAvailable < 300) return;
 
   /**
     TO DO: Requests for Military Support need to be prioritized
@@ -80,15 +80,19 @@ StructureSpawn.prototype.logic = function() {
           }
         }
 
-        // Try sending a DEFENDER in support as well
-        if (currentEnergy >= config.tier3_energy_threshold(room)
-          && OK == this.spawnCustomCreep(DEFENDER, entry.room, entry.room)) {
+        // If enough energy for a Defender...
+        if (energyAvailable >= config.tier3_energy_threshold(room)) {
 
-          // If positive, set request as fulfilled
-          Memory.board[entry.id].status = "fulfilled";
+          // ... try spawning one
+          let result = this.spawnCustomCreep(DEFENDER, entry.room, entry.room);
 
-          // quit execution for this cicle
-          return;
+          // If positive
+          if (result == OK) {
+
+            // Set request as fulfilled
+            Memory.board[entry.id].status = "fulfilled";
+            return; // Go to the next cycle
+          }
         }
       }
     }
@@ -269,6 +273,7 @@ StructureSpawn.prototype.spawnCustomCreep = function(role, homeroom, workroom, t
     energyUsed += addParts(MOVE,           50, Math.floor(use * 0.6), skills);
     energyUsed += addParts(RANGED_ATTACK, 150, Math.floor(use * 0.3), skills);
     skills.push(HEAL);
+    // console.log(energyUsed + 250, energyAvailable, calcCreepCost(skills), skills);
   }
 
   // Spawn new creep
@@ -282,9 +287,11 @@ StructureSpawn.prototype.spawnCustomCreep = function(role, homeroom, workroom, t
   });
 
   if (result == OK) {
+    const cost = calcCreepCost(skills);
+    // console.log("Creep cost:", cost);
     if (VERBOSE) console.log(this.name, "is spawning", name, listSkills(skills), homeroom, workroom, target_id);
   } else if (VERBOSE) {
-    console.log(this.name, "is spawning", role, "failed:", result);
+    console.log(this.name, "is spawning", role, "failed:", result, "cost:", calcCreepCost(skills));
   }
 }
 
@@ -363,6 +370,7 @@ StructureSpawn.prototype.countCreepsInRoom = function(room) {
   Return a count of a Creep body parts as following example
   [3 WORK, 2 CARRY, 3 MOVE]
   @param skills Array
+  @returns String
   */
 function listSkills(skills) {
   const countParts = {}
@@ -374,4 +382,25 @@ function listSkills(skills) {
     output += countParts[part] + " " + part.toUpperCase() + ", ";
   }
   return output.slice(0,-2) + "]";
+}
+
+/**
+  Returns the cost as Number in Energy of all parts in a Creep combined
+  @param parts Array of Body Parts [WORK, MOVE, CARRY, ...]
+  @returns Number
+  */
+function calcCreepCost(parts) {
+  let totalCost = 0;
+  const bodyPartCosts = {
+    move: 50,
+    work: 100,
+    carry: 50,
+    attack: 80,
+    ranged_attack: 150,
+    heal: 250,
+    claim: 600,
+    tough: 10
+  }
+  parts.forEach(part => totalCost += bodyPartCosts[part]);
+  return totalCost;
 }

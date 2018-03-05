@@ -110,10 +110,11 @@ Creep.prototype.getEnergy = function(useSource, useContainers, useStorage) {
   // See if there is already a storage in memory
   if (this.memory.storage_id) {
     storage = Game.getObjectById(this.memory.storage_id);
-    delete this.memory.storage_id; // reset and later update
+    // delete this.memory.storage_id; // reset and later update
 
     // If storage empty, reset and start over
     if (storage.store[RESOURCE_ENERGY] <= threshold) {
+      delete this.memory.storage_id;
       storage = null;
     }
   }
@@ -133,7 +134,12 @@ Creep.prototype.getEnergy = function(useSource, useContainers, useStorage) {
   // If no Containers or Storage nearly available, look for an Energy Source
   if (!storage && useSource && this.memory.source_id) {
     source = Game.getObjectById(this.memory.source_id);
-    delete this.memory.source_id; // resent and later update
+
+    // If this source exhausted, look for an alternative
+    if (source.energy <= 0) {
+      delete this.memory.source_id;
+      source = null;
+    }
   }
 
   // If no Source in memory, look for a nearby one
@@ -321,7 +327,10 @@ Creep.prototype.recycleAt = function(terminalTicks) {
     const spawn = this.pos.findClosestByPath(FIND_MY_STRUCTURES, {
       filter: s => s.structureType == STRUCTURE_SPAWN
     });
-    if (spawn && this.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE || spawn.recycleCreep(this) == ERR_NOT_IN_RANGE) {
+
+    if (!spawn) return false; // No Spawn in sight yet
+
+    if (this.transfer(spawn, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE || spawn.recycleCreep(this) == ERR_NOT_IN_RANGE) {
       this.moveTo(spawn);
     } else {
       if (VERBOSE) console.log(this.name + " has been recycled");

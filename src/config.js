@@ -34,7 +34,7 @@ module.exports = {
     capped to 800
     */
   tier1_energy_cap: function() {
-    return 1000;
+    return 800;
   },
 
   /**

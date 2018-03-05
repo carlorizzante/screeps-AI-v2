@@ -16,14 +16,10 @@ module.exports = {
 
         if (targets.length) {
           const target = creep.pos.findClosestByRange(targets);
-
-          // Try close range ATTACK
-          if (creep.attack(target) == ERR_NOT_IN_RANGE) {
-            // Then try Ranged ATTACK
-            if (creep.rangedAttack(target) == ERR_NOT_IN_RANGE) {
-              // If none succeed, move closer to the target
-              creep.moveTo(target);
-            }
+          // Then try Ranged ATTACK
+          if (creep.rangedAttack(target) == ERR_NOT_IN_RANGE) {
+            // If none succeed, move closer to the target
+            creep.moveTo(target);
           }
 
         /**
