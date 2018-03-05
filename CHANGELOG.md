@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/).
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [2.17.11] - UNRELEASED
+## [2.17.11] - 2018-03-05
+### Edited
+- README.md, final words
+
 ### Changed
 - config.js, Tier1 Energy Cap reduced from 1000 to 800
 - prototype.creep.js, bug fix recycleAt() and improvements
