@@ -1,11 +1,14 @@
 # Screeps!
-Release 2.17.11 - codename Little Rascal
+Release 2.17.12 - codename Little Rascal
 
-AI for Screeps, version 2.
-
-AI for the game Screeps, completed of Grunt file and tasks for stand alone / private server play.
+AI for Screeps, version 2, completed of Grunt file and tasks for stand alone / private server play.
 
 The project is abandoned due a complete rewrite of the entire AI which will be probably published as well at some point. However, at the current state the AI is quite capable and can get you started quite ok.
+
+### Grunt
+In order to stream files directly into the "default" folder, in game, you need to update one line in the file Gruntfile.js.
+
+In game, on the panel Script, you should find on the bottom of it a link "Open local folder". Click it copy as a string the location of the "default" folder and paste it into Grunt, as "dest".
 
 ### Features
 - Automatic spawn of all units, with the exclusion of Claimers.

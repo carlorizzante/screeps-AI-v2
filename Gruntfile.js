@@ -4,7 +4,12 @@ module.exports = function(grunt) {
 
   const config = {
     src: ["Gruntfile.js", "src/**/*.js"],
-    dest: "/Users/carlorizzante/Library/Application Support/Screeps/scripts/127_0_0_1___21025/default"
+
+    // In game > Script, bottom of it, click on "Open local folder", copy and paste in here as "dest"
+    dest: "/Users/YOURUSERNAME/Library/Application Support/Screeps/scripts/127_0_0_1___21025/default",
+
+    // Temporary folder used by Grunt to sync all files into the game.
+    temp: "temp/"
   }
 
   grunt.initConfig({
@@ -20,7 +25,7 @@ module.exports = function(grunt) {
     sync: {
       main: {
         files: [{
-          cwd: "default",
+          cwd: config.temp,
           src: ["**"],
           dest: config.dest
         }],
@@ -28,7 +33,9 @@ module.exports = function(grunt) {
       }
     },
     clean: {
-      contents: ["default"],
+      // AI files are first copied into a temporary folder "temp"
+      // and later synchronized with the "default" folder in game.
+      contents: [config.temp],
       options: {
         force: true
       }
@@ -40,7 +47,7 @@ module.exports = function(grunt) {
             expand: true,
             flatten: true,
             src: ['src/**'],
-            dest: "default",
+            dest: config.temp,
             filter: 'isFile'
           }
         ]
